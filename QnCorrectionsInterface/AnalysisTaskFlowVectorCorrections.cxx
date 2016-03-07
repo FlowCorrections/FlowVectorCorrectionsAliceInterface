@@ -20,7 +20,6 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <AliCentrality.h>
 #include <AliESDEvent.h>
 #include "QnCorrectionsCuts.h"
-#include "QnCorrectionsVarManager.h"
 #include "QnCorrectionsManager.h"
 #include "AliQnCorrectionsHistos.h"
 #include "AliLog.h"
@@ -107,6 +106,8 @@ fIsESD(kFALSE)
   fEventQAList->SetOwner(kTRUE);
 
   fEventHistos = new AliQnCorrectionsHistos();
+
+  SetDefaultVarNames();
 }
 
 //_________________________________________________________________________________
@@ -180,7 +181,7 @@ void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
 
   FillEventData();
 
-  if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d",(Int_t) (values[QnCorrectionsVarManager::kRunNo])));
+  if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d",(Int_t) (fDataBank[kRunNo])));
 
   fEventHistos->FillHistClass("Event_NoCuts", fDataBank);
 

@@ -80,13 +80,13 @@ void AnalysisTaskFlowVectorCorrections::SetDetectors() {
   //
   // determine which detectors are used (to call only the necessary detector fill functions)
 
-  if(fQnCorrectionsManager->FindDetector(VAR::kTPC  ) != NULL)    fFillTPC = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kVZERO) != NULL)  fFillVZERO = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kTZERO) != NULL)  fFillTZERO = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kZDC  ) != NULL)    fFillZDC = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kFMD  ) != NULL)    fFillFMD = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kFMDraw) != NULL)fFillRawFMD = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(VAR::kSPD  ) != NULL)    fFillSPD = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kTPC  ) != NULL)    fFillTPC = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kVZERO) != NULL)  fFillVZERO = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kTZERO) != NULL)  fFillTZERO = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kZDC  ) != NULL)    fFillZDC = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kFMD  ) != NULL)    fFillFMD = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kFMDraw) != NULL)fFillRawFMD = kTRUE;
+  if(fQnCorrectionsManager->FindDetector(kSPD  ) != NULL)    fFillSPD = kTRUE;
 
 
 }
@@ -112,39 +112,39 @@ void AnalysisTaskFlowVectorCorrections::FillEventInfo() {
   //
 
 
-  fDataBank[VAR::kRunNo]       = fEvent->GetRunNumber();
-  fDataBank[VAR::kVtxX]        = -999.;
-  fDataBank[VAR::kVtxY]        = -999.;
-  fDataBank[VAR::kVtxZ]        = -999.;
+  fDataBank[kRunNo]       = fEvent->GetRunNumber();
+  fDataBank[kVtxX]        = -999.;
+  fDataBank[kVtxY]        = -999.;
+  fDataBank[kVtxZ]        = -999.;
   const AliVVertex *primVtx = fEvent->GetPrimaryVertex();
   if (primVtx){
-    fDataBank[VAR::kVtxX]        = primVtx->GetX();
-    fDataBank[VAR::kVtxY]        = primVtx->GetY();
-    fDataBank[VAR::kVtxZ]        = primVtx->GetZ();
-    fDataBank[VAR::kNVtxContributors]    = primVtx->GetNContributors();
+    fDataBank[kVtxX]        = primVtx->GetX();
+    fDataBank[kVtxY]        = primVtx->GetY();
+    fDataBank[kVtxZ]        = primVtx->GetZ();
+    fDataBank[kNVtxContributors]    = primVtx->GetNContributors();
   }
 
   AliMultSelection *MultSelection = (AliMultSelection * ) fEvent->FindListObject("MultSelection");
-  fDataBank[VAR::kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
+  fDataBank[kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
 
   AliESDEvent* esdEvent = static_cast<AliESDEvent*>(fEvent);
   AliCentrality* cent = esdEvent->GetCentrality();
   if(cent){
-    fDataBank[VAR::kCentVZERO]   = cent->GetCentralityPercentile("V0M");
-    fDataBank[VAR::kCentSPD]     = cent->GetCentralityPercentile("CL1");
-    fDataBank[VAR::kCentTPC]     = cent->GetCentralityPercentile("TRK");
-    fDataBank[VAR::kCentQuality] = cent->GetQuality();
+    fDataBank[kCentVZERO]   = cent->GetCentralityPercentile("V0M");
+    fDataBank[kCentSPD]     = cent->GetCentralityPercentile("CL1");
+    fDataBank[kCentTPC]     = cent->GetCentralityPercentile("TRK");
+    fDataBank[kCentQuality] = cent->GetQuality();
   }
 
 
   AliVVZERO* vzero = fEvent->GetVZEROData();
-  fDataBank[VAR::kVZEROATotalMult]     = vzero->GetMTotV0A();
-  fDataBank[VAR::kVZEROCTotalMult]     = vzero->GetMTotV0C();
-  fDataBank[VAR::kVZEROTotalMult]      = fDataBank[VAR::kVZEROATotalMult]+fDataBank[VAR::kVZEROCTotalMult];
+  fDataBank[kVZEROATotalMult]     = vzero->GetMTotV0A();
+  fDataBank[kVZEROCTotalMult]     = vzero->GetMTotV0C();
+  fDataBank[kVZEROTotalMult]      = fDataBank[kVZEROATotalMult]+fDataBank[kVZEROCTotalMult];
 
   AliMultiplicity* spdmult = (AliMultiplicity*) fEvent->GetMultiplicity();
-  fDataBank[VAR::kSPDntracklets]      = spdmult->GetNumberOfTracklets();
-  fDataBank[VAR::kSPDnSingleClusters] = spdmult->GetNumberOfSingleClusters();
+  fDataBank[kSPDntracklets]      = spdmult->GetNumberOfTracklets();
+  fDataBank[kSPDnSingleClusters] = spdmult->GetNumberOfSingleClusters();
 }
 
 
@@ -155,25 +155,25 @@ void AnalysisTaskFlowVectorCorrections::FillTrackInfo(AliVParticle* particle) {
   Float_t dcaxy=0.0;
   Float_t dcaz=0.0;
 
-  fDataBank[VAR::kPx]        = particle->Px();
-  fDataBank[VAR::kPy]        = particle->Py();
-  fDataBank[VAR::kPz]        = particle->Pz();
-  fDataBank[VAR::kPt]        = particle->Pt();
-  fDataBank[VAR::kP]         = particle->P();
-  fDataBank[VAR::kPhi]       = particle->Phi();
-  fDataBank[VAR::kTheta]     = particle->Theta();
-  fDataBank[VAR::kEta]       = particle->Eta();
-  fDataBank[VAR::kCharge]    = particle->Charge();
-  fDataBank[VAR::kDcaXY]     = dcaxy;
-  fDataBank[VAR::kDcaZ]      = dcaz;
+  fDataBank[kPx]        = particle->Px();
+  fDataBank[kPy]        = particle->Py();
+  fDataBank[kPz]        = particle->Pz();
+  fDataBank[kPt]        = particle->Pt();
+  fDataBank[kP]         = particle->P();
+  fDataBank[kPhi]       = particle->Phi();
+  fDataBank[kTheta]     = particle->Theta();
+  fDataBank[kEta]       = particle->Eta();
+  fDataBank[kCharge]    = particle->Charge();
+  fDataBank[kDcaXY]     = dcaxy;
+  fDataBank[kDcaZ]      = dcaz;
 
   AliAODTrack* aodTrack=static_cast<AliAODTrack*>(particle);
 
   //fDataBank[VAR::kITSncls]       = particle->GetNcls(0);
-  fDataBank[VAR::kTPCncls]       = aodTrack->GetTPCNcls();
-  fDataBank[VAR::kTPCchi2]       = aodTrack->Chi2perNDF();
-  fDataBank[VAR::kTPCsignal]     = aodTrack->GetTPCsignal();
-  for(Int_t ibit=0; ibit<9; ibit++) fDataBank[VAR::kFilterBit+ibit]     = aodTrack->TestFilterBit(BIT(ibit));
+  fDataBank[kTPCncls]       = aodTrack->GetTPCNcls();
+  fDataBank[kTPCchi2]       = aodTrack->Chi2perNDF();
+  fDataBank[kTPCsignal]     = aodTrack->GetTPCsignal();
+  for(Int_t ibit=0; ibit<9; ibit++) fDataBank[kFilterBit+ibit]     = aodTrack->TestFilterBit(BIT(ibit));
 
 }
 
@@ -185,23 +185,23 @@ void AnalysisTaskFlowVectorCorrections::FillTrackInfo(AliESDtrack* particle) {
   Float_t dcaz=0.0;
   particle->GetImpactParameters(dcaxy,dcaz);
 
-  fDataBank[VAR::kPx]        = particle->Px();
-  fDataBank[VAR::kPy]        = particle->Py();
-  fDataBank[VAR::kPz]        = particle->Pz();
-  fDataBank[VAR::kPt]        = particle->Pt();
-  fDataBank[VAR::kP]         = particle->P();
-  fDataBank[VAR::kPhi]       = particle->Phi();
-  fDataBank[VAR::kTheta]     = particle->Theta();
-  fDataBank[VAR::kEta]       = particle->Eta();
-  fDataBank[VAR::kCharge]    = particle->Charge();
-  fDataBank[VAR::kDcaXY]     = dcaxy;
-  fDataBank[VAR::kDcaZ]      = dcaz;
+  fDataBank[kPx]        = particle->Px();
+  fDataBank[kPy]        = particle->Py();
+  fDataBank[kPz]        = particle->Pz();
+  fDataBank[kPt]        = particle->Pt();
+  fDataBank[kP]         = particle->P();
+  fDataBank[kPhi]       = particle->Phi();
+  fDataBank[kTheta]     = particle->Theta();
+  fDataBank[kEta]       = particle->Eta();
+  fDataBank[kCharge]    = particle->Charge();
+  fDataBank[kDcaXY]     = dcaxy;
+  fDataBank[kDcaZ]      = dcaz;
 
-  fDataBank[VAR::kTPCncls]       = particle->GetTPCNcls();
-  fDataBank[VAR::kTPCnclsIter1]  = particle->GetTPCNclsIter1();
-  fDataBank[VAR::kTPCchi2]       = fDataBank[VAR::kTPCncls]>0 ? particle->GetTPCchi2()/fDataBank[VAR::kTPCncls] : 0.0;
-  fDataBank[VAR::kTPCchi2Iter1]  = fDataBank[VAR::kTPCnclsIter1]>0 ? particle->GetTPCchi2Iter1()/fDataBank[VAR::kTPCnclsIter1] : 0.0;
-  fDataBank[VAR::kTPCsignal]     = particle->GetTPCsignal();
+  fDataBank[kTPCncls]       = particle->GetTPCNcls();
+  fDataBank[kTPCnclsIter1]  = particle->GetTPCNclsIter1();
+  fDataBank[kTPCchi2]       = fDataBank[kTPCncls]>0 ? particle->GetTPCchi2()/fDataBank[kTPCncls] : 0.0;
+  fDataBank[kTPCchi2Iter1]  = fDataBank[kTPCnclsIter1]>0 ? particle->GetTPCchi2Iter1()/fDataBank[kTPCnclsIter1] : 0.0;
+  fDataBank[kTPCsignal]     = particle->GetTPCsignal();
 
 
 
@@ -247,11 +247,11 @@ void AnalysisTaskFlowVectorCorrections::FillAodTPC(){
     FillTrackInfo(vTrack);
     fEventHistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, vTrack->Phi());
+    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kTPC, vTrack->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
         fEventHistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)),
+            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
             fDataBank);
     }
   }
@@ -280,13 +280,13 @@ void AnalysisTaskFlowVectorCorrections::FillEsdTPC(){
     if (!track) continue;
 
     FillTrackInfo(track);
-    fQAhistos->FillHistClass("TrackQA_NoCuts", fDataBank);
+    fEventHistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, track->Phi());
+    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kTPC, track->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
         fEventHistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)),
+            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
             fDataBank);
     }
 
@@ -307,14 +307,14 @@ void AnalysisTaskFlowVectorCorrections::FillSPDTracklets() {
   AliMultiplicity* mult = (AliMultiplicity*) fEvent->GetMultiplicity();
   nTracklets = mult->GetNumberOfTracklets();
   for(Int_t iTracklet=0; iTracklet<nTracklets; ++iTracklet) {
-    fDataBank[VAR::kSPDtrackletEta]    = mult->GetEta(iTracklet);
-    fDataBank[VAR::kSPDtrackletPhi]    = mult->GetPhi(iTracklet);
+    fDataBank[kSPDtrackletEta]    = mult->GetEta(iTracklet);
+    fDataBank[kSPDtrackletPhi]    = mult->GetPhi(iTracklet);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kSPD, fDataBank[VAR::kSPDtrackletPhi]);
+    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kSPD, fDataBank[kSPDtrackletPhi]);
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
       fEventHistos->FillHistClass(Form("TrackletQA_%s",
-          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kSPD, conf)),
+          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kSPD, conf)),
           fDataBank);
     }
   }
@@ -338,7 +338,7 @@ void AnalysisTaskFlowVectorCorrections::FillVZERO(){
     weight=vzero->GetMultiplicity(ich);
     if(weight<0.01) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(VAR::kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
 
   }
 }
@@ -361,7 +361,7 @@ void AnalysisTaskFlowVectorCorrections::FillTZERO(){
     weight=tzero->GetT0amplitude()[ich];
     if(weight<0.01) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(VAR::kTZERO, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(kTZERO, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
 
   }
 }
@@ -392,7 +392,7 @@ void AnalysisTaskFlowVectorCorrections::FillZDC(){
     weight=ZDCenergy[ich];
     if(weight<100.) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(VAR::kZDC, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(kZDC, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
   }
 }
 
@@ -440,7 +440,7 @@ void AnalysisTaskFlowVectorCorrections::FillFMD()
       if(m<0.01) continue;
       nFMD++;
 
-      fQnCorrectionsManager->AddDataVector(VAR::kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
+      fQnCorrectionsManager->AddDataVector(kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
     }
   }
 }
@@ -483,7 +483,7 @@ void AnalysisTaskFlowVectorCorrections::FillRawFMD()
           m    =  esdFmd->Multiplicity(det, ring, sec, str);
           if(m ==  AliESDFMD::kInvalidMult) m=0;
           fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
-          fQnCorrectionsManager->AddDataVector(VAR::kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
+          fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
         }  // end loop over strips
       }  // end loop over sectors      
     }  // end loop over rings

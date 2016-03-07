@@ -33,13 +33,9 @@
     Based on work of Ionut-Cristian Arsene
  ***********************************************************/
 
-#include "QnCorrectionsVarManager.h"
+#include "AnalysisTaskFlowVectorCorrections.h"
 
-#include <TMath.h>
-
-ClassImp(QnCorrectionsVarManager)
-
-const Char_t* QnCorrectionsVarManager::fTrackingFlagNames[QnCorrectionsVarManager::kNTrackingFlags] = {
+const Char_t* AnalysisTaskFlowVectorCorrections::fTrackingFlagNames[kNTrackingFlags] = {
   "kITSin", "kITSout", "kITSrefit", "kITSpid",
   "kTPCin", "kTPCout", "kTPCrefit", "kTPCpid",
   "kTRDin", "kTRDout", "kTRDrefit", "kTRDpid",
@@ -56,7 +52,7 @@ const Char_t* QnCorrectionsVarManager::fTrackingFlagNames[QnCorrectionsVarManage
 };
 
 
-const Char_t* QnCorrectionsVarManager::fOfflineTriggerNames[64] = {
+const Char_t* AnalysisTaskFlowVectorCorrections::fOfflineTriggerNames[64] = {
   "MB",              "INT7",              "MUON", "HighMult",    "EMC1", "CINT5",       "CMUS5/MUSPB",      "MUSH7/MUSHPB",
   "MUL7/MuonLikePB", "MUU7/MuonUnlikePB", "EMC7", "MUS7",        "PHI1", "PHI7/PHOSPb", "EMCEJE",           "EMCEGA",
   "Central",         "SemiCentral",       "DG5",  "ZED",         "SPI7", "CINT8",       "MuonSingleLowPt8", "MuonSingleHighPt8",  
@@ -68,7 +64,7 @@ const Char_t* QnCorrectionsVarManager::fOfflineTriggerNames[64] = {
 };
 
 //__________________________________________________________________
-void QnCorrectionsVarManager::SetDefaultVarNames() {
+void AnalysisTaskFlowVectorCorrections::SetDefaultVarNames() {
   fVariableNames[kRandom1][0]              = "User";                            fVariableNames[kRandom1][1] = "";
   fVariableNames[kRunNo][0]                = "Run number";                      fVariableNames[kRunNo][1] = "";
   fVariableNames[kLHCFillNumber][0]        = "LHC fill number";                 fVariableNames[kLHCFillNumber][1] = ""; 
@@ -227,70 +223,5 @@ void QnCorrectionsVarManager::SetDefaultVarNames() {
   fVariableNames[kDeltaTheta][0] = "#Delta #theta"; fVariableNames[kDeltaTheta][1] = "rad.";
   fVariableNames[kDeltaEta][0] = "#Delta #eta"; fVariableNames[kDeltaEta][1] = "";
   for(Int_t ibit=0;ibit<9;++ibit) { fVariableNames[kFilterBit+ibit][0] = Form("filter bit %d", ibit); fVariableNames[kFilterBit+ibit][1] = "";}
-}
-
-
-
-
-//__________________________________________________________________
-QnCorrectionsVarManager::QnCorrectionsVarManager():
-  TNamed("AliQnCorrectionsVarManager","AliQnCorrectionsVarManager")
-{
-  //
-  // Default constructor
-  //
-  for(Int_t ivar=0;ivar<kNVars;++ivar) { 
-    fUsedVars[ivar] = kFALSE;
-  }
-  fUseDefaultVariablesName = kFALSE;
-}
-
-
-//__________________________________________________________________
-QnCorrectionsVarManager::~QnCorrectionsVarManager()
-{
-  //
-  // Default destructor
-  //
-}
-
-
-
-//__________________________________________________________________
-void QnCorrectionsVarManager::UnsetDefaultVarNames() {
-  //
-  // Unset default names for variables
-  //
-  fUseDefaultVariablesName = kFALSE;
-  for(Int_t ivar=0;ivar<kNVars;++ivar) { 
-    fVariableNames[ivar][0] = ""; fVariableNames[ivar][1] = "";
-  }
-  return;
-}
-
-//__________________________________________________________________
-void QnCorrectionsVarManager::UnsetUsedVars() {
-  //
-  // Unset all used vars
-  //
-  for(Int_t ivar=0;ivar<kNVars;++ivar) { 
-    fUsedVars[ivar] = kFALSE;
-  }
-  return;
-}
-
-Double_t QnCorrectionsVarManager::DeltaPhi(Double_t phi1, Double_t phi2) {
-  //
-  // compute the delta of two angles defined in the (-pi,+pi) interval
-  //
-  Double_t delta = phi1-phi2;
-
-  if (2.0*TMath::Pi() < delta)
-    delta -= 2.0*TMath::Pi();
-  if (delta < - 2.0*TMath::Pi())
-    delta += 2.0*TMath::Pi();
-  if (TMath::Pi() < delta) return delta - 2.0*TMath::Pi();
-  if (delta < - TMath::Pi()) return delta + 2.0*TMath::Pi();
-  return delta;
 }
 

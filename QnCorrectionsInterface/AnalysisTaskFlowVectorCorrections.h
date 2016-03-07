@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 #include <TObject.h>
+#include "Rtypes.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -18,12 +19,14 @@
 #include "AliAnalysisTaskSE.h"
 
 class AliAnalysis;
-class QnCorrectionsFillEvent;
 class QnCorrectionsManager;
 class QnCorrectionsCutsSet;
 class AliQnCorrectionsHistos;
 
 class AnalysisTaskFlowVectorCorrections : public AliAnalysisTaskSE {
+public:
+  /* include the variable handling definitions */
+#include "AnalysisTaskFlowVectorCorrectionsVar.h"
 
 public:
   AnalysisTaskFlowVectorCorrections();
@@ -39,7 +42,6 @@ public:
   void SetUseTPCStandaloneTracks(Bool_t enable = kTRUE) { fUseTPCStandaloneTracks = enable; }
   void SetRunByRunCalibration(Bool_t enable) { fCalibrateByRun = enable; }
   void SetQnCorrectionsManager(QnCorrectionsManager* QnManager)  {fQnCorrectionsManager = QnManager;}
-  void SetVarManager(QnCorrectionsFillEvent *eventfiller)  { fEventFiller = eventfiller;}
   void SetEventCuts(QnCorrectionsCutsSet *cuts)  {fEventCuts = cuts;}
   void SetProvideQnVectors(Bool_t enable = kTRUE) { fProvideQnVectorsList = enable; }
   void SetTrigger(UInt_t triggerbit) {fTriggerMask=triggerbit;}
@@ -80,6 +82,11 @@ private:
 
   void SetDetectors();
 
+private:
+  /* variable handling methods */
+  const Char_t* VarName(Int_t var);
+  const Char_t* VarUnits(Int_t var);
+  void SetDefaultVarNames();
 
 
 private:
@@ -114,13 +121,30 @@ private:
   Bool_t fIsAOD;
   Bool_t fIsESD;
 
-
+  /* for variable handling */
+  static const Char_t* fTrackingFlagNames[kNTrackingFlags];
+  static const Char_t* fOfflineTriggerNames[64];
+  Char_t* fVariableNames[kNVars][2];
 
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
 
   ClassDef(AnalysisTaskFlowVectorCorrections, 1);
 };
+
+inline Char_t* AnalysisTaskFlowVectorCorrections::VarName(Int_t var) {
+  if ((!(var < 0)) && (var < kNVars))
+    return fVariableNames[var][0];
+  else
+    return "";
+}
+
+inline Char_t* AnalysisTaskFlowVectorCorrections::VarUnits(Int_t var) {
+  if ((!(var < 0)) && (var < kNVars))
+    return fVariableNames[var][1];
+  else
+    return "";
+}
 
 #endif // ANALYSISTASKFLOWVECTORCORRECTION_H
 
