@@ -121,17 +121,17 @@ void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
   DefineInput(0,TChain::Class());
   Int_t outputSlot = 1;
   // Calibration histograms
-  if (fQnCorrectionsManager->ShouldFillHistogramsQnCorrections()) {
+  if (fQnCorrectionsManager->GetShouldFillOutputHistograms()) {
     DefineOutput(outputSlot, TList::Class());
     fOutputSlotHistQn = outputSlot++;
   }
   // Calibrated qvector tree
-  if (fQnCorrectionsManager->ShouldFillTreeQnVectors()) {
+  if (fQnCorrectionsManager->GetShouldFillQnVectorTree()) {
     DefineOutput(outputSlot, TTree::Class());
     fOutputSlotTree = outputSlot++;
   }
   // Qvector QA histograms
-  if (fQnCorrectionsManager->ShouldFillHistogramsQA()) {
+  if (fQnCorrectionsManager->GetShouldFillQAHistograms()) {
     DefineOutput(outputSlot, TList::Class());
     fOutputSlotHistQA = outputSlot++;
   }
@@ -154,17 +154,14 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
   //
   // Add all histogram manager histogram lists to the output TList
   //
+  fQnCorrectionsManager->InitializeQnCorrectionsFramework();
 
-  fEventFiller->SetQnCorrectionsManager(fQnCorrectionsManager);
-
-  fQnCorrectionsManager->Initialize();
-
-  if (fQnCorrectionsManager->ShouldFillHistogramsQnCorrections())
-    PostData(fOutputSlotHistQn, fQnCorrectionsManager->GetListOutputHistogramsQnCorrections());
-  if (fQnCorrectionsManager->ShouldFillTreeQnVectors())
-    PostData(fOutputSlotTree, fQnCorrectionsManager->GetTreeQnVectors());
-  if (fQnCorrectionsManager->ShouldFillHistogramsQA())
-    PostData(fOutputSlotHistQA, fQnCorrectionsManager->GetListHistogramsQA());
+  if (fQnCorrectionsManager->GetShouldFillOutputHistograms())
+    PostData(fOutputSlotHistQn, fQnCorrectionsManager->GetOutputHistogramsList());
+  if (fQnCorrectionsManager->GetShouldFillQnVectorTree())
+    PostData(fOutputSlotTree, fQnCorrectionsManager->GetQnVectorTree());
+  if (fQnCorrectionsManager->GetShouldFillQAHistograms())
+    PostData(fOutputSlotHistQA, fQnCorrectionsManager->GetQAHistogramsList());
   if (fFillEventQA)
     PostData(fOutputSlotEventQA, fEventQAList);
 }
@@ -192,7 +189,7 @@ void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   }  // end if event selection
 
   if(fProvideQnVectorsList)
-    PostData(fOutputSlotQnVectorsList, fQnCorrectionsManager->GetListQnVectors());
+    PostData(fOutputSlotQnVectorsList, fQnCorrectionsManager->GetQnVectorList());
 }  // end loop over events
 
 

@@ -84,8 +84,8 @@ private:
 
 private:
   /* variable handling methods */
-  const Char_t* VarName(Int_t var);
-  const Char_t* VarUnits(Int_t var);
+  const Char_t* VarName(Int_t var) const;
+  const Char_t* VarUnits(Int_t var) const;
   void SetDefaultVarNames();
 
 
@@ -132,14 +132,14 @@ private:
   ClassDef(AnalysisTaskFlowVectorCorrections, 1);
 };
 
-inline Char_t* AnalysisTaskFlowVectorCorrections::VarName(Int_t var) {
+inline const Char_t* AnalysisTaskFlowVectorCorrections::VarName(Int_t var) const {
   if ((!(var < 0)) && (var < kNVars))
     return fVariableNames[var][0];
   else
     return "";
 }
 
-inline Char_t* AnalysisTaskFlowVectorCorrections::VarUnits(Int_t var) {
+inline const Char_t* AnalysisTaskFlowVectorCorrections::VarUnits(Int_t var) const {
   if ((!(var < 0)) && (var < kNVars))
     return fVariableNames[var][1];
   else
