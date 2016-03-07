@@ -19,7 +19,6 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <AliAnalysisManager.h>
 #include <AliCentrality.h>
 #include <AliESDEvent.h>
-#include "QnCorrectionsFillEvent.h"
 #include "QnCorrectionsCuts.h"
 #include "QnCorrectionsVarManager.h"
 #include "QnCorrectionsManager.h"
@@ -39,7 +38,6 @@ fListInputHistogramsQnCorrections(0x0),
 fEventQAList(0x0),
 fQnCorrectionsManager(NULL),
 fEventCuts(NULL),
-fEventFiller(NULL),
 fEventHistos(NULL),
 fLabel(""),
 fQAhistograms(""),
@@ -49,7 +47,19 @@ fOutputSlotEventQA(-1),
 fOutputSlotHistQA(-1),
 fOutputSlotHistQn(-1),
 fOutputSlotQnVectorsList(-1),
-fOutputSlotTree(-1)
+fOutputSlotTree(-1),
+fEvent(NULL),
+fDataBank(NULL),
+fUseTPCStandaloneTracks(kFALSE),
+fFillVZERO(kFALSE),
+fFillTPC(kFALSE),
+fFillZDC(kFALSE),
+fFillTZERO(kFALSE),
+fFillFMD(kFALSE),
+fFillRawFMD(kFALSE),
+fFillSPD(kFALSE),
+fIsAOD(kFALSE),
+fIsESD(kFALSE)
 {
   //
   // Default constructor
@@ -58,37 +68,45 @@ fOutputSlotTree(-1)
 
 //_________________________________________________________________________________
 AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections(const char* name) :
-            AliAnalysisTaskSE(),
-            fCalibrateByRun(kTRUE),
-            fTriggerMask(0),
-            fListInputHistogramsQnCorrections(0x0),
-            fEventQAList(0x0),
-            fQnCorrectionsManager(NULL),
-            fEventCuts(NULL),
-            fEventFiller(NULL),
-            fEventHistos(NULL),
-            fLabel(""),
-            fQAhistograms(""),
-            fFillEventQA(kTRUE),
-            fProvideQnVectorsList(kTRUE),
-            fOutputSlotEventQA(-1),
-            fOutputSlotHistQA(-1),
-            fOutputSlotHistQn(-1),
-            fOutputSlotQnVectorsList(-1),
-            fOutputSlotTree(-1)
+AliAnalysisTaskSE(),
+fCalibrateByRun(kTRUE),
+fTriggerMask(0),
+fListInputHistogramsQnCorrections(0x0),
+fEventQAList(0x0),
+fQnCorrectionsManager(NULL),
+fEventCuts(NULL),
+fEventHistos(NULL),
+fLabel(""),
+fQAhistograms(""),
+fFillEventQA(kTRUE),
+fProvideQnVectorsList(kTRUE),
+fOutputSlotEventQA(-1),
+fOutputSlotHistQA(-1),
+fOutputSlotHistQn(-1),
+fOutputSlotQnVectorsList(-1),
+fOutputSlotTree(-1),
+fEvent(NULL),
+fDataBank(NULL),
+fUseTPCStandaloneTracks(kFALSE),
+fFillVZERO(kFALSE),
+fFillTPC(kFALSE),
+fFillZDC(kFALSE),
+fFillTZERO(kFALSE),
+fFillFMD(kFALSE),
+fFillRawFMD(kFALSE),
+fFillSPD(kFALSE),
+fIsAOD(kFALSE),
+fIsESD(kFALSE)
 {
   //
   // Constructor
   //
 
-  fEventFiller = new QnCorrectionsFillEvent();
-
   fEventQAList = new TList();
   fEventQAList->SetName("EventQA");
   fEventQAList->SetOwner(kTRUE);
 
-  fQnCorrectionsQAHistos = new AliQnCorrectionsHistos();
-  fEventFiller->SetQnCorrectionsQAHistos(fQnCorrectionsQAHistos);
+  fEventHistos = new AliQnCorrectionsHistos();
 }
 
 //_________________________________________________________________________________
@@ -155,19 +173,19 @@ void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   // Main loop. Called for every event
   //
 
-  AliVEvent* event = InputEvent();
+  fEvent = InputEvent();
   fQnCorrectionsManager->ClearEvent();
 
-  Float_t* values = fQnCorrectionsManager->GetDataContainer();
+  fDataBank = fQnCorrectionsManager->GetDataContainer();
 
-  fEventFiller->Process((AliAnalysisTaskSE*) this, event, values);
+  FillEventData();
 
   if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d",(Int_t) (values[QnCorrectionsVarManager::kRunNo])));
 
-  fEventHistos->FillHistClass("Event_NoCuts", values);
+  fEventHistos->FillHistClass("Event_NoCuts", fDataBank);
 
-  if (IsEventSelected(values)) {
-    fEventHistos->FillHistClass("Event_Analysis", values);
+  if (IsEventSelected(fDataBank)) {
+    fEventHistos->FillHistClass("Event_Analysis", fDataBank);
 
     fQnCorrectionsManager->ProcessEvent();
   }  // end if event selection

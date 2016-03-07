@@ -35,15 +35,6 @@
 
 #include <Riostream.h>
 
-#include "QnCorrectionsFillEvent.h"
-#include "QnCorrectionsVarManager.h"
-
-#include "QnCorrectionsDataVector.h"
-#include "QnCorrectionsDetector.h"
-#include "QnCorrectionsManager.h"
-
-#include "AliQnCorrectionsHistos.h"
-
 #include <TChain.h>
 #include <TH1D.h>
 #include <TFile.h>
@@ -77,48 +68,15 @@
 
 #include <AliLog.h>
 
+#include "QnCorrectionsDataVector.h"
+#include "QnCorrectionsDetector.h"
+#include "QnCorrectionsManager.h"
 
-ClassImp(QnCorrectionsFillEvent)
+#include "AliQnCorrectionsHistos.h"
 
-#ifdef QNCORRECTIONS_VARMANAGER_H
-#define VAR QnCorrectionsVarManager
-#endif
+#include "AnalysisTaskFlowVectorCorrections.h"
 
-
-QnCorrectionsFillEvent::QnCorrectionsFillEvent() :
-TNamed("AliQnCorrectionsFillEvent","Fill functions"),
-fEvent(NULL),
-fQnCorrectionsManager(NULL),
-fQAhistos(NULL),
-fUseTPCStandaloneTracks(kFALSE),
-fFillVZERO(kFALSE),
-fFillTPC(kFALSE),
-fFillZDC(kFALSE),
-fFillTZERO(kFALSE),
-fFillFMD(kFALSE),
-fFillRawFMD(kFALSE),
-fFillSPD(kFALSE),
-fIsAOD(kFALSE),
-fIsESD(kFALSE)
-{
-  //
-  // Default constructor
-  //
-
-}
-
-//_____________________________________________________________________________
-QnCorrectionsFillEvent::~QnCorrectionsFillEvent()
-{
-  //
-  // Destructor
-  //
-}
-
-
-
-//__________________________________________________________________
-void QnCorrectionsFillEvent::SetDetectors() {
+void AnalysisTaskFlowVectorCorrections::SetDetectors() {
   //
   // determine which detectors are used (to call only the necessary detector fill functions)
 
@@ -135,9 +93,7 @@ void QnCorrectionsFillEvent::SetDetectors() {
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEvent::Process(AliAnalysisTaskSE* task, AliVEvent* event, Float_t* values) {
-
-  fEvent=event;
+void AnalysisTaskFlowVectorCorrections::FillEventData() {
 
   TString aod = "AOD";
   TString esd = "ESD";
@@ -145,142 +101,138 @@ void QnCorrectionsFillEvent::Process(AliAnalysisTaskSE* task, AliVEvent* event, 
   fIsAOD = ( aod.EqualTo(fEvent->Whoami()) ? kTRUE : kFALSE );
   fIsESD = ( esd.EqualTo(fEvent->Whoami()) ? kTRUE : kFALSE );
 
-  FillEventInfo(values);
-  FillDetectors(task, values);
-
+  FillEventInfo();
+  FillDetectors();
 }
 
 //__________________________________________________________________
-void QnCorrectionsFillEvent::FillEventInfo(Float_t* values) {
+void AnalysisTaskFlowVectorCorrections::FillEventInfo() {
   //
   // fill event info
   //
 
 
-  values[VAR::kRunNo]       = fEvent->GetRunNumber();
-  values[VAR::kVtxX]        = -999.;
-  values[VAR::kVtxY]        = -999.;
-  values[VAR::kVtxZ]        = -999.;
+  fDataBank[VAR::kRunNo]       = fEvent->GetRunNumber();
+  fDataBank[VAR::kVtxX]        = -999.;
+  fDataBank[VAR::kVtxY]        = -999.;
+  fDataBank[VAR::kVtxZ]        = -999.;
   const AliVVertex *primVtx = fEvent->GetPrimaryVertex();
   if (primVtx){
-    values[VAR::kVtxX]        = primVtx->GetX();
-    values[VAR::kVtxY]        = primVtx->GetY();
-    values[VAR::kVtxZ]        = primVtx->GetZ();
-    values[VAR::kNVtxContributors]    = primVtx->GetNContributors();
+    fDataBank[VAR::kVtxX]        = primVtx->GetX();
+    fDataBank[VAR::kVtxY]        = primVtx->GetY();
+    fDataBank[VAR::kVtxZ]        = primVtx->GetZ();
+    fDataBank[VAR::kNVtxContributors]    = primVtx->GetNContributors();
   }
 
   AliMultSelection *MultSelection = (AliMultSelection * ) fEvent->FindListObject("MultSelection");
-  values[VAR::kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
+  fDataBank[VAR::kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
 
   AliESDEvent* esdEvent = static_cast<AliESDEvent*>(fEvent);
   AliCentrality* cent = esdEvent->GetCentrality();
   if(cent){
-    values[VAR::kCentVZERO]   = cent->GetCentralityPercentile("V0M");
-    values[VAR::kCentSPD]     = cent->GetCentralityPercentile("CL1");
-    values[VAR::kCentTPC]     = cent->GetCentralityPercentile("TRK");
-    values[VAR::kCentQuality] = cent->GetQuality();
+    fDataBank[VAR::kCentVZERO]   = cent->GetCentralityPercentile("V0M");
+    fDataBank[VAR::kCentSPD]     = cent->GetCentralityPercentile("CL1");
+    fDataBank[VAR::kCentTPC]     = cent->GetCentralityPercentile("TRK");
+    fDataBank[VAR::kCentQuality] = cent->GetQuality();
   }
 
 
   AliVVZERO* vzero = fEvent->GetVZEROData();
-  values[VAR::kVZEROATotalMult]     = vzero->GetMTotV0A();
-  values[VAR::kVZEROCTotalMult]     = vzero->GetMTotV0C();
-  values[VAR::kVZEROTotalMult]      = values[VAR::kVZEROATotalMult]+values[VAR::kVZEROCTotalMult];
+  fDataBank[VAR::kVZEROATotalMult]     = vzero->GetMTotV0A();
+  fDataBank[VAR::kVZEROCTotalMult]     = vzero->GetMTotV0C();
+  fDataBank[VAR::kVZEROTotalMult]      = fDataBank[VAR::kVZEROATotalMult]+fDataBank[VAR::kVZEROCTotalMult];
 
   AliMultiplicity* spdmult = (AliMultiplicity*) fEvent->GetMultiplicity();
-  values[VAR::kSPDntracklets]      = spdmult->GetNumberOfTracklets();
-  values[VAR::kSPDnSingleClusters] = spdmult->GetNumberOfSingleClusters();
+  fDataBank[VAR::kSPDntracklets]      = spdmult->GetNumberOfTracklets();
+  fDataBank[VAR::kSPDnSingleClusters] = spdmult->GetNumberOfSingleClusters();
 }
 
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEvent::FillTrackInfo(AliVParticle* particle, Float_t* values) {
+void AnalysisTaskFlowVectorCorrections::FillTrackInfo(AliVParticle* particle) {
 
   Float_t dcaxy=0.0;
   Float_t dcaz=0.0;
 
-  values[VAR::kPx]        = particle->Px();
-  values[VAR::kPy]        = particle->Py();
-  values[VAR::kPz]        = particle->Pz();
-  values[VAR::kPt]        = particle->Pt();
-  values[VAR::kP]         = particle->P();
-  values[VAR::kPhi]       = particle->Phi();
-  values[VAR::kTheta]     = particle->Theta();
-  values[VAR::kEta]       = particle->Eta();
-  values[VAR::kCharge]    = particle->Charge();
-  values[VAR::kDcaXY]     = dcaxy;
-  values[VAR::kDcaZ]      = dcaz;
+  fDataBank[VAR::kPx]        = particle->Px();
+  fDataBank[VAR::kPy]        = particle->Py();
+  fDataBank[VAR::kPz]        = particle->Pz();
+  fDataBank[VAR::kPt]        = particle->Pt();
+  fDataBank[VAR::kP]         = particle->P();
+  fDataBank[VAR::kPhi]       = particle->Phi();
+  fDataBank[VAR::kTheta]     = particle->Theta();
+  fDataBank[VAR::kEta]       = particle->Eta();
+  fDataBank[VAR::kCharge]    = particle->Charge();
+  fDataBank[VAR::kDcaXY]     = dcaxy;
+  fDataBank[VAR::kDcaZ]      = dcaz;
 
   AliAODTrack* aodTrack=static_cast<AliAODTrack*>(particle);
 
-  //values[VAR::kITSncls]       = particle->GetNcls(0); 
-  values[VAR::kTPCncls]       = aodTrack->GetTPCNcls();
-  values[VAR::kTPCchi2]       = aodTrack->Chi2perNDF();
-  values[VAR::kTPCsignal]     = aodTrack->GetTPCsignal();
-  for(Int_t ibit=0; ibit<9; ibit++) values[VAR::kFilterBit+ibit]     = aodTrack->TestFilterBit(BIT(ibit));
+  //fDataBank[VAR::kITSncls]       = particle->GetNcls(0);
+  fDataBank[VAR::kTPCncls]       = aodTrack->GetTPCNcls();
+  fDataBank[VAR::kTPCchi2]       = aodTrack->Chi2perNDF();
+  fDataBank[VAR::kTPCsignal]     = aodTrack->GetTPCsignal();
+  for(Int_t ibit=0; ibit<9; ibit++) fDataBank[VAR::kFilterBit+ibit]     = aodTrack->TestFilterBit(BIT(ibit));
 
 }
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEvent::FillTrackInfo(AliESDtrack* particle, Float_t* values) {
+void AnalysisTaskFlowVectorCorrections::FillTrackInfo(AliESDtrack* particle) {
 
   Float_t dcaxy=0.0;
   Float_t dcaz=0.0;
   particle->GetImpactParameters(dcaxy,dcaz);
 
-  values[VAR::kPx]        = particle->Px();
-  values[VAR::kPy]        = particle->Py();
-  values[VAR::kPz]        = particle->Pz();
-  values[VAR::kPt]        = particle->Pt();
-  values[VAR::kP]         = particle->P();
-  values[VAR::kPhi]       = particle->Phi();
-  values[VAR::kTheta]     = particle->Theta();
-  values[VAR::kEta]       = particle->Eta();
-  values[VAR::kCharge]    = particle->Charge();
-  values[VAR::kDcaXY]     = dcaxy;
-  values[VAR::kDcaZ]      = dcaz;
+  fDataBank[VAR::kPx]        = particle->Px();
+  fDataBank[VAR::kPy]        = particle->Py();
+  fDataBank[VAR::kPz]        = particle->Pz();
+  fDataBank[VAR::kPt]        = particle->Pt();
+  fDataBank[VAR::kP]         = particle->P();
+  fDataBank[VAR::kPhi]       = particle->Phi();
+  fDataBank[VAR::kTheta]     = particle->Theta();
+  fDataBank[VAR::kEta]       = particle->Eta();
+  fDataBank[VAR::kCharge]    = particle->Charge();
+  fDataBank[VAR::kDcaXY]     = dcaxy;
+  fDataBank[VAR::kDcaZ]      = dcaz;
 
-  values[VAR::kTPCncls]       = particle->GetTPCNcls();
-  values[VAR::kTPCnclsIter1]  = particle->GetTPCNclsIter1();
-  values[VAR::kTPCchi2]       = values[VAR::kTPCncls]>0 ? particle->GetTPCchi2()/values[VAR::kTPCncls] : 0.0;
-  values[VAR::kTPCchi2Iter1]  = values[VAR::kTPCnclsIter1]>0 ? particle->GetTPCchi2Iter1()/values[VAR::kTPCnclsIter1] : 0.0;
-  values[VAR::kTPCsignal]     = particle->GetTPCsignal();
+  fDataBank[VAR::kTPCncls]       = particle->GetTPCNcls();
+  fDataBank[VAR::kTPCnclsIter1]  = particle->GetTPCNclsIter1();
+  fDataBank[VAR::kTPCchi2]       = fDataBank[VAR::kTPCncls]>0 ? particle->GetTPCchi2()/fDataBank[VAR::kTPCncls] : 0.0;
+  fDataBank[VAR::kTPCchi2Iter1]  = fDataBank[VAR::kTPCnclsIter1]>0 ? particle->GetTPCchi2Iter1()/fDataBank[VAR::kTPCnclsIter1] : 0.0;
+  fDataBank[VAR::kTPCsignal]     = particle->GetTPCsignal();
 
 
 
 }
 
 //_________________________________
-void QnCorrectionsFillEvent::FillDetectors(AliAnalysisTaskSE* task, Float_t* values){
+void AnalysisTaskFlowVectorCorrections::FillDetectors(){
 
-  if(fFillTPC)   FillTPC(values);
+  if(fFillTPC)   FillTPC();
   if(fFillVZERO) FillVZERO();
   if(fFillZDC)   FillZDC();
   if(fFillTZERO) FillTZERO();
-  if(fFillFMD)   FillFMD(task);
-  if(fFillRawFMD)FillRawFMD(values);
-  if(fFillSPD) FillSPDTracklets(values);
-
+  if(fFillFMD)   FillFMD();
+  if(fFillRawFMD)FillRawFMD();
+  if(fFillSPD) FillSPDTracklets();
 }
 
 
 //_________________________________
-void QnCorrectionsFillEvent::FillTPC(Float_t* values){
+void AnalysisTaskFlowVectorCorrections::FillTPC(){
   //
   // fill TPC info
   //
 
-  if(fIsAOD) FillAodTPC(values);
-  if(fIsESD) FillEsdTPC(values);
-
-
+  if(fIsAOD) FillAodTPC();
+  if(fIsESD) FillEsdTPC();
 }
 
 
 //_________________________________
-void QnCorrectionsFillEvent::FillAodTPC(Float_t* values){
+void AnalysisTaskFlowVectorCorrections::FillAodTPC(){
   //
   // fill AOD TPC info
   //
@@ -292,14 +244,15 @@ void QnCorrectionsFillEvent::FillAodTPC(Float_t* values){
     vTrack = fEvent->GetTrack(iTrack); //carefull do not modify it othwise  need to work with a copy 
     if (!vTrack) continue;
 
-    FillTrackInfo(vTrack, values);
-    fQAhistos->FillHistClass("TrackQA_NoCuts", values);
+    FillTrackInfo(vTrack);
+    fEventHistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
     Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, vTrack->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
-        fQAhistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
+        fEventHistos->FillHistClass(Form("TrackQA_%s",
+            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)),
+            fDataBank);
     }
   }
 }
@@ -308,7 +261,7 @@ void QnCorrectionsFillEvent::FillAodTPC(Float_t* values){
 
 
 //_________________________________
-void QnCorrectionsFillEvent::FillEsdTPC(Float_t* values){
+void AnalysisTaskFlowVectorCorrections::FillEsdTPC(){
   //
   // fill ESD TPC info
   //
@@ -326,14 +279,15 @@ void QnCorrectionsFillEvent::FillEsdTPC(Float_t* values){
     else track = esdTrack;
     if (!track) continue;
 
-    FillTrackInfo(track, values);
-    fQAhistos->FillHistClass("TrackQA_NoCuts", values);
+    FillTrackInfo(track);
+    fQAhistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
     Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, track->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
-        fQAhistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
+        fEventHistos->FillHistClass(Form("TrackQA_%s",
+            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)),
+            fDataBank);
     }
 
     if(fUseTPCStandaloneTracks) delete track;
@@ -343,7 +297,7 @@ void QnCorrectionsFillEvent::FillEsdTPC(Float_t* values){
 
 
 //_________________________________________________________________________________
-void QnCorrectionsFillEvent::FillSPDTracklets(Float_t* values) {
+void AnalysisTaskFlowVectorCorrections::FillSPDTracklets() {
   //
   // fill SPD info
   //
@@ -353,19 +307,20 @@ void QnCorrectionsFillEvent::FillSPDTracklets(Float_t* values) {
   AliMultiplicity* mult = (AliMultiplicity*) fEvent->GetMultiplicity();
   nTracklets = mult->GetNumberOfTracklets();
   for(Int_t iTracklet=0; iTracklet<nTracklets; ++iTracklet) {
-    values[VAR::kSPDtrackletEta]    = mult->GetEta(iTracklet);
-    values[VAR::kSPDtrackletPhi]    = mult->GetPhi(iTracklet);
+    fDataBank[VAR::kSPDtrackletEta]    = mult->GetEta(iTracklet);
+    fDataBank[VAR::kSPDtrackletPhi]    = mult->GetPhi(iTracklet);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kSPD, values[VAR::kSPDtrackletPhi]);
+    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kSPD, fDataBank[VAR::kSPDtrackletPhi]);
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
-      fQAhistos->FillHistClass(Form("TrackletQA_%s",
-          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kSPD, conf)), values);
+      fEventHistos->FillHistClass(Form("TrackletQA_%s",
+          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kSPD, conf)),
+          fDataBank);
     }
   }
 }
 
-void QnCorrectionsFillEvent::FillVZERO(){
+void AnalysisTaskFlowVectorCorrections::FillVZERO(){
   //
   // fill VZERO info
   //
@@ -373,6 +328,9 @@ void QnCorrectionsFillEvent::FillVZERO(){
   Double_t weight=0.;
   const Double_t kX[8] = {0.92388, 0.38268, -0.38268, -0.92388, -0.92388, -0.38268, 0.38268, 0.92388};    // cosines of the angles of the VZERO sectors (8 per ring)
   const Double_t kY[8] = {0.38268, 0.92388, 0.92388, 0.38268, -0.38268, -0.92388, -0.92388, -0.38268};    // sines     -- " --
+  const Double_t phi[8] = {TMath::ATan2(kY[0],kX[0]), TMath::ATan2(kY[1],kX[1]), TMath::ATan2(kY[2],kX[2]),
+      TMath::ATan2(kY[3],kX[3]), TMath::ATan2(kY[4],kX[4]), TMath::ATan2(kY[5],kX[5]),
+      TMath::ATan2(kY[6],kX[6]), TMath::ATan2(kY[7],kX[7]) };
 
   AliVVZERO* vzero = fEvent->GetVZEROData();
 
@@ -380,15 +338,14 @@ void QnCorrectionsFillEvent::FillVZERO(){
     weight=vzero->GetMultiplicity(ich);
     if(weight<0.01) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(VAR::kVZERO, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(VAR::kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
 
   }
 }
 
 
 
-//_________________________________
-void QnCorrectionsFillEvent::FillTZERO(){
+void AnalysisTaskFlowVectorCorrections::FillTZERO(){
   //
   // fill ESD TZERO info
   //
@@ -413,7 +370,7 @@ void QnCorrectionsFillEvent::FillTZERO(){
 
 
 //_________________________________
-void QnCorrectionsFillEvent::FillZDC(){
+void AnalysisTaskFlowVectorCorrections::FillZDC(){
   //
   // fill ZDC info
   //
@@ -440,8 +397,7 @@ void QnCorrectionsFillEvent::FillZDC(){
 }
 
 
-//_________________________________________________________________________________
-void QnCorrectionsFillEvent::FillFMD(AliAnalysisTaskSE* task)
+void AnalysisTaskFlowVectorCorrections::FillFMD()
 {
   //
   // fill ESD FMD info
@@ -449,7 +405,7 @@ void QnCorrectionsFillEvent::FillFMD(AliAnalysisTaskSE* task)
 
   Float_t m,eta,phi;
 
-  AliAODEvent* aodEvent = AliForwardUtil::GetAODEvent(task);
+  AliAODEvent* aodEvent = AliForwardUtil::GetAODEvent(this);
 
 
   if (!aodEvent) {
@@ -492,7 +448,7 @@ void QnCorrectionsFillEvent::FillFMD(AliAnalysisTaskSE* task)
 
 
 //_________________________________
-void QnCorrectionsFillEvent::FillRawFMD(Float_t* values)
+void AnalysisTaskFlowVectorCorrections::FillRawFMD()
 {
   //
   // fill Raw FMD info
@@ -526,7 +482,7 @@ void QnCorrectionsFillEvent::FillRawFMD(Float_t* values)
           eta  =  esdFmd->Eta(det, ring, sec, str);
           m    =  esdFmd->Multiplicity(det, ring, sec, str);
           if(m ==  AliESDFMD::kInvalidMult) m=0;
-          values[AliQnCorrectionsVarManager::kFMDEta] = eta;
+          fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
           fQnCorrectionsManager->AddDataVector(VAR::kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
         }  // end loop over strips
       }  // end loop over sectors      

@@ -10,6 +10,8 @@
  * Development:   2014-2016                                                *
  ***************************************************************************/
 
+#include <TObject.h>
+
 #include "TFile.h"
 #include "TTree.h"
 
@@ -34,6 +36,7 @@ public:
   virtual void FinishTaskOutput();
 
 
+  void SetUseTPCStandaloneTracks(Bool_t enable = kTRUE) { fUseTPCStandaloneTracks = enable; }
   void SetRunByRunCalibration(Bool_t enable) { fCalibrateByRun = enable; }
   void SetQnCorrectionsManager(QnCorrectionsManager* QnManager)  {fQnCorrectionsManager = QnManager;}
   void SetVarManager(QnCorrectionsFillEvent *eventfiller)  { fEventFiller = eventfiller;}
@@ -46,7 +49,6 @@ public:
 
   QnCorrectionsManager *GetQnCorrectionsManager() {return fQnCorrectionsManager;}
   AliQnCorrectionsHistos* GetEventHistograms() {return fEventHistos;}
-  QnCorrectionsFillEvent* GetFillEvent() {return fEventFiller;}
   QnCorrectionsCutsSet* GetEventCuts()  const {return fEventCuts;}
   Int_t OutputSlotEventQA()        const {return fOutputSlotEventQA;}
   Int_t OutputSlotHistQA()        const {return fOutputSlotHistQA;}
@@ -58,13 +60,35 @@ public:
   Bool_t IsFillEventQA() const  {return fFillEventQA;}
 
 private:
+  /* Fill event data methods */
+  void FillEventData();
+
+  void FillDetectors();
+  void FillTPC();
+  void FillEsdTPC();
+  void FillAodTPC();
+  void FillVZERO();
+  void FillTZERO();
+  void FillZDC();
+  void FillFMD();
+  void FillRawFMD();
+  void FillSPDTracklets();
+
+  void FillEventInfo();
+  void FillTrackInfo(AliESDtrack* p);
+  void FillTrackInfo(AliVParticle* p);
+
+  void SetDetectors();
+
+
+
+private:
   Bool_t fCalibrateByRun;
   UInt_t fTriggerMask;
   TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
   TList* fEventQAList;
   QnCorrectionsManager *fQnCorrectionsManager;
   QnCorrectionsCutsSet *fEventCuts;
-  QnCorrectionsFillEvent* fEventFiller;
   AliQnCorrectionsHistos* fEventHistos;
   TString fLabel;
   TString fQAhistograms;
@@ -75,6 +99,22 @@ private:
   Int_t fOutputSlotHistQn;
   Int_t fOutputSlotQnVectorsList;
   Int_t fOutputSlotTree;
+
+  /* for filling event data */
+  AliVEvent* fEvent;
+  Float_t *fDataBank;
+  Bool_t fUseTPCStandaloneTracks;
+  Bool_t fFillVZERO;
+  Bool_t fFillTPC;
+  Bool_t fFillZDC;
+  Bool_t fFillTZERO;
+  Bool_t fFillFMD;
+  Bool_t fFillRawFMD;
+  Bool_t fFillSPD;
+  Bool_t fIsAOD;
+  Bool_t fIsESD;
+
+
 
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
