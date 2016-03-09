@@ -10,8 +10,6 @@
  * Development:   2014-2016                                                *
  ***************************************************************************/
 
-#include "QnCorrectionsManager.h"
-#include "AliQnCorrectionsHistos.h"
 #include <AliVEvent.h>
 #include <AliESDEvent.h>
 #include <AliAnalysisManager.h>
@@ -19,49 +17,62 @@
 #include <AliInputEventHandler.h>
 #include <AliESDInputHandler.h>
 
-class QnCorrectionsFillEvent : public TNamed {
+#include "QnCorrectionsManager.h"
+#include "QnCorrectionsVarManagerTask.h"
+#include "AliQnCorrectionsHistos.h"
+
+class AliESDtrack;
+class AliVParticle;
+
+class QnCorrectionsFillEventTask : public QnCorrectionsVarManagerTask {
 public:
 
-  QnCorrectionsFillEvent();
-  ~QnCorrectionsFillEvent();
+  QnCorrectionsFillEventTask();
+  QnCorrectionsFillEventTask(const char *name);
+  ~QnCorrectionsFillEventTask();
+
+public:
+
+  virtual void UserExec(Option_t *) = 0;
+  virtual void UserCreateOutputObjects() = 0;
+  virtual void FinishTaskOutput() = 0;
 
 
-  void Process(AliAnalysisTaskSE* task, AliVEvent* event, Float_t* values);
+  void SetUseTPCStandaloneTracks(Bool_t enable = kTRUE) { fUseTPCStandaloneTracks = enable; }
 
-  void FillDetectors(AliAnalysisTaskSE* task, Float_t* values);
-  void FillTPC(Float_t* values);
-  void FillEsdTPC(Float_t* values);
-  void FillAodTPC(Float_t* values);
+protected:
+  /* Fill event data methods */
+  void FillEventData();
+
+  void FillDetectors();
+  void FillTPC();
+  void FillEsdTPC();
+  void FillAodTPC();
   void FillVZERO();
   void FillTZERO();
   void FillZDC();
-  void FillFMD(AliAnalysisTaskSE* task);
-  void FillRawFMD(Float_t* values);
-  void FillSPDTracklets(Float_t* values);
+  void FillFMD();
+  void FillRawFMD();
+  void FillSPDTracklets();
 
-  void FillEventInfo(Float_t* values);
-  void FillTrackInfo(AliESDtrack* p, Float_t* values);
-  void FillTrackInfo(AliVParticle* p, Float_t* values);
+  void FillEventInfo();
+  void FillTrackInfo(AliESDtrack* p);
+  void FillTrackInfo(AliVParticle* p);
 
-  void SetUseTPCStandaloneTracks(Bool_t b=kTRUE) { fUseTPCStandaloneTracks=b; }
-
-  void SetEvent(AliVEvent* ev) {fEvent=ev;}
-  void SetQnCorrectionsManager(QnCorrectionsManager *QnManager) { fQnCorrectionsManager = QnManager; SetDetectors(); }
-  void SetQnCorrectionsQAHistos(AliQnCorrectionsHistos* QAHistos) { fQAhistos = QAHistos; }
   void SetDetectors();
-
 
 private:
 
-  QnCorrectionsFillEvent(const QnCorrectionsFillEvent &c);
-  QnCorrectionsFillEvent& operator= (const QnCorrectionsFillEvent &c);
+  QnCorrectionsFillEventTask(const QnCorrectionsFillEventTask &c);
+  QnCorrectionsFillEventTask& operator= (const QnCorrectionsFillEventTask &c);
 
+protected:
   AliVEvent* fEvent;
   QnCorrectionsManager *fQnCorrectionsManager;
-  AliQnCorrectionsHistos* fQAhistos;
-
+  AliQnCorrectionsHistos* fEventHistos;
+  Float_t *fDataBank;
+private:
   Bool_t fUseTPCStandaloneTracks;
-
   Bool_t fFillVZERO;
   Bool_t fFillTPC;
   Bool_t fFillZDC;
@@ -69,11 +80,10 @@ private:
   Bool_t fFillFMD;
   Bool_t fFillRawFMD;
   Bool_t fFillSPD;
-
   Bool_t fIsAOD;
   Bool_t fIsESD;
 
-  ClassDef(QnCorrectionsFillEvent, 1);
+  ClassDef(QnCorrectionsFillEventTask, 1);
 };
 
 #endif
