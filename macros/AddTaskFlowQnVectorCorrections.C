@@ -45,6 +45,8 @@
 #include <AliLog.h>
 #include "AliAODHandler.h"
 #include "AliAnalysisTaskESDfilter.h"
+#include "AliAnalysisManager.h"
+#include "AliQnCorrectionsHistos.h"
 
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsCuts.h"
@@ -54,6 +56,7 @@
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsInputGainEqualization.h"
+#include "AnalysisTaskFlowVectorCorrections.h"
 
 #define VAR AnalysisTaskFlowVectorCorrections
 
@@ -102,7 +105,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
   else
     taskQnCorrections->SelectCollisionCandidates(AliVEvent::kMB|AliVEvent::kINT7);  // Events passing trigger and physics selection for analysis
 
-  taskQnCorrections->->SetUseTPCStandaloneTracks(kFALSE);  // Use of TPC standalone tracks or Global tracks (only for ESD analysis)
+  taskQnCorrections->SetUseTPCStandaloneTracks(kFALSE);  // Use of TPC standalone tracks or Global tracks (only for ESD analysis)
 
   TString histClass = "";
   histClass += "Event_NoCuts;";
@@ -209,7 +212,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
 
 
   Int_t channelGroups[64];
-  for(Int_t ich=0; ich<64; ich++) channelGroups->[ich] = Int_t(ich / 8);
+  for(Int_t ich=0; ich<64; ich++) channelGroups[ich] = Int_t(ich / 8);
 
   //-----------------------------------------------------------
   // Our event classes for V0
@@ -221,7 +224,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   /* the VZERO detector */
@@ -285,7 +288,7 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   /* the TPC  detector */
@@ -332,7 +335,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kVZEROMultPercentile], Ctbinning));
+      task->VarName(VAR::kVZEROMultPercentile), Ctbinning));
   ////////// end of binning
 
   /* the SPD detector */
@@ -377,7 +380,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   /* the TZERO detector */
@@ -450,7 +453,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxY,
       task->VarName(VAR::kVtxY), VtxYbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   /* the ZDC detector */
@@ -491,60 +494,6 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
 
-  gSystem->Load("libPWGLFforward2");  // for FMD
-
-  // Create the FMD task and add it to the manager
-  //===========================================================================
-
-  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
-
-  //--- AOD output handler -----------------------------------------
-  AliAODHandler* ret = new AliAODHandler();
-  //ret->SetFillAOD(kTRUE);
-  ret->SetOutputFileName("AliAOD.pass2.root");
-  mgr->SetOutputEventHandler(ret);
-
-  //gROOT->LoadClass("AliAODForwardMult", "libPWGLFforward2");
-  gSystem->Load("libESDfilter.so");
-  gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/ESDfilter/macros/AddTaskESDFilter.C");
-  AliAnalysisTaskESDfilter *esdfilter = AddTaskESDFilter(kTRUE, kFALSE, kFALSE, kFALSE, kFALSE, kTRUE);
-
-  // Create ONLY the output containers for the data produced by the task.
-  // Get and connect other common input/output containers via the manager as below
-  //==============================================================================
-  mgr->ConnectInput  (esdfilter,  0, mgr->GetCommonInputContainer());
-  mgr->ConnectOutput (esdfilter,  0, mgr->GetCommonOutputContainer());
-
-  gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/FORWARD/analysis2/AddTaskForwardMult.C");
-
-  Bool_t   mc  = false; // false: real data, true: simulated data
-  ULong_t run = 0; // 0: get from data???
-  UShort_t sys = 0; // 0: get from data, 1: pp, 2: AA
-  UShort_t sNN = 0; // 0: get from data, otherwise center of mass energy (per nucleon pair)
-  Short_t  fld = 0; // 0: get from data, otherwise L3 field in kG
-  //AliAnalysisTask *taskFmd  = AddTaskForwardMult(mc, sys, sNN, fld);
-  const Char_t* config = "$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/ForwardAODConfig2.C";
-  AliAnalysisTask *taskFmd  = AddTaskForwardMult(mc, run, sys, sNN, fld, config);
-
-
-
-  // --- Make the output container and connect it --------------------
-  AliAnalysisDataContainer* histOut =
-    mgr->CreateContainer("Forward", TList::Class(),
-        AliAnalysisManager::kExchangeContainer,
-        "Forward");
-  //AliAnalysisManager::GetCommonFileName());
-  AliAnalysisDataContainer *output =
-    mgr->CreateContainer("ForwardResultsP", TList::Class(),
-        AliAnalysisManager::kParamContainer,
-        "ForwardResultsP");
-  //AliAnalysisManager::GetCommonFileName());
-
-  mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
-  mgr->ConnectOutput(taskFmd, 1, histOut);
-
-  //mgr->AddTask(taskFmd);
-
   Bool_t FMDchannels[2][4000];
   for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<4000; ich++) FMDchannels[iv0][ich] = kFALSE;
 
@@ -561,7 +510,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   /* the FMD detector */
@@ -612,7 +561,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName[VAR::kCentVZERO], Ctbinning));
+      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   QnCorrectionsCutsSet *cutFMDA = new QnCorrectionsCutsSet();
