@@ -10,7 +10,7 @@
  * Development:   2014-2016                                                *
  ***************************************************************************/
 /*  Based on work of Ionut-Cristian Arsene
-************************************************************/
+ ************************************************************/
 #include "TNamed.h"
 #include "Rtypes.h"
 
@@ -20,7 +20,7 @@ class AliVEvent;
 
 class QnCorrectionsVarManager : public TNamed {
 
-  public:
+public:
   QnCorrectionsVarManager();
   virtual ~QnCorrectionsVarManager();
 
@@ -140,7 +140,7 @@ class QnCorrectionsVarManager : public TNamed {
     kChannelMult,      // For filling histograms with correct weight
     kVZEROChannelMult,                        // VZERO multiplicity per channel                 
     kVZEROChannelEta = kVZEROChannelMult+64,  // pseudo-rapidity of a VZERO channel             
-        // ZDC event plane related variables
+    // ZDC event plane related variables
     kZDCATotalEnergy = kVZEROChannelEta+64,  // total energy of ZDCA                         
     kZDCCTotalEnergy,   // total energy of ZDCC                         
     kZDCTotalEnergy,    // total energy of ZDC                          
@@ -281,7 +281,7 @@ class QnCorrectionsVarManager : public TNamed {
     kFilterBit7, 
     kFilterBit8        
   };
- 
+
   // offline triggers as defined in AliVEvent.h
   // NOTE: Check consistency with updates in aliroot!!!
   enum EOfflineTriggerTypes { 

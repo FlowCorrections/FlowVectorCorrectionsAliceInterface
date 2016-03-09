@@ -40,31 +40,31 @@
 ClassImp(QnCorrectionsVarManager)
 
 const Char_t* QnCorrectionsVarManager::fTrackingFlagNames[QnCorrectionsVarManager::kNTrackingFlags] = {
-  "kITSin", "kITSout", "kITSrefit", "kITSpid",
-  "kTPCin", "kTPCout", "kTPCrefit", "kTPCpid",
-  "kTRDin", "kTRDout", "kTRDrefit", "kTRDpid",
-  "kTOFin", "kTOFout", "kTOFrefit", "kTOFpid", "kTOFmismatch",
-  "kHMPIDout", "kHMPIDpid", 
-  "kEMCALmatch", "kPHOSmatch", 
-  "kTRDbackup", "kTRDStop",
-  "kESDpid", "kTIME", "kGlobalMerge",
-  "kITSpureSA", 
-  "kMultInV0",
-  "kMultSec",
-  "kTRDnPlanes",
-  "kEMCALNoMatch"
+    "kITSin", "kITSout", "kITSrefit", "kITSpid",
+    "kTPCin", "kTPCout", "kTPCrefit", "kTPCpid",
+    "kTRDin", "kTRDout", "kTRDrefit", "kTRDpid",
+    "kTOFin", "kTOFout", "kTOFrefit", "kTOFpid", "kTOFmismatch",
+    "kHMPIDout", "kHMPIDpid",
+    "kEMCALmatch", "kPHOSmatch",
+    "kTRDbackup", "kTRDStop",
+    "kESDpid", "kTIME", "kGlobalMerge",
+    "kITSpureSA",
+    "kMultInV0",
+    "kMultSec",
+    "kTRDnPlanes",
+    "kEMCALNoMatch"
 };
 
 
 const Char_t* QnCorrectionsVarManager::fOfflineTriggerNames[64] = {
-  "MB",              "INT7",              "MUON", "HighMult",    "EMC1", "CINT5",       "CMUS5/MUSPB",      "MUSH7/MUSHPB",
-  "MUL7/MuonLikePB", "MUU7/MuonUnlikePB", "EMC7", "MUS7",        "PHI1", "PHI7/PHOSPb", "EMCEJE",           "EMCEGA",
-  "Central",         "SemiCentral",       "DG5",  "ZED",         "SPI7", "CINT8",       "MuonSingleLowPt8", "MuonSingleHighPt8",  
-  "MuonLikeLowPt8",  "MuonUnlikeLowPt8",  "N/A",  "UserDefined", "N/A",  "N/A",         "FastOnly",         "N/A",
-  "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
-  "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
-  "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
-  "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A"
+    "MB",              "INT7",              "MUON", "HighMult",    "EMC1", "CINT5",       "CMUS5/MUSPB",      "MUSH7/MUSHPB",
+    "MUL7/MuonLikePB", "MUU7/MuonUnlikePB", "EMC7", "MUS7",        "PHI1", "PHI7/PHOSPb", "EMCEJE",           "EMCEGA",
+    "Central",         "SemiCentral",       "DG5",  "ZED",         "SPI7", "CINT8",       "MuonSingleLowPt8", "MuonSingleHighPt8",
+    "MuonLikeLowPt8",  "MuonUnlikeLowPt8",  "N/A",  "UserDefined", "N/A",  "N/A",         "FastOnly",         "N/A",
+    "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
+    "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
+    "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A",
+    "N/A",             "N/A",               "N/A",  "N/A",         "N/A",  "N/A",         "N/A",              "N/A"
 };
 
 //__________________________________________________________________
@@ -169,7 +169,7 @@ void QnCorrectionsVarManager::SetDefaultVarNames() {
     fVariableNames[kCosNPhi+iHarmonic][0] = Form("cos(%d#varphi)",iHarmonic+1); fVariableNames[kCosNPhi+iHarmonic][1] = "";
     fVariableNames[kSinNPhi+iHarmonic][0] = Form("sin(%d#varphi)",iHarmonic+1); fVariableNames[kSinNPhi+iHarmonic][1] = "";
   }
-  
+
   fVariableNames[kPt][0] = "p_{T}"; fVariableNames[kPt][1] = "GeV/c";
   fVariableNames[kP][0] = "p"; fVariableNames[kP][1] = "GeV/c";
   fVariableNames[kPx][0] = "p_{x}"; fVariableNames[kPx][1] = "GeV/c";
@@ -234,7 +234,7 @@ void QnCorrectionsVarManager::SetDefaultVarNames() {
 
 //__________________________________________________________________
 QnCorrectionsVarManager::QnCorrectionsVarManager():
-  TNamed("AliQnCorrectionsVarManager","AliQnCorrectionsVarManager")
+      TNamed("AliQnCorrectionsVarManager","AliQnCorrectionsVarManager")
 {
   //
   // Default constructor

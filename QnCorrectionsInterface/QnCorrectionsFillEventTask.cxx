@@ -298,8 +298,8 @@ void QnCorrectionsFillEvent::FillAodTPC(Float_t* values){
     Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, vTrack->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
-        fQAhistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
+      fQAhistos->FillHistClass(Form("TrackQA_%s",
+          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
     }
   }
 }
@@ -332,8 +332,8 @@ void QnCorrectionsFillEvent::FillEsdTPC(Float_t* values){
     Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(VAR::kTPC, track->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
-        fQAhistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
+      fQAhistos->FillHistClass(Form("TrackQA_%s",
+          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(VAR::kTPC, conf)), values);
     }
 
     if(fUseTPCStandaloneTracks) delete track;
