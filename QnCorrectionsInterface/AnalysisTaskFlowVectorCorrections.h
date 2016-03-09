@@ -22,6 +22,8 @@ class AliAnalysis;
 class QnCorrectionsManager;
 class QnCorrectionsCutsSet;
 class AliQnCorrectionsHistos;
+class AliESDtrack;
+class AliVParticle;
 
 class AnalysisTaskFlowVectorCorrections : public AliAnalysisTaskSE {
 public:
@@ -124,7 +126,7 @@ private:
   /* for variable handling */
   static const Char_t* fTrackingFlagNames[kNTrackingFlags];
   static const Char_t* fOfflineTriggerNames[64];
-  Char_t* fVariableNames[kNVars][2];
+  const Char_t* fVariableNames[kNVars][2];
 
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
