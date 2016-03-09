@@ -215,13 +215,13 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
   gROOT->LoadMacro("QnCorrectionsInputGainEqualization.cxx"+debugString);
 
 
-  gROOT->LoadMacro("AnalysisTaskFlowVectorCorrectionsVar.cxx"+debugString);
-  gROOT->LoadMacro("AnalysisTaskFlowVectorCorrectionsFill.cxx"+debugString);
+  gROOT->LoadMacro("QnCorrectionsVarManagerTask.cxx"+debugString);
+  gROOT->LoadMacro("QnCorrectionsFillEventTask.cxx"+debugString);
   gROOT->LoadMacro("AnalysisTaskFlowVectorCorrections.cxx"+debugString);
 
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
-  AliAnaTaskMomScan *corrTask = AddTaskFlowQnVectorCorrections();
+  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections();
 
   TChain* chain = 0;
 

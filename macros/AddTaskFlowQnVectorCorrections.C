@@ -58,7 +58,7 @@
 #include "QnCorrectionsInputGainEqualization.h"
 #include "AnalysisTaskFlowVectorCorrections.h"
 
-#define VAR AnalysisTaskFlowVectorCorrections
+#define VAR QnCorrectionsVarManagerTask
 
 void DefineHistograms(QnCorrectionsManager* QnManager, AliQnCorrectionsHistos* histos, TString histClass);
 
@@ -389,7 +389,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* the TZEROA detector configuration */
   QnCorrectionsDetectorConfigurationChannels *TZEROAconf =
       new QnCorrectionsDetectorConfigurationChannels(
-          "VZEROA",
+          "TZEROA",
           CorrEventClasses,
           24, /* number of channels */
           4); /* number of harmonics: 1, 2, 3 and 4 */
