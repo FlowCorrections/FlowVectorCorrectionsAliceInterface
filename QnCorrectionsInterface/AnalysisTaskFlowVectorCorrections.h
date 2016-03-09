@@ -17,18 +17,14 @@
 #include "TTree.h"
 
 #include "AliAnalysisTaskSE.h"
+#include "QnCorrectionsFillEventTask.h"
 
 class AliAnalysis;
 class QnCorrectionsManager;
 class QnCorrectionsCutsSet;
 class AliQnCorrectionsHistos;
-class AliESDtrack;
-class AliVParticle;
 
-class AnalysisTaskFlowVectorCorrections : public AliAnalysisTaskSE {
-public:
-  /* include the variable handling definitions */
-#include "AnalysisTaskFlowVectorCorrectionsVar.h"
+class AnalysisTaskFlowVectorCorrections : public QnCorrectionsFillEventTask {
 
 public:
   AnalysisTaskFlowVectorCorrections();
@@ -39,9 +35,9 @@ public:
   virtual void UserExec(Option_t *);
   virtual void UserCreateOutputObjects();
   virtual void FinishTaskOutput();
+  virtual void NotifyRun();
 
 
-  void SetUseTPCStandaloneTracks(Bool_t enable = kTRUE) { fUseTPCStandaloneTracks = enable; }
   void SetRunByRunCalibration(Bool_t enable) { fCalibrateByRun = enable; }
   void SetQnCorrectionsManager(QnCorrectionsManager* QnManager)  {fQnCorrectionsManager = QnManager;}
   void SetEventCuts(QnCorrectionsCutsSet *cuts)  {fEventCuts = cuts;}
@@ -64,41 +60,11 @@ public:
   Bool_t IsFillEventQA() const  {return fFillEventQA;}
 
 private:
-  /* Fill event data methods */
-  void FillEventData();
-
-  void FillDetectors();
-  void FillTPC();
-  void FillEsdTPC();
-  void FillAodTPC();
-  void FillVZERO();
-  void FillTZERO();
-  void FillZDC();
-  void FillFMD();
-  void FillRawFMD();
-  void FillSPDTracklets();
-
-  void FillEventInfo();
-  void FillTrackInfo(AliESDtrack* p);
-  void FillTrackInfo(AliVParticle* p);
-
-  void SetDetectors();
-
-private:
-  /* variable handling methods */
-  const Char_t* VarName(Int_t var) const;
-  const Char_t* VarUnits(Int_t var) const;
-  void SetDefaultVarNames();
-
-
-private:
   Bool_t fCalibrateByRun;
   UInt_t fTriggerMask;
   TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
   TList* fEventQAList;
-  QnCorrectionsManager *fQnCorrectionsManager;
   QnCorrectionsCutsSet *fEventCuts;
-  AliQnCorrectionsHistos* fEventHistos;
   TString fLabel;
   TString fQAhistograms;
   Bool_t fFillEventQA;
@@ -109,44 +75,11 @@ private:
   Int_t fOutputSlotQnVectorsList;
   Int_t fOutputSlotTree;
 
-  /* for filling event data */
-  AliVEvent* fEvent;
-  Float_t *fDataBank;
-  Bool_t fUseTPCStandaloneTracks;
-  Bool_t fFillVZERO;
-  Bool_t fFillTPC;
-  Bool_t fFillZDC;
-  Bool_t fFillTZERO;
-  Bool_t fFillFMD;
-  Bool_t fFillRawFMD;
-  Bool_t fFillSPD;
-  Bool_t fIsAOD;
-  Bool_t fIsESD;
-
-  /* for variable handling */
-  static const Char_t* fTrackingFlagNames[kNTrackingFlags];
-  static const Char_t* fOfflineTriggerNames[64];
-  const Char_t* fVariableNames[kNVars][2];
-
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
 
   ClassDef(AnalysisTaskFlowVectorCorrections, 1);
 };
-
-inline const Char_t* AnalysisTaskFlowVectorCorrections::VarName(Int_t var) const {
-  if ((!(var < 0)) && (var < kNVars))
-    return fVariableNames[var][0];
-  else
-    return "";
-}
-
-inline const Char_t* AnalysisTaskFlowVectorCorrections::VarUnits(Int_t var) const {
-  if ((!(var < 0)) && (var < kNVars))
-    return fVariableNames[var][1];
-  else
-    return "";
-}
 
 #endif // ANALYSISTASKFLOWVECTORCORRECTION_H
 

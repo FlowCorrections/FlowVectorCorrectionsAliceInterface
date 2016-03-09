@@ -30,14 +30,12 @@ ClassImp(AnalysisTaskFlowVectorCorrections)
 
 
 AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections() :
-AliAnalysisTaskSE(),
+QnCorrectionsFillEventTask(),
 fCalibrateByRun(kTRUE),
 fTriggerMask(0),
 fListInputHistogramsQnCorrections(0x0),
 fEventQAList(0x0),
-fQnCorrectionsManager(NULL),
 fEventCuts(NULL),
-fEventHistos(NULL),
 fLabel(""),
 fQAhistograms(""),
 fFillEventQA(kTRUE),
@@ -46,19 +44,7 @@ fOutputSlotEventQA(-1),
 fOutputSlotHistQA(-1),
 fOutputSlotHistQn(-1),
 fOutputSlotQnVectorsList(-1),
-fOutputSlotTree(-1),
-fEvent(NULL),
-fDataBank(NULL),
-fUseTPCStandaloneTracks(kFALSE),
-fFillVZERO(kFALSE),
-fFillTPC(kFALSE),
-fFillZDC(kFALSE),
-fFillTZERO(kFALSE),
-fFillFMD(kFALSE),
-fFillRawFMD(kFALSE),
-fFillSPD(kFALSE),
-fIsAOD(kFALSE),
-fIsESD(kFALSE)
+fOutputSlotTree(-1)
 {
   //
   // Default constructor
@@ -67,14 +53,12 @@ fIsESD(kFALSE)
 
 //_________________________________________________________________________________
 AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections(const char* name) :
-AliAnalysisTaskSE(),
+    QnCorrectionsFillEventTask(name),
 fCalibrateByRun(kTRUE),
 fTriggerMask(0),
 fListInputHistogramsQnCorrections(0x0),
 fEventQAList(0x0),
-fQnCorrectionsManager(NULL),
 fEventCuts(NULL),
-fEventHistos(NULL),
 fLabel(""),
 fQAhistograms(""),
 fFillEventQA(kTRUE),
@@ -83,19 +67,7 @@ fOutputSlotEventQA(-1),
 fOutputSlotHistQA(-1),
 fOutputSlotHistQn(-1),
 fOutputSlotQnVectorsList(-1),
-fOutputSlotTree(-1),
-fEvent(NULL),
-fDataBank(NULL),
-fUseTPCStandaloneTracks(kFALSE),
-fFillVZERO(kFALSE),
-fFillTPC(kFALSE),
-fFillZDC(kFALSE),
-fFillTZERO(kFALSE),
-fFillFMD(kFALSE),
-fFillRawFMD(kFALSE),
-fFillSPD(kFALSE),
-fIsAOD(kFALSE),
-fIsESD(kFALSE)
+fOutputSlotTree(-1)
 {
   //
   // Constructor
@@ -106,15 +78,13 @@ fIsESD(kFALSE)
   fEventQAList->SetOwner(kTRUE);
 
   fEventHistos = new AliQnCorrectionsHistos();
-
-  SetDefaultVarNames();
 }
 
 //_________________________________________________________________________________
 void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
 
   if(!fQnCorrectionsManager) {
-    AliFatal("First configure EventPlaneManager!!\n");
+    AliFatal("First configure QnCorrecionsManager!!\n");
     return;
   }
 
@@ -166,6 +136,14 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
     PostData(fOutputSlotEventQA, fEventQAList);
 }
 
+/// The current run has changed. Usually it is only sent before
+/// the first event is handled.
+/// Notify the framework manager that the current label has changed.
+void AnalysisTaskFlowVectorCorrections::NotifyRun() {
+
+  if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
+}
+
 void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   //
   // Main loop. Called for every event
@@ -177,8 +155,6 @@ void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   fDataBank = fQnCorrectionsManager->GetDataContainer();
 
   FillEventData();
-
-  if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d",(Int_t) (fDataBank[kRunNo])));
 
   fEventHistos->FillHistClass("Event_NoCuts", fDataBank);
 
