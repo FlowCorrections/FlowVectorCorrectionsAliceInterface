@@ -18,11 +18,12 @@
 
 class AliVEvent;
 
-class QnCorrectionsVarManager : public TNamed {
+class QnCorrectionsVarManagerTask : public AliAnalysisTaskSE {
 
 public:
-  QnCorrectionsVarManager();
-  virtual ~QnCorrectionsVarManager();
+  QnCorrectionsVarManagerTask();
+  QnCorrectionsVarManagerTask(const char *name);
+  virtual ~QnCorrectionsVarManagerTask();
 
   enum Detector {
     kVZERO=0,
@@ -333,49 +334,39 @@ public:
     kITSsixth  = 32
   };
 
+public:
+  virtual void UserExec(Option_t *) = 0;
+  virtual void UserCreateOutputObjects() = 0;
+  virtual void FinishTaskOutput() = 0;
 
-  //void GetUsedVars(Float_t* fUsedVars);
-
-  // Function prototypes
-  static Double_t DeltaPhi(Double_t phi1, Double_t phi2);  
-
-
-
-  void PrintBits(ULong_t mask);
+  const Char_t* VarName(Int_t var) const;
+  const Char_t* VarUnits(Int_t var) const;
+protected:
   void SetDefaultVarNames();
-  void UnsetDefaultVarNames();
-  void UnsetUsedVars();
-  void SetUsedVar(Int_t var);
-  void UnsetUsedVar(Int_t var);
-  Char_t* VarName(Int_t var);
 
+public:
   static const Char_t* fTrackingFlagNames[kNTrackingFlags];
   static const Char_t* fOfflineTriggerNames[64];
-  Char_t* fVariableNames[kNVars][2];
-  Bool_t fUsedVars[kNVars];
-  Bool_t fUseDefaultVariablesName;
+  const Char_t* fVariableNames[kNVars][2];
 
 private:
 
-  QnCorrectionsVarManager(const QnCorrectionsVarManager &c);
-  QnCorrectionsVarManager& operator= (const QnCorrectionsVarManager &c);
+  QnCorrectionsVarManagerTask(const QnCorrectionsVarManagerTask &c);
+  QnCorrectionsVarManagerTask & operator= (const QnCorrectionsVarManagerTask &c);
 
-  ClassDef(QnCorrectionsVarManager, 1);
+  ClassDef(QnCorrectionsVarManagerTask, 1);
 };  
 
-inline void QnCorrectionsVarManager::SetUsedVar(Int_t var) {
-  if ((!(var < 0)) && (var < kNVars))
-    fUsedVars[var] = kTRUE);
-}
-
-inline void QnCorrectionsVarManager::UnsetUsedVar(Int_t var) {
-  if ((!(var < 0)) && (var < kNVars))
-    fUsedVars[var] = kFALSE);
-}
-
-Char_t* QnCorrectionsVarManager::VarName(Int_t var) {
+inline const Char_t* QnCorrectionsVarManagerTask::VarName(Int_t var) const {
   if ((!(var < 0)) && (var < kNVars))
     return fVariableNames[var][0];
+  else
+    return "";
+}
+
+inline const Char_t* QnCorrectionsVarManagerTask::VarUnits(Int_t var) const {
+  if ((!(var < 0)) && (var < kNVars))
+    return fVariableNames[var][1];
   else
     return "";
 }
