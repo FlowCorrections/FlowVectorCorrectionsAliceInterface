@@ -139,7 +139,8 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
   QnManager->SetShouldFillQAHistograms(kFALSE);
   QnManager->SetShouldFillOutputHistograms(kTRUE);
 
-  taskQnCorrections->SetProvideQnVectors(kFALSE);
+  taskQnCorrections->SetFillExchangeContainerWithQvectors(kFALSE);
+  taskQnCorrections->SetFillEventQA(kTRUE);
 
   taskQnCorrections->SetQnCorrectionsManager(QnManager);
   taskQnCorrections->DefineInOutput();
@@ -147,20 +148,47 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
   AliQnCorrectionsHistos* hists = taskQnCorrections->GetEventHistograms();
   DefineHistograms(QnManager, hists, histClass);
 
+
   mgr->AddTask(taskQnCorrections);
 
-  //create output container
-  AliAnalysisDataContainer *cOutputHist =
-    mgr->CreateContainer("CalibrationHistos",
-        TList::Class(),
-        AliAnalysisManager::kOutputContainer,
-        "CalibrationHistograms.root");
+  mgr->ConnectInput(taskQnCorrections,  0, mgr->GetCommonInputContainer());
 
-  AliAnalysisDataContainer *cOutputQvec =
-    mgr->CreateContainer("CalibratedQvector",
-        TTree::Class(),
-        AliAnalysisManager::kOutputContainer,
-        "QvectorsTree.root");
+  //create output containers
+  if (QnManager->GetShouldFillOutputHistograms()) {
+    AliAnalysisDataContainer *cOutputHist =
+      mgr->CreateContainer("CalibrationHistos",
+          TList::Class(),
+          AliAnalysisManager::kOutputContainer,
+          "CalibrationHistograms.root");
+    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotHistQn(), cOutputHist );
+  }
+
+  if (QnManager->GetShouldFillQnVectorTree()) {
+    AliAnalysisDataContainer *cOutputQvec =
+      mgr->CreateContainer("CalibratedQvector",
+          TTree::Class(),
+          AliAnalysisManager::kOutputContainer,
+          "QvectorsTree.root");
+    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotTree(), cOutputQvec );
+  }
+
+  if (QnManager->GetShouldFillQAHistograms()) {
+    AliAnalysisDataContainer *cOutputHistQA =
+      mgr->CreateContainer("CalibrationQA",
+          TList::Class(),
+          AliAnalysisManager::kOutputContainer,
+          "CalibrationQA.root");
+    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotHistQA(), cOutputHistQA );
+  }
+
+  if (taskQnCorrections->GetFillEventQA()) {
+    AliAnalysisDataContainer *cOutputQnEventQA =
+      mgr->CreateContainer("QnEventQA",
+          TList::Class(),
+          AliAnalysisManager::kOutputContainer,
+          "QnEventQA.root");
+    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotEventQA(), cOutputQnEventQA );
+  }
 
   AliAnalysisDataContainer *cOutputQvecList =
     mgr->CreateContainer("CalibratedQvectorList",
@@ -168,32 +196,8 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
         AliAnalysisManager::kExchangeContainer,
         "QvectorsList.root");
 
-  AliAnalysisDataContainer *cOutputHistQA =
-    mgr->CreateContainer("CalibrationQA",
-        TList::Class(),
-        AliAnalysisManager::kOutputContainer,
-        "CalibrationQA.root");
-
-  AliAnalysisDataContainer *cOutputQnEventQA =
-    mgr->CreateContainer("QnEventQA",
-        TList::Class(),
-        AliAnalysisManager::kOutputContainer,
-        "QnEventQA.root");
-
-
-  AliAnalysisDataContainer *cinput1 = mgr->GetCommonInputContainer();
-
-  mgr->ConnectInput(taskQnCorrections,  0, mgr->GetCommonInputContainer());
-  if (QnManager->GetShouldFillOutputHistograms())
-    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotHistQn(), cOutputHist );
-  if (QnManager->GetShouldFillQnVectorTree())
-    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotTree(), cOutputQvec );
-  if (QnManager->GetShouldFillQAHistograms())
-    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotHistQA(), cOutputHistQA );
-  if (taskQnCorrections->IsFillExchangeContainerWithQvectors())
+  if (taskQnCorrections->GetFillExchangeContainerWithQvectors())
     mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotGetListQnVectors(), cOutputQvecList );
-  if (taskQnCorrections->IsFillEventQA())
-    mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotEventQA(), cOutputQnEventQA );
 
   return cOutputQvecList;
 }

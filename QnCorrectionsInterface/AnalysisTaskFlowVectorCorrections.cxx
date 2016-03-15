@@ -38,8 +38,8 @@ fEventQAList(0x0),
 fEventCuts(NULL),
 fLabel(""),
 fQAhistograms(""),
-fFillEventQA(kTRUE),
-fProvideQnVectorsList(kTRUE),
+fFillEventQA(kFALSE),
+fProvideQnVectorsList(kFALSE),
 fOutputSlotEventQA(-1),
 fOutputSlotHistQA(-1),
 fOutputSlotHistQn(-1),
@@ -61,8 +61,8 @@ fEventQAList(0x0),
 fEventCuts(NULL),
 fLabel(""),
 fQAhistograms(""),
-fFillEventQA(kTRUE),
-fProvideQnVectorsList(kTRUE),
+fFillEventQA(kFALSE),
+fProvideQnVectorsList(kFALSE),
 fOutputSlotEventQA(-1),
 fOutputSlotHistQA(-1),
 fOutputSlotHistQn(-1),
@@ -124,6 +124,9 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
   //
   // Add all histogram manager histogram lists to the output TList
   //
+  this->SetDefaultVarNames();
+  this->SetDetectors();
+
   fQnCorrectionsManager->InitializeQnCorrectionsFramework();
 
   if (fQnCorrectionsManager->GetShouldFillOutputHistograms())

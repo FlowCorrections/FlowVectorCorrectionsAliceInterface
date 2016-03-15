@@ -41,7 +41,8 @@ public:
   void SetRunByRunCalibration(Bool_t enable) { fCalibrateByRun = enable; }
   void SetQnCorrectionsManager(QnCorrectionsManager* QnManager)  {fQnCorrectionsManager = QnManager;}
   void SetEventCuts(QnCorrectionsCutsSet *cuts)  {fEventCuts = cuts;}
-  void SetProvideQnVectors(Bool_t enable = kTRUE) { fProvideQnVectorsList = enable; }
+  void SetFillExchangeContainerWithQvectors(Bool_t enable = kTRUE) { fProvideQnVectorsList = enable; }
+  void SetFillEventQA(Bool_t enable = kTRUE) { fFillEventQA = enable; }
   void SetTrigger(UInt_t triggerbit) {fTriggerMask=triggerbit;}
   void AddHistogramClass(TString hist) {fQAhistograms+=hist+";";}
   void SetCalibrationHistograms(TList* input) {fListInputHistogramsQnCorrections = input;}
@@ -56,8 +57,8 @@ public:
   Int_t OutputSlotGetListQnVectors() const {return fOutputSlotQnVectorsList;}
   Int_t OutputSlotTree()          const {return fOutputSlotTree;}
   Bool_t IsEventSelected(Float_t* values);
-  Bool_t IsFillExchangeContainerWithQvectors() const  {return fProvideQnVectorsList;}
-  Bool_t IsFillEventQA() const  {return fFillEventQA;}
+  Bool_t GetFillExchangeContainerWithQvectors() const  {return fProvideQnVectorsList;}
+  Bool_t GetFillEventQA() const  {return fFillEventQA;}
 
 private:
   Bool_t fCalibrateByRun;
