@@ -52,7 +52,7 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
 //  plugin->SetRunRange(138653, 138666);
 
   // Define alien work directory where all files will be copied. Relative to alien $HOME.
-  plugin->SetGridWorkingDir("Correlation_PbPb");  // NOTE: Change name here every new run!!!eclare alien output directory. Relative to working directory.
+  plugin->SetGridWorkingDir("FlowQnVectorCorrection");  // NOTE: Change name here every new run!!!eclare alien output directory. Relative to working directory.
   plugin->SetGridOutputDir("output"); // In this case will be $HOME/work/output
   plugin->SetOutputToRunNo(); // we want the run number as output subdirectory
   plugin->SetDefaultOutputs(kTRUE);
@@ -62,14 +62,28 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
 
   // Declare the analysis source files names separated by blanks. To be compiled runtime
   // using ACLiC on the worker nodes
+  plugin->SetAnalysisSource("QnCorrectionsLog.cxx QnCorrectionsEventClasses.cxx QnCorrectionsCuts.cxx "
+      "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
+      "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
+      "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
+      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx");
 
-//  plugin->SetAnalysisSource("EventSwarm.cxx ViscositySwarm.cxx AliAnalysisTaskViscosity.cxx");
 
 // Declare all libraries (other than the default ones for the framework. These will be
 // loaded by the generated analysis macro. Add all extra files (task .cxx/.h) here.
-  plugin->SetAdditionalLibs("libGui.so libProof.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libSTAT.so "
-       "libCDB.so libSTEER.so libSTEERBase.so libITSbase.so libITSrec.so libTRDbase.so libVZERObase.so libVZEROrec.so "
-       "libTPCbase.so libTOFbase.so libT0base.so libT0rec.so libTRDbase.so libTRDrec.so "
+  plugin->SetAdditionalLibs("QnCorrectionsLog.h QnCorrectionsEventClasses.h QnCorrectionsCuts.h "
+      "QnCorrectionsHistograms.h QnCorrectionsDataVector.h QnCorrectionsQnVector.h "
+      "QnCorrectionsCorrectionSteps.h QnCorrectionsDetector.h QnCorrectionsManager.h "
+      "QnCorrectionsInputGainEqualization.h QnCorrectionsVarManagerTask.h "
+      "QnCorrectionsFillEventTask.h AnalysisTaskFlowVectorCorrections.h "
+      "QnCorrectionsLog.cxx QnCorrectionsEventClasses.cxx QnCorrectionsCuts.cxx "
+      "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
+      "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
+      "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
+      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx "
+      "libGui.so libProof.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libSTAT.so "
+      "libCDB.so libSTEER.so libSTEERBase.so libITSbase.so libITSrec.so libTRDbase.so libVZERObase.so libVZEROrec.so "
+      "libTPCbase.so libTOFbase.so libT0base.so libT0rec.so libTRDbase.so libTRDrec.so "
 #ifdef ALIROOTSPLIT
        "libTender.so libTenderSupplies.so");
 #else
