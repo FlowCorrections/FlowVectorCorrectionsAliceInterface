@@ -488,7 +488,7 @@ void QnCorrectionsFillEventTask::FillFMD()
   // Loop over eta 
   Int_t nFMD=-1;
   for (Int_t iEta = 1; iEta <= nEta; iEta++) {
-    Int_t valid = d2Ndetadphi.GetBinContent(iEta, 0);
+    Int_t valid = Int_t(d2Ndetadphi.GetBinContent(iEta, 0));
     if (!valid) continue; // No data expected for this eta 
 
     eta = d2Ndetadphi.GetXaxis()->GetBinCenter(iEta);
