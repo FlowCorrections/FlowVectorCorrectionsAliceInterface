@@ -45,7 +45,7 @@ public:
   void SetFillEventQA(Bool_t enable = kTRUE) { fFillEventQA = enable; }
   void SetTrigger(UInt_t triggerbit) {fTriggerMask=triggerbit;}
   void AddHistogramClass(TString hist) {fQAhistograms+=hist+";";}
-  void SetCalibrationHistograms(TList* input) {fListInputHistogramsQnCorrections = input;}
+  void SetCalibrationHistograms(TFile* calibfile);
   void DefineInOutput();
 
   QnCorrectionsManager *GetQnCorrectionsManager() {return fQnCorrectionsManager;}
@@ -63,7 +63,6 @@ public:
 private:
   Bool_t fCalibrateByRun;
   UInt_t fTriggerMask;
-  TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
   TList* fEventQAList;
   QnCorrectionsCutsSet *fEventCuts;
   TString fLabel;

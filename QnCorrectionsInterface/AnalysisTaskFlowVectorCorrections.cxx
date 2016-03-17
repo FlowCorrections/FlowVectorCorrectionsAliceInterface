@@ -33,7 +33,6 @@ AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections() :
 QnCorrectionsFillEventTask(),
 fCalibrateByRun(kTRUE),
 fTriggerMask(0),
-fListInputHistogramsQnCorrections(0x0),
 fEventQAList(0x0),
 fEventCuts(NULL),
 fLabel(""),
@@ -56,7 +55,6 @@ AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections(const char*
     QnCorrectionsFillEventTask(name),
 fCalibrateByRun(kTRUE),
 fTriggerMask(0),
-fListInputHistogramsQnCorrections(0x0),
 fEventQAList(0x0),
 fEventCuts(NULL),
 fLabel(""),
@@ -117,6 +115,9 @@ void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
   }
 }
 
+void AnalysisTaskFlowVectorCorrections::SetCalibrationHistograms(TFile* calibfile) {
+  fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+}
 
 //_________________________________________________________________________________
 void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()

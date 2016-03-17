@@ -64,7 +64,7 @@ extern AliAnalysisTaskPhiCorrelations *AddTaskPhiCorrelations(Int_t analysisMode
     Int_t zVtxAxis = 0,
     const char* containerName = "histosPhiCorrelations",
     const char* folderName = "PWG4_PhiCorrelations");
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections();
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputHistogramFileName);
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
 #include "runAnalysisCriteria.H"
@@ -221,7 +221,7 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
-  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections();
+  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
 
   TChain* chain = 0;
 

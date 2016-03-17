@@ -71,7 +71,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 
 
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibrationFilename) {
 
   /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
   Bool_t bUseMultiplicity = kFALSE;
@@ -145,6 +145,15 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
   taskQnCorrections->SetQnCorrectionsManager(QnManager);
   taskQnCorrections->DefineInOutput();
 
+  /* let's get the calibration file */
+  TString inputfilename = inputCalibrationFilename;
+  if (inputfilename.Length() != 0) {
+    TFile *inputfile = new TFile(inputCalibrationFilename);
+    if (inputfile != NULL) {
+      taskQnCorrections->SetCalibrationHistograms(inputfile);
+    }
+  }
+
   AliQnCorrectionsHistos* hists = taskQnCorrections->GetEventHistograms();
   DefineHistograms(QnManager, hists, histClass);
 
@@ -156,7 +165,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
   //create output containers
   if (QnManager->GetShouldFillOutputHistograms()) {
     AliAnalysisDataContainer *cOutputHist =
-      mgr->CreateContainer("CalibrationHistos",
+      mgr->CreateContainer(QnManager->GetCalibrationHistogramsContainerName(),
           TList::Class(),
           AliAnalysisManager::kOutputContainer,
           "CalibrationHistograms.root");
