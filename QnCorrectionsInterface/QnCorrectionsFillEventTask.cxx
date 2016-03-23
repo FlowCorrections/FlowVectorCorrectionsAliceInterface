@@ -410,8 +410,19 @@ void QnCorrectionsFillEventTask::FillTZERO(){
   //
 
   Double_t weight=0.0;
-  const Double_t kX[24] = {/* Cside */ 0.905348,0.571718,0.0848977,-0.424671,-0.82045,-0.99639,-0.905348,-0.571718,-0.0848977,0.424671,0.82045,0.99639, /* Aside */ 0.99995,0.870982,0.508635,0.00999978,-0.491315,-0.860982,-0.99995,-0.870982,-0.508635,-0.0100001,0.491315,0.860982};
-  const Double_t kY[24] = {/* Cside */ 0.424671,0.82045,0.99639,0.905348,0.571718,0.0848976,-0.424671,-0.82045,-0.99639,-0.905348,-0.571719,-0.0848975, /* Aside */ -0.00999983,0.491315,0.860982,0.99995,0.870982,0.508635,0.00999974,-0.491315,-0.860982,-0.99995,-0.870982,-0.508635};
+  const Double_t kX[24] = {/* Cside */ 0.905348,0.571718,0.0848977,-0.424671,-0.82045,-0.99639,-0.905348,-0.571718,-0.0848977,0.424671,0.82045,0.99639,
+                           /* Aside */ 0.99995,0.870982,0.508635,0.00999978,-0.491315,-0.860982,-0.99995,-0.870982,-0.508635,-0.0100001,0.491315,0.860982};
+  const Double_t kY[24] = {/* Cside */ 0.424671,0.82045,0.99639,0.905348,0.571718,0.0848976,-0.424671,-0.82045,-0.99639,-0.905348,-0.571719,-0.0848975,
+                           /* Aside */ -0.00999983,0.491315,0.860982,0.99995,0.870982,0.508635,0.00999974,-0.491315,-0.860982,-0.99995,-0.870982,-0.508635};
+  const Double_t phi[24] = {TMath::ATan2(kY[0],kX[0]), TMath::ATan2(kY[1],kX[1]), TMath::ATan2(kY[2],kX[2]),
+      TMath::ATan2(kY[3],kX[3]), TMath::ATan2(kY[4],kX[4]), TMath::ATan2(kY[5],kX[5]),
+      TMath::ATan2(kY[6],kX[6]), TMath::ATan2(kY[7],kX[7]),
+      TMath::ATan2(kY[8],kX[8]), TMath::ATan2(kY[9],kX[9]), TMath::ATan2(kY[10],kX[10]),
+      TMath::ATan2(kY[11],kX[11]), TMath::ATan2(kY[12],kX[12]), TMath::ATan2(kY[13],kX[13]),
+      TMath::ATan2(kY[14],kX[14]), TMath::ATan2(kY[15],kX[15]),
+      TMath::ATan2(kY[16],kX[16]), TMath::ATan2(kY[17],kX[17]), TMath::ATan2(kY[18],kX[18]),
+      TMath::ATan2(kY[19],kX[19]), TMath::ATan2(kY[20],kX[20]), TMath::ATan2(kY[21],kX[21]),
+      TMath::ATan2(kY[22],kX[22]), TMath::ATan2(kY[23],kX[23]) };
 
   const AliESDTZERO* tzero= ((AliESDEvent*)fEvent)->GetESDTZERO();
 
@@ -420,7 +431,7 @@ void QnCorrectionsFillEventTask::FillTZERO(){
     weight=tzero->GetT0amplitude()[ich];
     if(weight<0.01) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(kTZERO, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(kTZERO, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
 
   }
 }
@@ -436,8 +447,14 @@ void QnCorrectionsFillEventTask::FillZDC(){
 
 
   Double_t weight=0.0;
-  const Double_t kX[10] = { /* Cside */ 0.0,  -1.75,  1.75, -1.75, 1.75, /* Aside */  0.0,  1.75, -1.75, 1.75, -1.75  };
-  const Double_t kY[10] = { /* Cside */ 0.0,  -1.75, -1.75,  1.75, 1.75, /* Aside */  0.0, -1.75, -1.75, 1.75,  1.75  };
+  const Double_t kX[10] = { /* Cside */ 0.0,  -1.75,  1.75, -1.75, 1.75,
+                            /* Aside */  0.0,  1.75, -1.75, 1.75, -1.75  };
+  const Double_t kY[10] = { /* Cside */ 0.0,  -1.75, -1.75,  1.75, 1.75,
+                            /* Aside */  0.0, -1.75, -1.75, 1.75,  1.75  };
+  const Double_t phi[10] = {0.0, TMath::ATan2(kY[1],kX[1]), TMath::ATan2(kY[2],kX[2]),
+      TMath::ATan2(kY[3],kX[3]), TMath::ATan2(kY[4],kX[4]), 0.0,
+      TMath::ATan2(kY[6],kX[6]), TMath::ATan2(kY[7],kX[7]),
+      TMath::ATan2(kY[8],kX[8]), TMath::ATan2(kY[9],kX[9]) };
 
 
   AliVZDC* zdc = (AliVZDC*) fEvent->GetZDCData();
@@ -451,7 +468,7 @@ void QnCorrectionsFillEventTask::FillZDC(){
     weight=ZDCenergy[ich];
     if(weight<100.) weight=0.;
 
-    fQnCorrectionsManager->AddDataVector(kZDC, TMath::ATan2(kY[ich%8],kX[ich%8]), weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    fQnCorrectionsManager->AddDataVector(kZDC, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
   }
 }
 
