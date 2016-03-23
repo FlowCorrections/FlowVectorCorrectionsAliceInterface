@@ -23,43 +23,13 @@ const char *sRunNo[NOOFTOTALRUNS] = {  "137161","137162","137231","137232","1372
     "138653","138662","138666","138730","138732","138837","138870","138871","138872","139028","139029","139036","139037","139038","139105","139107",
     "139173","139309","139310","139314","139328","139329","139360","139437","139438","139465","139503","139505","139507","139510","169099","170040"};
 
-TObjArray *runs = NULL;
-
-void loadRuns() {
-  runs = new TObjArray(NOOFTOTALRUNS);
+TObjArray * loadRuns() {
+  TObjArray *runs = new TObjArray(NOOFTOTALRUNS);
   runs->SetOwner(kTRUE);
 
   for (Int_t i = 0; i < NOOFTOTALRUNS; i++) {
     runs->AddAt(new TObjString(sRunNo[i]),i);
   }
+  return runs;
 }
-
-Double_t getRunIndex(const char *run) {
-  return runs->IndexOf(runs->FindObject(run));
-}
-
-#define NOOFREASONS 8
-const char *sReasons[NOOFREASONS] = { "norec", "diffrecwtruth", "notruth", "reason4", "reason5", "reason6", "reason7", "reason8" };
-
-TObjArray *reasons = NULL;
-
-void loadReasons() {
-  reasons = new TObjArray(NOOFREASONS);
-  reasons->SetOwner(kTRUE);
-
-  for (Int_t i = 0; i < NOOFREASONS; i++) {
-    reasons->AddAt(new TObjString(sReasons[i]),i);
-  }
-}
-
-Double_t getReasonIndex(const char *reason) {
-  return reasons->IndexOf(reasons->FindObject(reason));
-}
-
-
-
-
-
-
-
 

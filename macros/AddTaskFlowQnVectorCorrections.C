@@ -71,7 +71,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 
 
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibrationFilename) {
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputCalibrationFilename) {
 
   /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
   Bool_t bUseMultiplicity = kFALSE;
@@ -144,6 +144,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
 
   taskQnCorrections->SetQnCorrectionsManager(QnManager);
   taskQnCorrections->DefineInOutput();
+  taskQnCorrections->SetRunsLabels(runsList);
 
   /* let's get the calibration file */
   TString inputfilename = inputCalibrationFilename;

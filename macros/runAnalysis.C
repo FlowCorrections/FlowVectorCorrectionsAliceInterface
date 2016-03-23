@@ -57,18 +57,17 @@ AliPhysicsSelectionTask* AddTaskPhysicsSelection(
     Bool_t useSpecialOutput=kFALSE);
 extern AliAnalysisTask *AddTaskTender(Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t);
 extern AliTaskCDBconnect* AddTaskCDBconnect(const char *path="raw://", Int_t run=0);
-extern AliAnalysisTaskPhiCorrelations *AddTaskPhiCorrelations(Int_t analysisMode = 0,
-    Bool_t ppRun = kFALSE,
-    const char* outputFileName = 0,
-    Bool_t eventMixing = kTRUE,
-    Int_t zVtxAxis = 0,
-    const char* containerName = "histosPhiCorrelations",
-    const char* folderName = "PWG4_PhiCorrelations");
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputHistogramFileName);
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputHistogramFileName);
+AliMultSelectionTask *AddTaskMultSelection(
+    Bool_t lCalibration = kFALSE,
+    TString lExtraOptions = "",
+    Int_t lNDebugEstimators = 1,
+    const TString lMasterJobSessionFlag = "");
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
 #include "runAnalysisCriteria.H"
 #include "runAnalysis.H"
+#include "runs.H"
 
 void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   /* WARNING!!! HANDLE WITH CARE!!! precedes GRID and MC */
@@ -198,8 +197,7 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
 
   /* load the runs list we will analyse */
-  loadRuns();
-  loadReasons();
+  TObjArray *runsList = loadRuns();
 
   TString debugString="+g";
 
@@ -221,7 +219,7 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
-  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
+  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(runsList, inputHistogramFileName);
 
   TChain* chain = 0;
 

@@ -7,9 +7,6 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 
-extern TObjArray *runs;
-extern TObjArray *reasons;
-void loadRuns();
-void loadReasons();
+TObjArray *loadRuns();
 
 #endif /* RUNS_H_ */

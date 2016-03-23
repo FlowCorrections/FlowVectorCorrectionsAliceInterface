@@ -47,6 +47,7 @@ public:
   void AddHistogramClass(TString hist) {fQAhistograms+=hist+";";}
   void SetCalibrationHistograms(TFile* calibfile);
   void DefineInOutput();
+  void SetRunsLabels(TObjArray *runsList) { fQnCorrectionsManager->SetListOfProcessesNames(runsList); }
 
   QnCorrectionsManager *GetQnCorrectionsManager() {return fQnCorrectionsManager;}
   AliQnCorrectionsHistos* GetEventHistograms() {return fEventHistos;}
