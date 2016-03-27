@@ -260,6 +260,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   VZEROAconf->AddCorrectionOnInputData(eqA);
+  /* lets configrure the QA histograms */
+  VZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
+  VZEROAconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
 
   /* add the configuration to the detector */
   VZERO->AddDetectorConfiguration(VZEROAconf);
@@ -278,8 +281,11 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
   eqC->SetEqualizationMethod(QEQUAL_widthEqualization);
   eqC->SetAandB(1.0, 0.1);
-  eqC->SetUseChannelGroupsWeights(kTRUE);
+  eqC->SetUseChannelGroupsWeights(kFALSE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
+  /* lets configrure the QA histograms */
+  VZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
+  VZEROCconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
 
   /* add the configuration to the detector */
   VZERO->AddDetectorConfiguration(VZEROCconf);
@@ -416,6 +422,9 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   TZEROAconf->AddCorrectionOnInputData(eqA);
+  /* lets configrure the QA histograms */
+  TZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
+  TZEROAconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
   /* add the configuration to the detector */
   TZERO->AddDetectorConfiguration(TZEROAconf);
@@ -436,6 +445,9 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   TZEROCconf->AddCorrectionOnInputData(eqC);
+  /* lets configrure the QA histograms */
+  TZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
+  TZEROCconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
   /* add the configuration to the detector */
   TZERO->AddDetectorConfiguration(TZEROCconf);
