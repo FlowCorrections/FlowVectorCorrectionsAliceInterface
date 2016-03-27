@@ -347,7 +347,7 @@ protected:
 public:
   static const Char_t* fTrackingFlagNames[kNTrackingFlags];
   static const Char_t* fOfflineTriggerNames[64];
-  const Char_t* fVariableNames[kNVars][2];      //<!<! The variable names. Transient!
+  const Char_t* fVariableNames[kNVars][2];      //!<! The variable names. Transient!
 
 private:
 

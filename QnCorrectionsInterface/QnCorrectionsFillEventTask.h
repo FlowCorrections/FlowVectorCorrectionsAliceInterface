@@ -70,7 +70,7 @@ protected:
   AliVEvent* fEvent;
   QnCorrectionsManager *fQnCorrectionsManager;
   AliQnCorrectionsHistos* fEventHistos;
-  Float_t *fDataBank;
+  Float_t *fDataBank;                             //!<! The event variables values data bank. Transient!
 private:
   Bool_t fUseTPCStandaloneTracks;
   Bool_t fFillVZERO;
