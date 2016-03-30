@@ -279,9 +279,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   VZEROCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqC->SetEqualizationMethod(QEQUAL_averageEqualization);
   eqC->SetAandB(1.0, 0.1);
-  eqC->SetUseChannelGroupsWeights(kFALSE);
+  eqC->SetUseChannelGroupsWeights(kTRUE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
   /* lets configrure the QA histograms */
   VZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
@@ -661,7 +661,7 @@ void DefineHistograms(QnCorrectionsManager* QnManager, AliQnCorrectionsHistos* h
       histos->AddHistogram(classStr.Data(),"IsPhysicsSelection","Physics selection flag;;", kFALSE,
           2,-0.5,1.5,VAR::kIsPhysicsSelection, 0,0.0,0.0,VAR::kNothing, 0,0.0,0.0,VAR::kNothing, "off;on");
 
-      histos->AddHistogram(classStr.Data(),"VtxZ","Vtx Z;vtx Z (cm)", kFALSE,300,0.0,0.0,VAR::kVtxZ);
+      histos->AddHistogram(classStr.Data(),"VtxZ","Vtx Z;vtx Z (cm)", kFALSE,300,-30.0,30.0,VAR::kVtxZ);
       //histos->AddHistogram(classStr.Data(),"VtxZ","Vtx Z;vtx Z (cm)", kFALSE,300,-15.,15.,VAR::kVtxZ);
       histos->AddHistogram(classStr.Data(),"VtxX","Vtx X;vtx X (cm)", kFALSE,300,-1.,1.,VAR::kVtxX);
       histos->AddHistogram(classStr.Data(),"VtxY","Vtx Y;vtx Y (cm)", kFALSE,300,-1.,1.,VAR::kVtxY);
@@ -710,9 +710,9 @@ void DefineHistograms(QnCorrectionsManager* QnManager, AliQnCorrectionsHistos* h
       histos->AddHistogram(classStr.Data(),"MultVZERO","Multiplicity;multiplicity VZERO", kFALSE,
           320, 0.0, 25000.0, VAR::kVZEROTotalMult);
       histos->AddHistogram(classStr.Data(),"MultVZEROA","Multiplicity;multiplicity VZEROA", kFALSE,
-          250, 0.0, 0.0, VAR::kVZEROATotalMult);//10000.0
+          250, 0.0, 9500.0, VAR::kVZEROATotalMult);//10000.0
       histos->AddHistogram(classStr.Data(),"MultVZEROC","Multiplicity;multiplicity VZEROC", kFALSE,
-          250, 0.0, 0.0, VAR::kVZEROCTotalMult);//15000.0
+          250, 0.0, 16000.0, VAR::kVZEROCTotalMult);//15000.0
       histos->AddHistogram(classStr.Data(),"MultZDC","Multiplicity;multiplicity ZDC", kFALSE,
           200, 0.0, 300000.0, VAR::kZDCTotalEnergy);
       histos->AddHistogram(classStr.Data(),"MultZDCA","Multiplicity;multiplicity ZDCA", kFALSE,

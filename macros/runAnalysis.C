@@ -76,13 +76,13 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
   Bool_t bUseESD                     = kTRUE;
   Bool_t bUseAOD                     = kFALSE;
 
-  Bool_t useTender              = kTRUE;
+  Bool_t useTender              = kFALSE;
   Bool_t useCDB                 = kFALSE;
   Bool_t isPhysicsSelection     = kTRUE;
 
   /* PIDresponse is not optional any longer so,
    * do NOT change this flag at all */
-  Bool_t usePIDResponse         = kTRUE;
+  Bool_t usePIDResponse         = kFALSE;
 
   Bool_t bRunPIDCombinedTask = kFALSE;
 
@@ -162,17 +162,17 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
       AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(bMC);
     }
 
+    if (UseMultiplicity) {
+      gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
+      AliMultSelectionTask * task = AddTaskMultSelection(kFALSE); // user mode:
+    }
+
     if( UseCentrality  ) {
       gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskCentrality.C");
       AliCentralitySelectionTask *taskCentrality = AddTaskCentrality();
       if (bMC) {
         taskCentrality->SetMCInput();
       }
-    }
-
-    if (UseMultiplicity) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
-      AliMultSelectionTask * task = AddTaskMultSelection(kFALSE); // user mode:
     }
   }
 
@@ -263,40 +263,4 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
     mgr->StartAnalysis("local",chain);
   }
 }
-
-Int_t setupPar(const char* pararchivename) {
-  ///////////////////
-  // Setup PAR File//
-  ///////////////////
-  if (pararchivename) {
-    char processline[1024];
-    sprintf(processline,".! tar xvzf %s.par",pararchivename);
-    gROOT->ProcessLine(processline);
-    const char* ocwd = gSystem->WorkingDirectory();
-    gSystem->ChangeDirectory(pararchivename);
-
-    // check for BUILD.sh and execute
-    if (!gSystem->AccessPathName("PROOF-INF/BUILD.sh")) {
-      printf("*******************************\n");
-      printf("*** Building PAR archive    ***\n");
-      printf("*******************************\n");
-
-      if (gSystem->Exec("PROOF-INF/BUILD.sh")) {
-        Error("runAnalysis","Cannot Build the PAR Archive! - Abort!");
-        return -1;
-      }
-    }
-    // check for SETUP.C and execute
-    if (!gSystem->AccessPathName("PROOF-INF/SETUP.C")) {
-      printf("*******************************\n");
-      printf("*** Setup PAR archive       ***\n");
-      printf("*******************************\n");
-      gROOT->Macro("PROOF-INF/SETUP.C");
-    }
-    gSystem->ChangeDirectory("../");
-  }
-  return 1;
-}
-
-
 
