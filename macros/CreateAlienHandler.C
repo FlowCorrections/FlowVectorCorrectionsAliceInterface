@@ -66,7 +66,8 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
       "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
       "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
       "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
-      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx");
+      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx "
+      "QnCorrectionsQnVectorRecentering.cxx");
 
 
 // Declare all libraries (other than the default ones for the framework. These will be
@@ -76,11 +77,13 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
       "QnCorrectionsCorrectionSteps.h QnCorrectionsDetector.h QnCorrectionsManager.h "
       "QnCorrectionsInputGainEqualization.h QnCorrectionsVarManagerTask.h "
       "QnCorrectionsFillEventTask.h AnalysisTaskFlowVectorCorrections.h "
+      "QnCorrectionsQnVectorRecentering.h "
       "QnCorrectionsLog.cxx QnCorrectionsEventClasses.cxx QnCorrectionsCuts.cxx "
       "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
       "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
       "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
       "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx "
+      "QnCorrectionsQnVectorRecentering.cxx "
       "libGui.so libProof.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libSTAT.so "
       "libCDB.so libSTEER.so libSTEERBase.so libITSbase.so libITSrec.so libTRDbase.so libVZERObase.so libVZEROrec.so "
       "libTPCbase.so libTOFbase.so libT0base.so libT0rec.so libTRDbase.so libTRDrec.so "

@@ -108,7 +108,7 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
   // Enable debug printouts
   mgr->SetDebugLevel(AliLog::kError);
-  AliLog::SetGlobalLogLevel(AliLog::kFatal);
+  AliLog::SetGlobalLogLevel(AliLog::kDebug);
 
 
   if (bUseESD) {
@@ -211,6 +211,7 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
   gROOT->LoadMacro("QnCorrectionsDetector.cxx"+debugString);
   gROOT->LoadMacro("QnCorrectionsManager.cxx"+debugString);
   gROOT->LoadMacro("QnCorrectionsInputGainEqualization.cxx"+debugString);
+  gROOT->LoadMacro("QnCorrectionsQnVectorRecentering.cxx"+debugString);
 
 
   gROOT->LoadMacro("QnCorrectionsVarManagerTask.cxx"+debugString);

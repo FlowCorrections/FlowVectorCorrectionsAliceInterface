@@ -56,6 +56,7 @@
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsInputGainEqualization.h"
+#include "QnCorrectionsQnVectorRecentering.h"
 #include "AnalysisTaskFlowVectorCorrections.h"
 
 #define VAR QnCorrectionsVarManagerTask
@@ -139,7 +140,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, co
   QnManager->SetShouldFillQAHistograms(kTRUE);
   QnManager->SetShouldFillOutputHistograms(kTRUE);
 
-  taskQnCorrections->SetFillExchangeContainerWithQvectors(kFALSE);
+  taskQnCorrections->SetFillExchangeContainerWithQvectors(kTRUE);
   taskQnCorrections->SetFillEventQA(kTRUE);
 
   taskQnCorrections->SetQnCorrectionsManager(QnManager);
@@ -260,6 +261,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   VZEROAconf->AddCorrectionOnInputData(eqA);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  VZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* lets configrure the QA histograms */
   VZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
   VZEROAconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
@@ -283,6 +287,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  VZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* lets configrure the QA histograms */
   VZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
   VZEROCconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
@@ -322,6 +329,9 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
   TPCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  TPCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* define the cuts to apply */
   QnCorrectionsCutsSet *cutsTPC = new QnCorrectionsCutsSet();
@@ -369,6 +379,9 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
   SPDconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  SPDconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configuration to the detector */
   SPD->AddDetectorConfiguration(SPDconf);
@@ -422,7 +435,10 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   TZEROAconf->AddCorrectionOnInputData(eqA);
-  /* lets configrure the QA histograms */
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  TZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's configure the QA histograms */
   TZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
   TZEROAconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
@@ -445,7 +461,10 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   TZEROCconf->AddCorrectionOnInputData(eqC);
-  /* lets configrure the QA histograms */
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  TZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's configure the QA histograms */
   TZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
   TZEROCconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
@@ -495,6 +514,9 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   ZDCAconf->SetChannelsScheme(ZDCchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
   ZDCAconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  ZDCAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configuration to the detector */
   ZDC->AddDetectorConfiguration(ZDCAconf);
@@ -509,6 +531,9 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   ZDCCconf->SetChannelsScheme(ZDCchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
   ZDCCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  ZDCCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configuration to the detector */
   ZDC->AddDetectorConfiguration(ZDCCconf);
@@ -607,6 +632,9 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           4); /* number of harmonics: 1, 2 and 3 */
   /* let's configure the Q vector calibration */
   FMDArawconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  FMDArawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* and add the cuts */
   FMDArawconf->SetCuts(cutFMDA);
 
@@ -621,6 +649,9 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
   FMDCrawconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  FMDCrawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* and add the cuts */
   FMDCrawconf->SetCuts(cutFMDC);
 
