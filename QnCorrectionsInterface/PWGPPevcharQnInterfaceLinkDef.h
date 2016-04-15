@@ -5,8 +5,8 @@
 #pragma link off all functions;
 
 #pragma link C++ class AliQnCorrectionsHistos+;
-#pragma link C++ class AliQnCorrectionsFillEvent+;
-#pragma link C++ class AliQnCorrectionsVarManager+;
-#pragma link C++ class AliAnalysisTaskFlowVectorCorrections+;
+#pragma link C++ class QnCorrectionsFillEventTask+;
+#pragma link C++ class QnCorrectionsVarManagerTask+;
+#pragma link C++ class AnalysisTaskFlowVectorCorrections+;
 
 #endif

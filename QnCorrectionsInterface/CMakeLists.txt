@@ -29,10 +29,10 @@ include_directories(${ROOT_INCLUDE_DIRS}
 
 # Sources - alphabetical order
 set(SRCS
-  AliAnalysisTaskFlowVectorCorrections.cxx 
+  AnalysisTaskFlowVectorCorrections.cxx 
   AliQnCorrectionsHistos.cxx 
-  AliQnCorrectionsFillEvent.cxx 
-  AliQnCorrectionsVarManager.cxx 
+  QnCorrectionsFillEventTask.cxx 
+  QnCorrectionsVarManagerTask.cxx 
   )
 
 # Headers from sources
