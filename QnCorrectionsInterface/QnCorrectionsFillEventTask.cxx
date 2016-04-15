@@ -479,7 +479,7 @@ void QnCorrectionsFillEventTask::FillFMD()
   // fill ESD FMD info
   //
 
-  Float_t m,eta,phi;
+  Float_t m,phi;
 
   AliAODEvent* aodEvent = AliForwardUtil::GetAODEvent(this);
 
@@ -497,7 +497,6 @@ void QnCorrectionsFillEventTask::FillFMD()
 
   const TH2D& d2Ndetadphi = aodForward->GetHistogram();
 
-  Float_t FMDtotalmult=0.0;
   Int_t nEta = d2Ndetadphi.GetXaxis()->GetNbins();
   Int_t nPhi = d2Ndetadphi.GetYaxis()->GetNbins();
 
@@ -508,7 +507,6 @@ void QnCorrectionsFillEventTask::FillFMD()
     Int_t valid = Int_t(d2Ndetadphi.GetBinContent(iEta, 0));
     if (!valid) continue; // No data expected for this eta 
 
-    eta = d2Ndetadphi.GetXaxis()->GetBinCenter(iEta);
     // Loop over phi 
     for (Int_t iPhi = 1; iPhi <= nPhi; iPhi++) {
       phi = d2Ndetadphi.GetYaxis()->GetBinCenter(iPhi);
