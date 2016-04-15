@@ -401,7 +401,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   for(Int_t ich=0; ich<12; ich++) TZEROchannels[1][ich] = kTRUE;
 
   Int_t channelGroups[24];
-  for(Int_t ich=0; ich<24; ich++) channelGroups[ich] = Int_t(ich / 6);
+  for(Int_t ich=0; ich<24; ich++) channelGroups[ich] = Int_t(ich / 12);
 
   //-----------------------------------------------------------
   // Our event classes for TZERO
