@@ -254,10 +254,10 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   VZEROAconf->SetChannelsScheme(VZEROchannels[0], channelGroups);
   /* let's configure the Q vector calibration */
-  VZEROAconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  VZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   VZEROAconf->AddCorrectionOnInputData(eqA);
@@ -280,10 +280,10 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   VZEROCconf->SetChannelsScheme(VZEROchannels[1], channelGroups);
   /* let's configure the Q vector calibration */
-  VZEROCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  VZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(QEQUAL_averageEqualization);
+  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
@@ -328,7 +328,7 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  TPCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  TPCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   TPCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -378,7 +378,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  SPDconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  SPDconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   SPDconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -428,10 +428,10 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   TZEROAconf->SetChannelsScheme(TZEROchannels[0], channelGroups);
   /* let's configure the Q vector calibration */
-  TZEROAconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  TZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(QEQUAL_averageEqualization);
+  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   TZEROAconf->AddCorrectionOnInputData(eqA);
@@ -454,10 +454,10 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   TZEROCconf->SetChannelsScheme(TZEROchannels[1], channelGroups);
   /* let's configure the Q vector calibration */
-  TZEROCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  TZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(QEQUAL_averageEqualization);
+  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   TZEROCconf->AddCorrectionOnInputData(eqC);
@@ -513,7 +513,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           3); /* number of harmonics: 1, 2 and 3 */
   ZDCAconf->SetChannelsScheme(ZDCchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  ZDCAconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  ZDCAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   ZDCAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -530,7 +530,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           3); /* number of harmonics: 1, 2 and 3 */
   ZDCCconf->SetChannelsScheme(ZDCchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  ZDCCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  ZDCCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   ZDCCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -576,7 +576,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2 and 3 */
   FMDAconf->SetChannelsScheme(FMDchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  FMDAconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  FMDAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDAconf);
@@ -590,7 +590,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2, 3 and 4 */
   FMDCconf->SetChannelsScheme(FMDchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  FMDCconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  FMDCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDCconf);
@@ -631,7 +631,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           CorrEventClasses,
           4); /* number of harmonics: 1, 2 and 3 */
   /* let's configure the Q vector calibration */
-  FMDArawconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  FMDArawconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDArawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -648,7 +648,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  FMDCrawconf->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  FMDCrawconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDCrawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
