@@ -71,6 +71,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
 void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 
+Int_t varForEventMultiplicity;
 
 AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputCalibrationFilename) {
 
@@ -92,11 +93,12 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, co
   QnCorrectionsCutsSet *eventCuts = new QnCorrectionsCutsSet();
   eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,-10.0,10.0));
   if (bUseMultiplicity) {
-    eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVZEROMultPercentile,0.0,90.0));
+    varForEventMultiplicity = VAR::kVZEROMultPercentile;
   }
   else {
-    eventCuts->Add(new QnCorrectionsCutWithin(VAR::kCentVZERO,0.0,90.0));
+    varForEventMultiplicity = VAR::kCentVZERO;
   }
+  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,0.0,90.0));
   taskQnCorrections->SetEventCuts(eventCuts);
 
   /* and the physics selection also */
@@ -238,8 +240,8 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the VZERO detector */
@@ -265,7 +267,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* we don't configure it, so we create it anonymous */
   VZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* lets configrure the QA histograms */
-  VZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
+  VZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROAconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
 
   /* add the configuration to the detector */
@@ -283,7 +285,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   VZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
+  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
@@ -291,7 +293,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* we don't configure it, so we create it anonymous */
   VZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* lets configrure the QA histograms */
-  VZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
+  VZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROCconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
 
   /* add the configuration to the detector */
@@ -314,8 +316,8 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the TPC  detector */
@@ -335,10 +337,10 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
   /* define the cuts to apply */
   QnCorrectionsCutsSet *cutsTPC = new QnCorrectionsCutsSet();
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaXY,-1.0,1.0));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-3.0,3.0));
+  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaXY,-0.3,0.3));
+  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-0.3,0.3));
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,2.));
+  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCnclsIter1,70.0,161.0));
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2Iter1,0.2,4.0));
   TPCconf->SetCuts(cutsTPC);
@@ -364,8 +366,8 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kVZEROMultPercentile), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the SPD detector */
@@ -412,8 +414,8 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the TZERO detector */
@@ -439,7 +441,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* we don't configure it, so we create it anonymous */
   TZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* let's configure the QA histograms */
-  TZEROAconf->SetQACentralityVar(VAR::kCentVZERO);
+  TZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROAconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
   /* add the configuration to the detector */
@@ -465,7 +467,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* we don't configure it, so we create it anonymous */
   TZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
   /* let's configure the QA histograms */
-  TZEROCconf->SetQACentralityVar(VAR::kCentVZERO);
+  TZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROCconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
 
   /* add the configuration to the detector */
@@ -490,15 +492,15 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   //
   const Int_t nZDCdim = 3;
   QnCorrectionsEventClassVariablesSet *CorrEventClasses = new QnCorrectionsEventClassVariablesSet(nZDCdim);
-  Double_t VtxXbinning[][2] = {{ -0.06, 2}, {0.04, 5 }};
-  Double_t VtxYbinning[][2] = {{ 0.12, 2}, {0.24, 5 }};
+  Double_t VtxXbinning[][2] = {{ -0.3, 2}, {0.3, 10 }};
+  Double_t VtxYbinning[][2] = {{ -0.3, 2}, {0.3, 10 }};
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxX,
       task->VarName(VAR::kVtxX), VtxXbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxY,
       task->VarName(VAR::kVtxY), VtxYbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the ZDC detector */
@@ -560,8 +562,8 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   ////////// end of binning
 
   /* the FMD detector */
@@ -609,10 +611,10 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
   QnCorrectionsEventClassVariablesSet *CorrEventClasses = new QnCorrectionsEventClassVariablesSet(nFMDdim);
   Double_t VtxZbinning[][2] = { { -10.0, 4} , {-7.0, 1}, {7.0, 8}, {10.0, 1}};
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      task->VarName(varForEventMultiplicity), Ctbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kCentVZERO,
-      task->VarName(VAR::kCentVZERO), Ctbinning));
   ////////// end of binning
 
   QnCorrectionsCutsSet *cutFMDA = new QnCorrectionsCutsSet();
