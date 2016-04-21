@@ -22,8 +22,6 @@
 Bool_t bOptionsLoaded = kFALSE;
 void CleanOptions();
 
-TString szRootVersion;
-TString szAliRootVersion;
 TString szAliPhysicsVersion;
 TString szDataPattern;
 TString szDataDir;
@@ -164,24 +162,6 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   printf("  with %s data\n", bMC ? "simulated MC" : "real");
 
   /* SW versions */
-  currline.ReadLine(optionsfile);
-  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
-  if (currline.BeginsWith("RootVersion: ")) {
-    szRootVersion = currline.Remove(0,strlen("RootVersion: "));
-  }
-  else
-    { printf("ERROR: wrong root SW version in options file %s\n", filename); return kFALSE; }
-  if (bGRIDPlugin)
-    cout << "    Grid ROOT version: " << szRootVersion << endl;
-  currline.ReadLine(optionsfile);
-  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
-  if (currline.BeginsWith("AliRootVersion: ")) {
-    szAliRootVersion = currline.Remove(0,strlen("AliRootVersion: "));
-  }
-  else
-    { printf("ERROR: wrong Aliroot SW version in options file %s\n", filename); return kFALSE; }
-  if (bGRIDPlugin)
-    cout << "    Grid AliROOT version: " << szAliRootVersion << endl;
   currline.ReadLine(optionsfile);
   while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
   if (currline.BeginsWith("AliPhysicsVersion: ")) {

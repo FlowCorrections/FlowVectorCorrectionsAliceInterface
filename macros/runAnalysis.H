@@ -69,8 +69,6 @@ extern Double_t *deltaPhi;
 extern Int_t *noOfPhiPoints;
 extern Double_t **pointPhi;
 
-extern TString szRootVersion;
-extern TString szAliRootVersion;
 extern TString szAliPhysicsVersion;
 extern TString szDataPattern;
 extern TString szDataDir;

@@ -20,19 +20,10 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
   plugin->SetNtestFiles(1); // num of test files in "test" mode
 
   // Set versions of used packages
-  plugin->SetAPIVersion("V1.1x");
-  plugin->SetROOTVersion(szRootVersion.Data());
-  plugin->SetAliROOTVersion(szAliRootVersion.Data());
-#ifdef ALIROOTSPLIT
   plugin->SetAliPhysicsVersion(szAliPhysicsVersion.Data());
-#endif
 
-  //next instruction relied to versions v5-04-07-AN and v5-04-06-AN
-#ifdef ALIROOTSPLIT
   plugin->AddIncludePath("-I$ALICE_ROOT/include -I$ALICE_PHYSICS/include");
-#else
-  plugin->AddIncludePath("-I$ALICE_ROOT/include -I$ALICE_ROOT/ITS -I$ALICE_ROOT/PWG1/ITS");
-#endif
+
   /////////////////////////////////////////////////////////////////////////
   plugin->SetDataPattern(szDataPattern.Data());
   plugin->SetGridDataDir(szDataDir.Data()); // Data
