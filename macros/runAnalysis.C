@@ -201,24 +201,6 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
   TString debugString="+g";
 
-  gROOT->LoadMacro("QnCorrectionsLog.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsEventClasses.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsCuts.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsHistograms.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsDataVector.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsQnVector.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsCorrectionSteps.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsDetector.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsManager.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsInputGainEqualization.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsQnVectorRecentering.cxx"+debugString);
-
-
-  gROOT->LoadMacro("QnCorrectionsVarManagerTask.cxx"+debugString);
-  gROOT->LoadMacro("QnCorrectionsFillEventTask.cxx"+debugString);
-  gROOT->LoadMacro("AnalysisTaskFlowVectorCorrections.cxx"+debugString);
-
-
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
   AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(runsList, inputHistogramFileName);
 

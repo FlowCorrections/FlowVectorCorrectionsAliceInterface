@@ -60,38 +60,9 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
 //  plugin->SetMergeExcludes("Viscosity.root EventStat_temp.root");
   plugin->SetMergeViaJDL(gridMerge);
 
-  // Declare the analysis source files names separated by blanks. To be compiled runtime
-  // using ACLiC on the worker nodes
-  plugin->SetAnalysisSource("QnCorrectionsLog.cxx QnCorrectionsEventClasses.cxx QnCorrectionsCuts.cxx "
-      "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
-      "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
-      "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
-      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx "
-      "QnCorrectionsQnVectorRecentering.cxx");
+  plugin->EnablePackage("PWGPPevcharQn.par");
+  plugin->EnablePackage("PWGPPevcharQnInterface.par");
 
-
-// Declare all libraries (other than the default ones for the framework. These will be
-// loaded by the generated analysis macro. Add all extra files (task .cxx/.h) here.
-  plugin->SetAdditionalLibs("QnCorrectionsLog.h QnCorrectionsEventClasses.h QnCorrectionsCuts.h "
-      "QnCorrectionsHistograms.h QnCorrectionsDataVector.h QnCorrectionsQnVector.h "
-      "QnCorrectionsCorrectionSteps.h QnCorrectionsDetector.h QnCorrectionsManager.h "
-      "QnCorrectionsInputGainEqualization.h QnCorrectionsVarManagerTask.h "
-      "QnCorrectionsFillEventTask.h AnalysisTaskFlowVectorCorrections.h "
-      "QnCorrectionsQnVectorRecentering.h "
-      "QnCorrectionsLog.cxx QnCorrectionsEventClasses.cxx QnCorrectionsCuts.cxx "
-      "QnCorrectionsHistograms.cxx QnCorrectionsDataVector.cxx QnCorrectionsQnVector.cxx "
-      "QnCorrectionsCorrectionSteps.cxx QnCorrectionsDetector.cxx QnCorrectionsManager.cxx "
-      "QnCorrectionsInputGainEqualization.cxx QnCorrectionsVarManagerTask.cxx "
-      "QnCorrectionsFillEventTask.cxx AnalysisTaskFlowVectorCorrections.cxx "
-      "QnCorrectionsQnVectorRecentering.cxx "
-      "libGui.so libProof.so libXMLParser.so libRAWDatabase.so libRAWDatarec.so libSTAT.so "
-      "libCDB.so libSTEER.so libSTEERBase.so libITSbase.so libITSrec.so libTRDbase.so libVZERObase.so libVZEROrec.so "
-      "libTPCbase.so libTOFbase.so libT0base.so libT0rec.so libTRDbase.so libTRDrec.so "
-#ifdef ALIROOTSPLIT
-       "libTender.so libTenderSupplies.so");
-#else
-       "libTENDER.so libTENDERSupplies.so");
-#endif
 
 // Declare the output file names separated by blanks.
 // (can be like: file.root or file.root@ALICE::Niham::File)
