@@ -76,8 +76,8 @@ Int_t varForEventMultiplicity;
 AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputCalibrationFilename) {
 
   /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
-  Bool_t bUseMultiplicity = kFALSE;
-  Bool_t b2015DataSet = kFALSE;
+  Bool_t bUseMultiplicity = kTRUE;
+  Bool_t b2015DataSet = kTRUE;
 
 
   AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
@@ -435,7 +435,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
   eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
   eqA->SetAandB(1.0, 0.1);
-  eqA->SetUseChannelGroupsWeights(kTRUE);
+  eqA->SetUseChannelGroupsWeights(kFALSE);
   TZEROAconf->AddCorrectionOnInputData(eqA);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
@@ -461,7 +461,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
   eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
   eqC->SetAandB(1.0, 0.1);
-  eqC->SetUseChannelGroupsWeights(kTRUE);
+  eqC->SetUseChannelGroupsWeights(kFALSE);
   TZEROCconf->AddCorrectionOnInputData(eqC);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
