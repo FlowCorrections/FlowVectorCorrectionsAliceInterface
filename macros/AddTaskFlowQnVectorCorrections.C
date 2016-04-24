@@ -259,8 +259,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   VZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
-  eqA->SetAandB(1.0, 0.1);
+  eqA->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqA->SetShift(1.0);
+  eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   VZEROAconf->AddCorrectionOnInputData(eqA);
   /* let's add the Q vector recentering correction step */
@@ -285,8 +286,9 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   VZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
-  eqC->SetAandB(1.0, 0.1);
+  eqC->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqC->SetShift(1.0);
+  eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   VZEROCconf->AddCorrectionOnInputData(eqC);
   /* let's add the Q vector recentering correction step */
@@ -433,8 +435,9 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   TZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
-  eqA->SetAandB(1.0, 0.1);
+  eqA->SetEqualizationMethod(GEQUAL_averageEqualization);
+  eqA->SetShift(1.0);
+  eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kFALSE);
   TZEROAconf->AddCorrectionOnInputData(eqA);
   /* let's add the Q vector recentering correction step */
@@ -459,8 +462,9 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   TZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_averageEqualization);
-  eqC->SetAandB(1.0, 0.1);
+  eqC->SetEqualizationMethod(GEQUAL_averageEqualization);
+  eqC->SetShift(1.0);
+  eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kFALSE);
   TZEROCconf->AddCorrectionOnInputData(eqC);
   /* let's add the Q vector recentering correction step */
