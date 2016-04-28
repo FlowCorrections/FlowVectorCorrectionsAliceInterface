@@ -1,4 +1,4 @@
-/* Copyright(c) 2013-2014, ALICE Experiment at CERN, All rights reserved. *
+/* Copyright(c) 2013-2016, ALICE Experiment at CERN, All rights reserved. *
  *                                                                        *
  * Author: The ALICE Off-line Project.                                    *
  * Contributors are mentioned in the code where appropriate.              *
@@ -36,6 +36,9 @@ extern TString szRunPrefix;
 extern Int_t nNoOfInputFiles;
 extern TObjArray listOfRuns;
 extern TObjArray listOfActiveRuns;
+extern TString szCorrectionsSource;
+extern TString szCorrectionsFilePath;
+extern TString szCorrectionsFileName;
 
 extern TString szLocalFileList;
 

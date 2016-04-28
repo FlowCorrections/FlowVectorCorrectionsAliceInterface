@@ -1,5 +1,5 @@
 /**************************************************************************
- * Copyright(c) 2013-2014, ALICE Experiment at CERN, All rights reserved. *
+ * Copyright(c) 2013-2016, ALICE Experiment at CERN, All rights reserved. *
  *                                                                        *
  * Author: The ALICE Off-line Project.                                    *
  * Contributors are mentioned in the code where appropriate.              *
@@ -14,14 +14,14 @@
  **************************************************************************/
 
 #include <stdio.h>
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include "TSystem.h"
 #include "TROOT.h"
 
-#include "runAnalysisCriteria.H"
-
 using namespace std;
+
+#include "runAnalysis.H"
 
 Bool_t bOptionsLoaded = kFALSE;
 void CleanOptions();
@@ -35,20 +35,25 @@ Int_t nNoOfInputFiles;       ///< Max number of input files per concurrent proce
 TObjArray listOfRuns;        ///< The list of runs to consider, both for analyzing and for concurrent data taking
 TObjArray listOfActiveRuns;  ///< The list of runs to analyze in the current invocation
 
-/* grid or local execution */
+/// grid or local execution
 Bool_t bGRIDPlugin;          ///< If kTRUE the process will be executed on the grid
-/* MC or real data */
+/// MC or real data
 Bool_t bMC;                  ///< If kTRUE the input are MC data
 
-/* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
+/// Flags to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset
 Bool_t bUseMultiplicity;     ///< If kTRUE use multiplicity to estimate centrality
 Bool_t b2015DataSet;         ///< If kTRUE the input data are from the 2015 data taking period
 
-/* Task level cuts */
+/// Task level cuts
 Double_t centralityMin;      ///< min centrality cut value
 Double_t centralityMax;      ///< max centrality cut value
 Double_t zvertexMin;         ///< min vertex z cut value
 Double_t zvertexMax;         ///< max vertex z cut value
+
+/// Corrections file location
+TString szCorrectionsSource;     ///< The location source to use for the file: "local", "alien", "OADB" or "OCDB"
+TString szCorrectionsFilePath;   ///< The path of the file in the location source
+TString szCorrectionsFileName;   ///< The file name
 
 /// \brief Load the run options for the current task
 /// The run options as present in the input file are taken over the global variables
@@ -146,7 +151,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
         sscanf(currline.Data(), "%lf-%lf", &min, &max);
         centralityMin = min;
         centralityMax = max;
-        printf ("    centrality cut: %.1f-%.1f\n",centralityMin,centralityMax);
+        printf ("      centrality cut: %.1f-%.1f\n",centralityMin,centralityMax);
         currline.ReadLine(optionsfile);
         while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
       } /* end centrality cuts */
@@ -160,7 +165,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
         sscanf(currline.Data(), "%lf:%lf", &min, &max);
         zvertexMin = min;
         zvertexMax = max;
-        printf ("    z vertex cut: %.1f:%.1f\n",zvertexMin,zvertexMax);
+        printf ("      z vertex cut: %.1f:%.1f\n",zvertexMin,zvertexMax);
         currline.ReadLine(optionsfile);
         while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
       } /* end centrality cuts */
@@ -168,6 +173,52 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   }
   else
     { printf("ERROR: wrong Task cuts section in options file %s\n", filename); return kFALSE; }
+
+  /* now the corrections file */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (!currline.EqualTo("Corrections file:")) { printf("ERROR: wrong corrections file location in options file %s\n", filename); return kFALSE; }
+  printf(" Corrections file:\n");
+  /* source option */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith("source: ")) {
+    currline.Remove(0,strlen("source: "));
+    if (currline.Contains("local"))
+      szCorrectionsSource = "local";
+    else if (currline.Contains("alien"))
+      szCorrectionsSource = "alien";
+    else if (currline.Contains("OADB"))
+      szCorrectionsSource = "OADB";
+    else if (currline.Contains("OCDB"))
+      szCorrectionsSource = "OCDB";
+    else
+      { printf("ERROR: wrong corrections file source in options file %s\n", filename); return kFALSE; }
+  }
+  else
+    { printf("ERROR: wrong corrections file source in options file %s\n", filename); return kFALSE; }
+  printf("  source: %s\n", (const char *) szCorrectionsSource);
+  /* path option */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith("path: ")) {
+    currline.Remove(0,strlen("path: "));
+    szCorrectionsFilePath = currline;
+  }
+  else
+    { printf("ERROR: wrong corrections file path in options file %s\n", filename); return kFALSE; }
+  printf("  path: %s\n", (const char *) szCorrectionsFilePath);
+
+  /* file name option */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith("filename: ")) {
+    currline.Remove(0,strlen("filename: "));
+    szCorrectionsFileName = currline;
+  }
+  else
+    { printf("ERROR: wrong corrections file naem in options file %s\n", filename); return kFALSE; }
+  printf("  filename: %s\n", (const char *) szCorrectionsFileName);
 
   /* closing the options file */
   if (verb) printf(" Closing the options file\n");
@@ -248,14 +299,23 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
       }
       currline.ReadLine(datalocfile);
     }
-    printf("  List of runs: ");
+    printf("  List of concurrent runs: ");
     for (Int_t i=0;i<listOfRuns.GetEntriesFast();i++) {
       if (i%8 == 0) {
-        printf("\n  ");
+        printf("\n    ");
       }
       printf("%s, ", ((TObjString*) listOfRuns.At(i))->GetString().Data());
     }
     printf("\n");
+    printf("  List of runs to analyze: ");
+    for (Int_t i=0;i<listOfActiveRuns.GetEntriesFast();i++) {
+      if (i%8 == 0) {
+        printf("\n    ");
+      }
+      printf("%s, ", ((TObjString*) listOfActiveRuns.At(i))->GetString().Data());
+    }
+    printf("\n");
+    if (verb) printf(" Closing the data location file: %s\n", szDataLocFile.Data());
     datalocfile.close();
   }
   else {
@@ -272,4 +332,5 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
 
 void CleanOptions() {
   listOfRuns.Clear();
+  listOfActiveRuns.Clear();
 }
