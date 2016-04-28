@@ -86,7 +86,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, co
     return 0;
   }
 
-  QnCorrectionsManager *QnManager = new QnCorrectionsManager();
+  QnCorrectionsManager *QnManager = QnCorrectionsManager::GetInstance();
   AnalysisTaskFlowVectorCorrections *taskQnCorrections = new AnalysisTaskFlowVectorCorrections("FlowQnVectorCorrections");
 
   /* let's establish the event cuts for event selection */
