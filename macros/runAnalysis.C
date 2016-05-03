@@ -67,7 +67,7 @@ AliMultSelectionTask *AddTaskMultSelection(
 
 #include "runAnalysis.H"
 
-void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
+void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   /* WARNING!!! HANDLE WITH CARE!!! precedes GRID and MC */
   Bool_t bASCIIoutput           = kFALSE;
 
@@ -194,6 +194,8 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
 
   TString debugString="+g";
+
+  TString inputHistogramFileName = Form("%s/%s", (const char*) szCorrectionsFilePath, (const char*) szCorrectionsFileName)
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
   AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);

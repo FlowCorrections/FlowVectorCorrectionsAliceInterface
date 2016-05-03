@@ -147,13 +147,18 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   taskQnCorrections->SetRunsLabels(&listOfRuns);
 
   /* let's get the calibration file */
+  cout << "=================== CALIBRATION FILE =============================================" << endl;
   TString inputfilename = inputCalibrationFilename;
   if (inputfilename.Length() != 0) {
-    TFile *inputfile = new TFile(inputCalibrationFilename);
-    if (inputfile != NULL) {
+    TFile *inputfile = new TFile(inputCalibrationFilename,"READ");
+    if (inputfile != NULL && inputfile->IsOpen()) {
       taskQnCorrections->SetCalibrationHistograms(inputfile);
+      cout << "\t " << inputfilename << endl;
     }
+    else
+      cout << "\t NOT FOUND" << endl;
   }
+  cout << "==================================================================================" << endl;
 
   AliQnCorrectionsHistos* hists = taskQnCorrections->GetEventHistograms();
   DefineHistograms(QnManager, hists, histClass);
