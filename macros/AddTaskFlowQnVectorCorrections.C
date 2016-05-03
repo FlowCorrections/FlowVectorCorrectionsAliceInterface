@@ -125,12 +125,12 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   else {
     AddTPC(taskQnCorrections, QnManager);
     histClass+= "TrackQA_TPC;";
-    AddSPD(taskQnCorrections, QnManager);
+//    AddSPD(taskQnCorrections, QnManager);
     histClass+= "TrackletQA_SPD;";
     AddVZERO(taskQnCorrections, QnManager);
     AddTZERO(taskQnCorrections, QnManager);
-    //AddFMD(taskQnCorrections, ,QnManager);
-    AddRawFMD(taskQnCorrections, QnManager);
+    AddFMD(taskQnCorrections, ,QnManager);
+//    AddRawFMD(taskQnCorrections, QnManager);
     AddZDC(taskQnCorrections, QnManager);
   }
 
@@ -147,13 +147,18 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   taskQnCorrections->SetRunsLabels(&listOfRuns);
 
   /* let's get the calibration file */
+  cout << "=================== CALIBRATION FILE =============================================" << endl;
   TString inputfilename = inputCalibrationFilename;
   if (inputfilename.Length() != 0) {
-    TFile *inputfile = new TFile(inputCalibrationFilename);
-    if (inputfile != NULL) {
+    TFile *inputfile = new TFile(inputCalibrationFilename,"READ");
+    if (inputfile != NULL && inputfile->IsOpen()) {
       taskQnCorrections->SetCalibrationHistograms(inputfile);
+      cout << "\t " << inputfilename << endl;
     }
+    else
+      cout << "\t NOT FOUND" << endl;
   }
+  cout << "==================================================================================" << endl;
 
   AliQnCorrectionsHistos* hists = taskQnCorrections->GetEventHistograms();
   DefineHistograms(QnManager, hists, histClass);
@@ -238,7 +243,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the VZERO detector */
@@ -253,10 +258,10 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   VZEROAconf->SetChannelsScheme(VZEROchannels[0], channelGroups);
   /* let's configure the Q vector calibration */
-  VZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  VZEROAconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqA->SetEqualizationMethod(GEQUAL_averageEqualization);
   eqA->SetShift(1.0);
   eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
@@ -280,10 +285,10 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   VZEROCconf->SetChannelsScheme(VZEROchannels[1], channelGroups);
   /* let's configure the Q vector calibration */
-  VZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  VZEROCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqC->SetEqualizationMethod(GEQUAL_averageEqualization);
   eqC->SetShift(1.0);
   eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
@@ -316,7 +321,7 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the TPC  detector */
@@ -329,7 +334,7 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  TPCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  TPCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   TPCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -340,8 +345,8 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-0.3,0.3));
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
   cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCnclsIter1,70.0,161.0));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2Iter1,0.2,4.0));
+  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCncls,70.0,161.0));
+  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2,0.2,4.0));
   TPCconf->SetCuts(cutsTPC);
 
   /* add the configuration to the detector */
@@ -366,7 +371,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the SPD detector */
@@ -379,7 +384,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  SPDconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  SPDconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   SPDconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -414,7 +419,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the TZERO detector */
@@ -429,7 +434,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   TZEROAconf->SetChannelsScheme(TZEROchannels[0], channelGroups);
   /* let's configure the Q vector calibration */
-  TZEROAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  TZEROAconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
   eqA->SetEqualizationMethod(GEQUAL_averageEqualization);
@@ -456,7 +461,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
           4); /* number of harmonics: 1, 2, 3 and 4 */
   TZEROCconf->SetChannelsScheme(TZEROchannels[1], channelGroups);
   /* let's configure the Q vector calibration */
-  TZEROCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  TZEROCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
   eqC->SetEqualizationMethod(GEQUAL_averageEqualization);
@@ -501,7 +506,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxY,
       task->VarName(VAR::kVtxY), VtxYbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the ZDC detector */
@@ -516,7 +521,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           3); /* number of harmonics: 1, 2 and 3 */
   ZDCAconf->SetChannelsScheme(ZDCchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  ZDCAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  ZDCAconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   ZDCAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -533,7 +538,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           3); /* number of harmonics: 1, 2 and 3 */
   ZDCCconf->SetChannelsScheme(ZDCchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  ZDCCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  ZDCCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   ZDCCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -547,6 +552,52 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 
 void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
+
+  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
+
+  gSystem->Load("libPWGLFforward2");  // for FMD
+
+  // Create the FMD task and add it to the manager
+  //===========================================================================
+  //--- AOD output handler -----------------------------------------
+  AliAODHandler* ret = new AliAODHandler();
+
+  ret->SetOutputFileName("AliAOD.pass2.root");
+  mgr->SetOutputEventHandler(ret);
+
+  gSystem->Load("libESDfilter.so");
+  gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/ESDfilter/macros/AddTaskESDFilter.C");
+  AliAnalysisTaskESDfilter *esdfilter = AddTaskESDFilter(kTRUE, kFALSE, kFALSE, kFALSE, kFALSE, kTRUE);
+
+  // Create ONLY the output containers for the data produced by the task.
+  // Get and connect other common input/output containers via the manager as below
+  //==============================================================================
+  mgr->ConnectInput  (esdfilter,  0, mgr->GetCommonInputContainer());
+  mgr->ConnectOutput (esdfilter,  0, mgr->GetCommonOutputContainer());
+
+  gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/FORWARD/analysis2/AddTaskForwardMult.C");
+
+  ULong_t run = 0; // 0: get from data???
+  UShort_t sys = 0; // 0: get from data, 1: pp, 2: AA
+  UShort_t sNN = 0; // 0: get from data, otherwise center of mass energy (per nucleon pair)
+  Short_t  fld = 0; // 0: get from data, otherwise L3 field in kG
+
+  const Char_t* config = "$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/ForwardAODConfig2.C";
+  AliAnalysisTask *taskFmd  = AddTaskForwardMult(bMC, run, sys, sNN, fld, config);
+
+  // --- Make the output container and connect it --------------------
+  AliAnalysisDataContainer* histOut =
+    mgr->CreateContainer("Forward", TList::Class(),
+        AliAnalysisManager::kExchangeContainer,
+        "Forward");
+
+  AliAnalysisDataContainer *output =
+    mgr->CreateContainer("ForwardResultsP", TList::Class(),
+        AliAnalysisManager::kParamContainer,
+        "ForwardResultsP");
+
+  mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
+  mgr->ConnectOutput(taskFmd, 1, histOut);
 
   Bool_t FMDchannels[2][4000];
   for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<4000; ich++) FMDchannels[iv0][ich] = kFALSE;
@@ -564,7 +615,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   /* the FMD detector */
@@ -579,7 +630,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2 and 3 */
   FMDAconf->SetChannelsScheme(FMDchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  FMDAconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  FMDAconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDAconf);
@@ -593,7 +644,7 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
           4); /* number of harmonics: 1, 2, 3 and 4 */
   FMDCconf->SetChannelsScheme(FMDchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
-  FMDCconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  FMDCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDCconf);
@@ -612,10 +663,10 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
   QnCorrectionsEventClassVariablesSet *CorrEventClasses = new QnCorrectionsEventClassVariablesSet(nFMDdim);
   Double_t VtxZbinning[][2] = { { -10.0, 4} , {-7.0, 1}, {7.0, 8}, {10.0, 1}};
   Double_t Ctbinning[][2] = {{ 0.0, 2}, {100.0, 100 }};
-  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
-      task->VarName(varForEventMultiplicity), Ctbinning));
   CorrEventClasses->Add(new QnCorrectionsEventClassVariable(VAR::kVtxZ,
       task->VarName(VAR::kVtxZ), VtxZbinning));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(varForEventMultiplicity,
+      Form("Centrality (%s)", task->VarName(varForEventMultiplicity)), Ctbinning));
   ////////// end of binning
 
   QnCorrectionsCutsSet *cutFMDA = new QnCorrectionsCutsSet();
@@ -634,7 +685,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           CorrEventClasses,
           4); /* number of harmonics: 1, 2 and 3 */
   /* let's configure the Q vector calibration */
-  FMDArawconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  FMDArawconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDArawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -651,7 +702,7 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
           CorrEventClasses,
           4); /* number of harmonics: 1, 2, 3 and 4 */
   /* let's configure the Q vector calibration */
-  FMDCrawconf->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  FMDCrawconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDCrawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
