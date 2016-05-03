@@ -59,6 +59,8 @@
 #include "QnCorrectionsQnVectorRecentering.h"
 #include "AnalysisTaskFlowVectorCorrections.h"
 
+#include "runAnalisis.H"
+
 #define VAR QnCorrectionsVarManagerTask
 
 void DefineHistograms(QnCorrectionsManager* QnManager, AliQnCorrectionsHistos* histos, TString histClass);
@@ -73,12 +75,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 Int_t varForEventMultiplicity;
 
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputCalibrationFilename) {
-
-  /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
-  Bool_t bUseMultiplicity = kTRUE;
-  Bool_t b2015DataSet = kTRUE;
-
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibrationFilename) {
 
   AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
   if (!mgr) {
@@ -91,14 +88,14 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, co
 
   /* let's establish the event cuts for event selection */
   QnCorrectionsCutsSet *eventCuts = new QnCorrectionsCutsSet();
-  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,-10.0,10.0));
+  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,zvertexMin,zvertexMin));
   if (bUseMultiplicity) {
     varForEventMultiplicity = VAR::kVZEROMultPercentile;
   }
   else {
     varForEventMultiplicity = VAR::kCentVZERO;
   }
-  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,0.0,90.0));
+  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
   taskQnCorrections->SetEventCuts(eventCuts);
 
   /* and the physics selection also */
@@ -147,7 +144,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, co
 
   taskQnCorrections->SetQnCorrectionsManager(QnManager);
   taskQnCorrections->DefineInOutput();
-  taskQnCorrections->SetRunsLabels(runsList);
+  taskQnCorrections->SetRunsLabels(&listOfRuns);
 
   /* let's get the calibration file */
   TString inputfilename = inputCalibrationFilename;

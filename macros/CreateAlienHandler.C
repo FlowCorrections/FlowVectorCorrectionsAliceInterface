@@ -3,7 +3,6 @@
 #include "AliAnalysisAlien.h"
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
-#include "runAnalysisCriteria.H"
 #include "runAnalysis.H"
 
 AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
@@ -33,8 +32,8 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
     plugin->SetRunPrefix(szRunPrefix.Data());
 
   /* run numbers to analyse */
-  for (Int_t i=0;i<listOfRuns.GetEntriesFast();i++) {
-    plugin->AddRunNumber(((TObjString*) listOfRuns.At(i))->GetString().Data());
+  for (Int_t i=0;i<listOfActiveRuns.GetEntriesFast();i++) {
+    plugin->AddRunNumber(((TObjString*) listOfActiveRuns.At(i))->GetString().Data());
   }
 
   /* alternatively provide run number */

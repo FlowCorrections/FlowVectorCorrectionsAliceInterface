@@ -57,7 +57,7 @@ AliPhysicsSelectionTask* AddTaskPhysicsSelection(
     Bool_t useSpecialOutput=kFALSE);
 extern AliAnalysisTask *AddTaskTender(Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t);
 extern AliTaskCDBconnect* AddTaskCDBconnect(const char *path="raw://", Int_t run=0);
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(TObjArray *runsList, const char *inputHistogramFileName);
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputHistogramFileName);
 AliMultSelectionTask *AddTaskMultSelection(
     Bool_t lCalibration = kFALSE,
     TString lExtraOptions = "",
@@ -65,9 +65,7 @@ AliMultSelectionTask *AddTaskMultSelection(
     const TString lMasterJobSessionFlag = "");
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
-#include "runAnalysisCriteria.H"
 #include "runAnalysis.H"
-#include "runs.H"
 
 void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   /* WARNING!!! HANDLE WITH CARE!!! precedes GRID and MC */
@@ -94,7 +92,6 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
 
   gROOT->LoadMacro("loadRunOptions.C");
   loadRunOptions();
-  gROOT->LoadMacro("runs.C");
 
   /* SANITY CHECKS! DON'T CHANGE THIS! */
   if (bASCIIoutput) {
@@ -196,13 +193,10 @@ void runAnalysis(const char *inputHistogramFileName = "", const char *sRunMode =
   }
 
 
-  /* load the runs list we will analyse */
-  TObjArray *runsList = loadRuns();
-
   TString debugString="+g";
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
-  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(runsList, inputHistogramFileName);
+  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
 
   TChain* chain = 0;
 

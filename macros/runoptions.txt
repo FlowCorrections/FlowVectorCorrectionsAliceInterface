@@ -1,4 +1,4 @@
-# run Viscosity configuration file
+# run Flow Qn vector corrections configuration file
 #
 
 # run options
@@ -9,37 +9,21 @@ grid
 real
 
 # SW versions
-RootVersion: v5-34-30-alice-3
-AliRootVersion: v5-07-05-1
-AliPhysicsVersion: vAN-20151101-1
+AliPhysicsVersion: vAN-20160420-1
+
+# Execution conditions
+Use multiplicity: yes
+Is 2015 dataset: yes
 
 Task level:
-# we put here the task level cuts
-Centrality: 00-05,05-10,00-10
 # We put here the event selection criteria
+Centrality: 00-90
 zvertex: -10.0:10.0
-# We put here the track selection criteria
-# clusters, ratiofindable
-Track selection: clusters, ratiofindable
-# We put here the PID criteria
-# tpcplustof, tpcandtof
-PID: tpcplustof
-NsTPC: -3.0:3.0,-2.5:2.5
-NsTOF: -3.0:3.0,-2.5:2.5
-# Event mixing percentage
-mixing: 100.0
 end
 
-Swarm level:
-Delta pT:
-0.3 > 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5
-Delta eta:
-0.6 > 0
-0.9 > 0
-1.8 > 0
-Delta phi:
-30 > 165
-60 > 45
-90 > 45
-end
-
+# the corrections file
+Corrections file:
+# source: local, alien, OADB or OCDB
+source: local
+path: ./
+filename: QnVectorCorrectionsHistograms.root
