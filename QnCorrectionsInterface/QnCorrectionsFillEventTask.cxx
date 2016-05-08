@@ -80,6 +80,11 @@
 
 ClassImp(QnCorrectionsFillEventTask)
 
+const Float_t QnCorrectionsFillEventTask::fVZEROSignalThreshold = 0.01;
+const Float_t QnCorrectionsFillEventTask::fTZEROSignalThreshold = 0.01;
+const Float_t QnCorrectionsFillEventTask::fZDCSignalThreshold = 100.0;
+const Float_t QnCorrectionsFillEventTask::fFMDSignalThreshold = 0.01;
+
 QnCorrectionsFillEventTask::QnCorrectionsFillEventTask() :
 QnCorrectionsVarManagerTask(),
 fEvent(NULL),
@@ -395,10 +400,9 @@ void QnCorrectionsFillEventTask::FillVZERO(){
 
   for(Int_t ich=0; ich<64; ich++){
     weight=vzero->GetMultiplicity(ich);
-    if(weight<0.01) weight=0.;
-
-    fQnCorrectionsManager->AddDataVector(kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
-
+    if(weight > fVZEROSignalThreshold) {
+      fQnCorrectionsManager->AddDataVector(kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    }
   }
 }
 
@@ -429,10 +433,9 @@ void QnCorrectionsFillEventTask::FillTZERO(){
 
   for(Int_t ich=0; ich<24; ich++){
     weight=tzero->GetT0amplitude()[ich];
-    if(weight<0.01) weight=0.;
-
-    fQnCorrectionsManager->AddDataVector(kTZERO, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
-
+    if(weight > fTZEROSignalThreshold) {
+      fQnCorrectionsManager->AddDataVector(kTZERO, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    }
   }
 }
 
@@ -466,9 +469,9 @@ void QnCorrectionsFillEventTask::FillZDC(){
   for(Int_t ich=1; ich<10; ich++){
     if(ich==5) continue;
     weight=ZDCenergy[ich];
-    if(weight<100.) weight=0.;
-
-    fQnCorrectionsManager->AddDataVector(kZDC, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    if(weight > fZDCSignalThreshold) {
+      fQnCorrectionsManager->AddDataVector(kZDC, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+    }
   }
 }
 
@@ -485,13 +488,16 @@ void QnCorrectionsFillEventTask::FillFMD()
 
 
   if (!aodEvent) {
-    AliFatal("didn't get AOD\n");
+    AliFatal("Didn't get AOD event. Aborting! Check the AOD event handler presence.\n");
     return;
   }
 
 
-  TObject* obj = aodEvent->FindListObject("Forward");  
-  if (!obj) return;
+  TObject* obj = aodEvent->FindListObject("Forward");
+  if (!obj) {
+    AliError("Didn't get the AOD Forward multiplicity object instance\n");
+    return;
+  }
 
   AliAODForwardMult* aodForward = static_cast<AliAODForwardMult*>(obj);
 
@@ -511,10 +517,10 @@ void QnCorrectionsFillEventTask::FillFMD()
     for (Int_t iPhi = 1; iPhi <= nPhi; iPhi++) {
       phi = d2Ndetadphi.GetYaxis()->GetBinCenter(iPhi);
       m     =  d2Ndetadphi.GetBinContent(iEta, iPhi);
-      if(m<0.01) continue;
-      nFMD++;
-
-      fQnCorrectionsManager->AddDataVector(kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
+      if(m > fFMDSignalThreshold) {
+        nFMD++;
+        fQnCorrectionsManager->AddDataVector(kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
+      }
     }
   }
 }
@@ -555,9 +561,10 @@ void QnCorrectionsFillEventTask::FillRawFMD()
           ++id;
           eta  =  esdFmd->Eta(det, ring, sec, str);
           m    =  esdFmd->Multiplicity(det, ring, sec, str);
-          if(m ==  AliESDFMD::kInvalidMult) m=0;
-          fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
-          fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
+          if(m !=  AliESDFMD::kInvalidMult) {
+            fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
+            fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
+          }
         }  // end loop over strips
       }  // end loop over sectors      
     }  // end loop over rings

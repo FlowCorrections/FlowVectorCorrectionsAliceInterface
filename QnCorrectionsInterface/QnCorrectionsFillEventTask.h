@@ -72,6 +72,11 @@ protected:
   AliQnCorrectionsHistos* fEventHistos;
   Float_t *fDataBank;                             //!<! The event variables values data bank. Transient!
 private:
+  static const Float_t fVZEROSignalThreshold; ///< the VZERO channel signal threshold for building a data vector
+  static const Float_t fTZEROSignalThreshold; ///< the TZERO channel signal threshold for building a data vector
+  static const Float_t fZDCSignalThreshold; ///< the ZDC channel signal threshold for building a data vector
+  static const Float_t fFMDSignalThreshold; ///< the FMD channel signal threshold for building a data vector
+
   Bool_t fUseTPCStandaloneTracks;
   Bool_t fFillVZERO;
   Bool_t fFillTPC;
