@@ -23,37 +23,9 @@ using namespace std;
 
 #include "runAnalysis.H"
 
+
 Bool_t bOptionsLoaded = kFALSE;
 void CleanOptions();
-
-TString szAliPhysicsVersion; ///< The AliPhysics version to use once in the grid
-TString szDataPattern;       ///< Data pattern for input data files selection
-TString szDataDir;           ///< Data directory once in the grid
-TString szRunPrefix;         ///< Run prefix, usually applicable when MC/real
-TString szLocalFileList;     ///< File list filename for local tests
-Int_t nNoOfInputFiles;       ///< Max number of input files per concurrent process on the grid
-TObjArray listOfRuns;        ///< The list of runs to consider, both for analyzing and for concurrent data taking
-TObjArray listOfActiveRuns;  ///< The list of runs to analyze in the current invocation
-
-/// grid or local execution
-Bool_t bGRIDPlugin;          ///< If kTRUE the process will be executed on the grid
-/// MC or real data
-Bool_t bMC;                  ///< If kTRUE the input are MC data
-
-/// Flags to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset
-Bool_t bUseMultiplicity;     ///< If kTRUE use multiplicity to estimate centrality
-Bool_t b2015DataSet;         ///< If kTRUE the input data are from the 2015 data taking period
-
-/// Task level cuts
-Double_t centralityMin;      ///< min centrality cut value
-Double_t centralityMax;      ///< max centrality cut value
-Double_t zvertexMin;         ///< min vertex z cut value
-Double_t zvertexMax;         ///< max vertex z cut value
-
-/// Corrections file location
-TString szCorrectionsSource;     ///< The location source to use for the file: "local", "alien", "OADB" or "OCDB"
-TString szCorrectionsFilePath;   ///< The path of the file in the location source
-TString szCorrectionsFileName;   ///< The file name
 
 /// \brief Load the run options for the current task
 /// The run options as present in the input file are taken over the global variables

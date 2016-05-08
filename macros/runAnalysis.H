@@ -15,32 +15,32 @@
 #ifndef RUNANALYSIS_H_
 #define RUNANALYSIS_H_
 
-extern Bool_t bGRIDPlugin;
-extern Bool_t bMC;
+Bool_t bGRIDPlugin;
+Bool_t bMC;
 
 /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
-extern Bool_t bUseMultiplicity;
-extern Bool_t b2015DataSet;
+Bool_t bUseMultiplicity;
+Bool_t b2015DataSet;
 
 /* Task level cuts */
-extern Double_t centralityMin;
-extern Double_t centralityMax;
-extern Double_t zvertexMin;
-extern Double_t zvertexMax;
+Double_t centralityMin;
+Double_t centralityMax;
+Double_t zvertexMin;
+Double_t zvertexMax;
 
 /* Running conditions */
-extern TString szAliPhysicsVersion;
-extern TString szDataPattern;
-extern TString szDataDir;
-extern TString szRunPrefix;
-extern Int_t nNoOfInputFiles;
-extern TObjArray listOfRuns;
-extern TObjArray listOfActiveRuns;
-extern TString szCorrectionsSource;
-extern TString szCorrectionsFilePath;
-extern TString szCorrectionsFileName;
+TString szAliPhysicsVersion;
+TString szDataPattern;
+TString szDataDir;
+TString szRunPrefix;
+Int_t nNoOfInputFiles;
+TObjArray listOfRuns;
+TObjArray listOfActiveRuns;
+TString szCorrectionsSource;
+TString szCorrectionsFilePath;
+TString szCorrectionsFileName;
 
-extern TString szLocalFileList;
+TString szLocalFileList;
 
 Bool_t loadRunOptions(Bool_t verb = kFALSE,const char *filename = "runoptions.txt");
 
