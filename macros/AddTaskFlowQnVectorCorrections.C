@@ -57,9 +57,10 @@
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsInputGainEqualization.h"
 #include "QnCorrectionsQnVectorRecentering.h"
+#include "QnCorrectionsQnVectorAlignment.h"
 #include "AnalysisTaskFlowVectorCorrections.h"
 
-#include "runAnalisis.H"
+#include "runAnalysis.H"
 
 #define VAR QnCorrectionsVarManagerTask
 
@@ -88,14 +89,15 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
 
   /* let's establish the event cuts for event selection */
   QnCorrectionsCutsSet *eventCuts = new QnCorrectionsCutsSet();
-  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,zvertexMin,zvertexMin));
+  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,-10.0,10.0));
   if (bUseMultiplicity) {
     varForEventMultiplicity = VAR::kVZEROMultPercentile;
   }
   else {
     varForEventMultiplicity = VAR::kCentVZERO;
   }
-  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
+  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,0.0,90.0));
+  printf("TASK CUTS: zvertex: %f-%f; centrality(%d): %f-%f\n", zvertexMin, zvertexMax, varForEventMultiplicity, centralityMin, centralityMax);
   taskQnCorrections->SetEventCuts(eventCuts);
 
   /* and the physics selection also */
@@ -129,7 +131,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
     histClass+= "TrackletQA_SPD;";
     AddVZERO(taskQnCorrections, QnManager);
     AddTZERO(taskQnCorrections, QnManager);
-    AddFMD(taskQnCorrections, ,QnManager);
+    AddFMD(taskQnCorrections, QnManager);
 //    AddRawFMD(taskQnCorrections, QnManager);
     AddZDC(taskQnCorrections, QnManager);
   }
@@ -269,6 +271,11 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   VZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignA = new QnCorrectionsQnVectorAlignment();
+  alignA->SetHarmonicNumberForAlignment(2);
+  alignA->SetReferenceConfigurationForAlignment("TPC");
+  VZEROAconf->AddCorrectionOnQnVector(alignA);
   /* lets configrure the QA histograms */
   VZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROAconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
@@ -296,6 +303,11 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   VZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignC = new QnCorrectionsQnVectorAlignment();
+  alignC->SetHarmonicNumberForAlignment(2);
+  alignC->SetReferenceConfigurationForAlignment("TPC");
+  VZEROCconf->AddCorrectionOnQnVector(alignC);
   /* lets configrure the QA histograms */
   VZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROCconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
@@ -445,6 +457,11 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   TZEROAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignA = new QnCorrectionsQnVectorAlignment();
+  alignA->SetHarmonicNumberForAlignment(2);
+  alignA->SetReferenceConfigurationForAlignment("TPC");
+  TZEROAconf->AddCorrectionOnQnVector(alignA);
   /* let's configure the QA histograms */
   TZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROAconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
@@ -472,6 +489,11 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   TZEROCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignC = new QnCorrectionsQnVectorAlignment();
+  alignC->SetHarmonicNumberForAlignment(2);
+  alignC->SetReferenceConfigurationForAlignment("TPC");
+  TZEROCconf->AddCorrectionOnQnVector(alignC);
   /* let's configure the QA histograms */
   TZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROCconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
@@ -553,52 +575,6 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
 
-  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
-
-  gSystem->Load("libPWGLFforward2");  // for FMD
-
-  // Create the FMD task and add it to the manager
-  //===========================================================================
-  //--- AOD output handler -----------------------------------------
-  AliAODHandler* ret = new AliAODHandler();
-
-  ret->SetOutputFileName("AliAOD.pass2.root");
-  mgr->SetOutputEventHandler(ret);
-
-  gSystem->Load("libESDfilter.so");
-  gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/ESDfilter/macros/AddTaskESDFilter.C");
-  AliAnalysisTaskESDfilter *esdfilter = AddTaskESDFilter(kTRUE, kFALSE, kFALSE, kFALSE, kFALSE, kTRUE);
-
-  // Create ONLY the output containers for the data produced by the task.
-  // Get and connect other common input/output containers via the manager as below
-  //==============================================================================
-  mgr->ConnectInput  (esdfilter,  0, mgr->GetCommonInputContainer());
-  mgr->ConnectOutput (esdfilter,  0, mgr->GetCommonOutputContainer());
-
-  gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/FORWARD/analysis2/AddTaskForwardMult.C");
-
-  ULong_t run = 0; // 0: get from data???
-  UShort_t sys = 0; // 0: get from data, 1: pp, 2: AA
-  UShort_t sNN = 0; // 0: get from data, otherwise center of mass energy (per nucleon pair)
-  Short_t  fld = 0; // 0: get from data, otherwise L3 field in kG
-
-  const Char_t* config = "$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/ForwardAODConfig2.C";
-  AliAnalysisTask *taskFmd  = AddTaskForwardMult(bMC, run, sys, sNN, fld, config);
-
-  // --- Make the output container and connect it --------------------
-  AliAnalysisDataContainer* histOut =
-    mgr->CreateContainer("Forward", TList::Class(),
-        AliAnalysisManager::kExchangeContainer,
-        "Forward");
-
-  AliAnalysisDataContainer *output =
-    mgr->CreateContainer("ForwardResultsP", TList::Class(),
-        AliAnalysisManager::kParamContainer,
-        "ForwardResultsP");
-
-  mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
-  mgr->ConnectOutput(taskFmd, 1, histOut);
-
   Bool_t FMDchannels[2][4000];
   for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<4000; ich++) FMDchannels[iv0][ich] = kFALSE;
 
@@ -631,6 +607,14 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   FMDAconf->SetChannelsScheme(FMDchannels[0], NULL /* no groups */);
   /* let's configure the Q vector calibration */
   FMDAconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  FMDAconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignA = new QnCorrectionsQnVectorAlignment();
+  alignA->SetHarmonicNumberForAlignment(2);
+  alignA->SetReferenceConfigurationForAlignment("TPC");
+  FMDAconf->AddCorrectionOnQnVector(alignA);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDAconf);
@@ -645,6 +629,14 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   FMDCconf->SetChannelsScheme(FMDchannels[1], NULL /* no groups */);
   /* let's configure the Q vector calibration */
   FMDCconf->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  /* let's add the Q vector recentering correction step */
+  /* we don't configure it, so we create it anonymous */
+  FMDCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignC = new QnCorrectionsQnVectorAlignment();
+  alignC->SetHarmonicNumberForAlignment(2);
+  alignC->SetReferenceConfigurationForAlignment("TPC");
+  FMDCconf->AddCorrectionOnQnVector(alignC);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDCconf);

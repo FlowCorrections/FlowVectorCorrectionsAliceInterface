@@ -78,6 +78,8 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   Bool_t useCDB                 = kFALSE;
   Bool_t isPhysicsSelection     = kTRUE;
 
+  Bool_t useAddFMD              = kTRUE;
+
   /* PIDresponse is not optional any longer so,
    * do NOT change this flag at all */
   Bool_t usePIDResponse         = kFALSE;
@@ -192,10 +194,46 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
     cout << "Info: created PID combined task" << endl;
   }
 
+  if (useAddFMD) {
+    gSystem->Load("libPWGLFforward2");  // for FMD
+
+    // Create the FMD task and add it to the manager
+    //===========================================================================
+    //--- AOD output handler -----------------------------------------
+    AliAODHandler* ret = new AliAODHandler();
+
+    ret->SetOutputFileName("AliAOD.pass2.root");
+    mgr->SetOutputEventHandler(ret);
+
+    gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/FORWARD/analysis2/AddTaskForwardMult.C");
+
+    ULong_t run = 0; // 0: get from data???
+    UShort_t sys = 0; // 0: get from data, 1: pp, 2: AA
+    UShort_t sNN = 0; // 0: get from data, otherwise center of mass energy (per nucleon pair)
+    Short_t  fld = 0; // 0: get from data, otherwise L3 field in kG
+
+
+
+    const Char_t* config = "$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/ForwardAODConfig2.C";
+    AliAnalysisTask *taskFmd  = AddTaskForwardMult(bMC, run, sys, sNN, fld, config,0,0);
+
+    // --- Make the output container and connect it --------------------
+    AliAnalysisDataContainer* histOut =
+      mgr->CreateContainer("Forward", TList::Class(),
+          AliAnalysisManager::kExchangeContainer);
+
+    AliAnalysisDataContainer *output =
+      mgr->CreateContainer("ForwardResultsP", TList::Class(),
+          AliAnalysisManager::kExchangeContainer);
+
+    mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
+    mgr->ConnectOutput(taskFmd, 1, histOut);
+    mgr->ConnectOutput(taskFmd, 2, output);
+  }
 
   TString debugString="+g";
 
-  TString inputHistogramFileName = Form("%s/%s", (const char*) szCorrectionsFilePath, (const char*) szCorrectionsFileName)
+  TString inputHistogramFileName = Form("%s/%s", (const char*) szCorrectionsFilePath, (const char*) szCorrectionsFileName);
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C"+debugString);
   AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
