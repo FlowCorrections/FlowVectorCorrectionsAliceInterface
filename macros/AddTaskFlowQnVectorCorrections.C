@@ -89,15 +89,14 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
 
   /* let's establish the event cuts for event selection */
   QnCorrectionsCutsSet *eventCuts = new QnCorrectionsCutsSet();
-  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,-10.0,10.0));
+  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,zvertexMin,zvertexMax));
   if (bUseMultiplicity) {
     varForEventMultiplicity = VAR::kVZEROMultPercentile;
   }
   else {
     varForEventMultiplicity = VAR::kCentVZERO;
   }
-  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,0.0,90.0));
-  printf("TASK CUTS: zvertex: %f-%f; centrality(%d): %f-%f\n", zvertexMin, zvertexMax, varForEventMultiplicity, centralityMin, centralityMax);
+  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
   taskQnCorrections->SetEventCuts(eventCuts);
 
   /* and the physics selection also */
