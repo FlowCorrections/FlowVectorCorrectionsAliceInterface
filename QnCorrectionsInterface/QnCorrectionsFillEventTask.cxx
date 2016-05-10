@@ -539,7 +539,7 @@ void QnCorrectionsFillEventTask::FillRawFMD()
   AliESDEvent* esdEvent = static_cast<AliESDEvent*>(fEvent);
 
   AliESDFMD* esdFmd = esdEvent->GetFMDData();
-
+/*
   Int_t id=-1;
   Int_t maxDet=3;
   Int_t maxRing=2;
@@ -548,24 +548,42 @@ void QnCorrectionsFillEventTask::FillRawFMD()
   Float_t m=0.0;
   Double_t phi,eta;
   Char_t ring;
+*/
+  Int_t nNoOfDetectors       = 3;           ///< the number of FMD detectors
+  Int_t detectorNumber[]     = {1,2,3};     ///< the number of the FMD detector
+  Int_t nNoOfRings[]         = {1,2,2};     ///< the number of rings for each detector
+  Char_t ringId[]            = {'I','O'};   ///< ring identity
+  Int_t ringNoOfSectors[]    = {20,40};   ///< ring number of sectors
+  Int_t ringNoOfStrips[]     = {512,256};     ///< ring number of strips per sector
+  Int_t nSectorId = 0;
 
-  for(UShort_t det = 1; det <= maxDet; ++det) {
-    (det == 1 ? maxRing=1 : maxRing=2);
-    for(UShort_t ir = 0; ir < maxRing; ++ir) {
-      ring = (ir == 0 ? 'I' : 'O');
-      (ir == 0 ? maxSector=20 : maxSector=40);
-      (ir == 0 ? maxStrip=512 : maxStrip=256);
-      for(UShort_t sec = 0; sec < maxSector; ++sec) {
-        phi  =  esdFmd->Phi(det, ring, sec, 0)/180.*TMath::Pi();
-        for(UShort_t str = 0; str < maxStrip; ++str) {
-          ++id;
-          eta  =  esdFmd->Eta(det, ring, sec, str);
-          m    =  esdFmd->Multiplicity(det, ring, sec, str);
+
+  /**
+   * Get the azimuthal angle of
+   * @f$ \text{FMD}\langle detector\rangle\lange ring\rangle_{\langle
+   * sector\rangle\langle strip\rangle}@f$
+   *
+   * @param detector Detector number (1-3)
+   * @param ring     Ring identifier ('I' or 'O')
+   * @param sector   Sector number (0-19, or 0-39)
+   * @param strip    Strip number (0-511, or 0-255)
+   *
+   * @return Azimuthal angle
+   */
+
+  for(Int_t detector = 0; detector < nNoOfDetectors; detector++) {
+    for(Int_t ring = 0; ring < nNoOfRings[detector]; ring++) {
+      for(Int_t sector = 0; sector < ringNoOfSectors[ring]; sector++) {
+        Double_t phi  =  esdFmd->Phi(detectorNumber[detector], ringId[ring], sector, 0) / 180. * TMath::Pi();
+        for(Int_t strip = 0; strip < ringNoOfStrips[ring]; strip++) {
+          Double_t eta  =  esdFmd->Eta(detectorNumber[detector], ringId[ring], sector, strip);
+          Float_t m = esdFmd->Multiplicity(detectorNumber[detector], ringId[ring], sector, strip);
           if(m !=  AliESDFMD::kInvalidMult) {
             fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
-            fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, id);   // 1st ich is position in array, 2nd ich is channel id
+            fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, nSectorId);   // 1st ich is position in array, 2nd ich is channel id
           }
         }  // end loop over strips
+        nSectorId++;
       }  // end loop over sectors      
     }  // end loop over rings
   } // end loop over detectors

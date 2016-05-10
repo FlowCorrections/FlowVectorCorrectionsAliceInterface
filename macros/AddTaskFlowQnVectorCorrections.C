@@ -126,12 +126,12 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   else {
     AddTPC(taskQnCorrections, QnManager);
     histClass+= "TrackQA_TPC;";
-//    AddSPD(taskQnCorrections, QnManager);
+    AddSPD(taskQnCorrections, QnManager);
     histClass+= "TrackletQA_SPD;";
     AddVZERO(taskQnCorrections, QnManager);
     AddTZERO(taskQnCorrections, QnManager);
     AddFMD(taskQnCorrections, QnManager);
-//    AddRawFMD(taskQnCorrections, QnManager);
+    AddRawFMD(taskQnCorrections, QnManager);
     AddZDC(taskQnCorrections, QnManager);
   }
 
@@ -684,6 +684,35 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
 
+  /////////////// Add FMD subdetectors ///////////////////
+  /* FMD1 and FMD2 make FMDA and FMD3 make FMDC */
+
+  const Int_t nNoOfDetectors       = 3;           ///< the number of FMD detectors
+  const Int_t detectorNumber[]     = {1,2,3};     ///< the number of the FMD detector
+  const Int_t nNoOfRings[]         = {1,2,2};     ///< the number of rings for each detector
+  const Int_t ringNoOfSectors[]    = {20,40};   ///< ring number of sectors
+  const Int_t nTotalNoOfChannels   = ringNoOfSectors[0] * 3 + ringNoOfSectors[1] * 2; ///< three inner sectors plus two outer ones
+  const Int_t nTotalNoOfGroups     = nNoOfRings[0] + nNoOfRings[1] + nNoOfRings[2]; ///< each ring one channel group
+  const Int_t FMDCdetectorNumber   = 3;           ///< the number of the detector associated to FMDC
+  Int_t nSectorId = 0;                            ///< the sector id used as channel number
+  Int_t nRingId = 0;                              ///< the ring id (0..4) used as group number
+
+  Bool_t FMDchannels[2][nTotalNoOfChannels];      ///< the assignment of channels to each subdetector
+  Int_t FMDchannelGroups[nTotalNoOfChannels];     ///< the group associated to each channel
+  for (Int_t i = 0; i < 2; i++) for (Int_t c = 0; c < nTotalNoOfChannels; c++) FMDchannels[i][c] = kFALSE;
+
+  for(Int_t detector = 0; detector < nNoOfDetectors; detector++) {
+    for(Int_t ring = 0; ring < nNoOfRings[detector]; ring++) {
+      for(Int_t sector = 0; sector < ringNoOfSectors[ring]; sector++) {
+        FMDchannels[0][nSectorId] = ((detectorNumber[detector] != FMDCdetectorNumber) ? kTRUE : kFALSE);
+        FMDchannels[1][nSectorId] = ((detectorNumber[detector] != FMDCdetectorNumber) ? kFALSE : kTRUE);
+        FMDchannelGroups[nSectorId] = nRingId;
+        nSectorId++;
+      }
+      nRingId++;
+    }
+  }
+
   //-----------------------------------------------------------
   // Our event classes for FMD
   //
@@ -707,16 +736,30 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
   QnCorrectionsDetector *FMDraw = new QnCorrectionsDetector("FMDraw", VAR::kFMDraw);
 
   /* the FMDAraw detector configuration */
-  QnCorrectionsDetectorConfigurationTracks *FMDArawconf =
-      new QnCorrectionsDetectorConfigurationTracks(
+  QnCorrectionsDetectorConfigurationChannels *FMDArawconf =
+      new QnCorrectionsDetectorConfigurationChannels(
           "FMDAraw",
           CorrEventClasses,
-          4); /* number of harmonics: 1, 2 and 3 */
+          nTotalNoOfChannels,
+          4); /* number of harmonics: 1, 2, 3 and 4 */
+  FMDArawconf->SetChannelsScheme(FMDchannels[0], FMDchannelGroups);
   /* let's configure the Q vector calibration */
   FMDArawconf->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
+  /* lets configure the equalization of input data */
+  QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
+  eqA->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
+  eqA->SetShift(1.0);
+  eqA->SetScale(0.1);
+  eqA->SetUseChannelGroupsWeights(kTRUE);
+  FMDArawconf->AddCorrectionOnInputData(eqA);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDArawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignA = new QnCorrectionsQnVectorAlignment();
+  alignA->SetHarmonicNumberForAlignment(2);
+  alignA->SetReferenceConfigurationForAlignment("TPC");
+  FMDArawconf->AddCorrectionOnQnVector(alignA);
   /* and add the cuts */
   FMDArawconf->SetCuts(cutFMDA);
 
@@ -724,16 +767,30 @@ void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* Qn
   FMDraw->AddDetectorConfiguration(FMDArawconf);
 
   /* the FMDCraw detector configuration */
-  QnCorrectionsDetectorConfigurationTracks *FMDCrawconf =
-      new QnCorrectionsDetectorConfigurationTracks(
+  QnCorrectionsDetectorConfigurationChannels *FMDCrawconf =
+      new QnCorrectionsDetectorConfigurationChannels(
           "FMDCraw",
           CorrEventClasses,
+          nTotalNoOfChannels,
           4); /* number of harmonics: 1, 2, 3 and 4 */
+  FMDCrawconf->SetChannelsScheme(FMDchannels[1], FMDchannelGroups);
   /* let's configure the Q vector calibration */
   FMDCrawconf->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
+  /* lets configure the equalization of input data */
+  QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
+  eqC->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
+  eqC->SetShift(1.0);
+  eqC->SetScale(0.1);
+  eqC->SetUseChannelGroupsWeights(kTRUE);
+  FMDCrawconf->AddCorrectionOnInputData(eqC);
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   FMDCrawconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignC = new QnCorrectionsQnVectorAlignment();
+  alignC->SetHarmonicNumberForAlignment(2);
+  alignC->SetReferenceConfigurationForAlignment("TPC");
+  FMDCrawconf->AddCorrectionOnQnVector(alignC);
   /* and add the cuts */
   FMDCrawconf->SetCuts(cutFMDC);
 
