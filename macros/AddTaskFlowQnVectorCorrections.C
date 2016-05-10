@@ -575,6 +575,43 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
 
+  gSystem->Load("libPWGLFforward2");  // for FMD
+
+  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
+
+  // Create the FMD task and add it to the manager
+  //===========================================================================
+  //--- AOD output handler -----------------------------------------
+  AliAODHandler* ret = new AliAODHandler();
+
+  ret->SetOutputFileName("AliAOD.pass2.root");
+  mgr->SetOutputEventHandler(ret);
+
+  gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/FORWARD/analysis2/AddTaskForwardMult.C");
+
+  ULong_t run = 0; // 0: get from data???
+  UShort_t sys = 0; // 0: get from data, 1: pp, 2: AA
+  UShort_t sNN = 0; // 0: get from data, otherwise center of mass energy (per nucleon pair)
+  Short_t  fld = 0; // 0: get from data, otherwise L3 field in kG
+
+
+
+  const Char_t* config = "$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/ForwardAODConfig2.C";
+  AliAnalysisTask *taskFmd  = AddTaskForwardMult(bMC, run, sys, sNN, fld, config,0,0);
+
+  // --- Make the output container and connect it --------------------
+  AliAnalysisDataContainer* histOut =
+    mgr->CreateContainer("Forward", TList::Class(),
+        AliAnalysisManager::kExchangeContainer);
+
+  AliAnalysisDataContainer *output =
+    mgr->CreateContainer("ForwardResultsP", TList::Class(),
+        AliAnalysisManager::kExchangeContainer);
+
+  mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
+  mgr->ConnectOutput(taskFmd, 1, histOut);
+  mgr->ConnectOutput(taskFmd, 2, output);
+
   Bool_t FMDchannels[2][4000];
   for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<4000; ich++) FMDchannels[iv0][ich] = kFALSE;
 
