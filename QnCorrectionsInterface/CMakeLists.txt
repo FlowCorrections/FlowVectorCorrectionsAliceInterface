@@ -30,6 +30,7 @@ include_directories(${ROOT_INCLUDE_DIRS}
 # Sources - alphabetical order
 set(SRCS
   AnalysisTaskFlowVectorCorrections.cxx 
+  AnalysisTaskQnVectorAnalysis.cxx 
   AliQnCorrectionsHistos.cxx 
   QnCorrectionsFillEventTask.cxx 
   QnCorrectionsVarManagerTask.cxx 

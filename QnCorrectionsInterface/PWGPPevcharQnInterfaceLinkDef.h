@@ -8,5 +8,6 @@
 #pragma link C++ class QnCorrectionsFillEventTask+;
 #pragma link C++ class QnCorrectionsVarManagerTask+;
 #pragma link C++ class AnalysisTaskFlowVectorCorrections+;
+#pragma link C++ class AnalysisTaskQnVectorAnalysis+;
 
 #endif

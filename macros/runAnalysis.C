@@ -86,6 +86,9 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
 
   Bool_t isHeavyIon     = kTRUE;
 
+  /* run the Qn vector analysis task */
+  Bool_t bRunQnVectorAnalysisTask = kTRUE;
+
   // Centrality
   Bool_t UseCentrality  = kTRUE;
   Bool_t UseMultiplicity = kTRUE;
@@ -196,6 +199,24 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
 
   gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C");
   AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
+
+  if (bRunQnVectorAnalysisTask) {
+    gROOT->LoadMacro("AddTaskQnVectorAnalysis.C");
+    AliAnalysisTask* taskQn = AddTaskQnVectorAnalysis(bUseMultiplicity, b2015DataSet);
+
+    mgr->AddTask(taskQn);
+
+    //create output container
+    AliAnalysisDataContainer *cOutputQnAnaEventQA =
+      mgr->CreateContainer("QnAnalysisEventQA",
+          TList::Class(),
+          AliAnalysisManager::kOutputContainer,
+          "QnAnalysisEventQA.root");
+
+    mgr->ConnectInput(taskQn,  0, mgr->GetCommonInputContainer());
+    mgr->ConnectInput(taskQn,  1, corrTask);
+    mgr->ConnectOutput(taskQn, 1, cOutputQnAnaEventQA );
+  }
 
   TChain* chain = 0;
 
