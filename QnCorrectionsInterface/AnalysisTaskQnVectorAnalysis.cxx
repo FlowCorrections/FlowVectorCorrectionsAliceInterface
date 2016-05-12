@@ -31,10 +31,6 @@ Instructions in AddTask_EPcorrectionsExample.C
 
 // make a change
 
-using std::cout;
-using std::endl;
-
-
 ClassImp(AnalysisTaskQnVectorAnalysis)
 
 /* names for the different TProfile */
@@ -59,7 +55,8 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis() :
   fDetectorResolutionContributors(),
   fDetectorResolutionCorrelations(),
   fTrackDetectorNameInFile(),
-  fEPDetectorNameInFile()
+  fEPDetectorNameInFile(),
+  fCentralityVariable(-1)
 {
   //
   // Default constructor
@@ -78,7 +75,8 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   fDetectorResolutionContributors(),
   fDetectorResolutionCorrelations(),
   fTrackDetectorNameInFile(),
-  fEPDetectorNameInFile()
+  fEPDetectorNameInFile(),
+  fCentralityVariable(-1)
 {
   //
   // Constructor
@@ -325,13 +323,13 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
         /*sanity check */
         if (newEP_qvec[iEPDetector]->IsGoodQuality()) {
           for(Int_t h=0; h < kNharmonics; h++) {
-            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][0]->Fill(values[AliQnCorrectionsVarManager::kVZEROMultPercentile],
+            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][0]->Fill(values[fCentralityVariable],
                     newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1));
-            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][1]->Fill(values[AliQnCorrectionsVarManager::kVZEROMultPercentile],
+            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][1]->Fill(values[fCentralityVariable],
                     newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1));
-            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][2]->Fill(values[AliQnCorrectionsVarManager::kVZEROMultPercentile],
+            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][2]->Fill(values[fCentralityVariable],
                     newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1));
-            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][3]->Fill(values[AliQnCorrectionsVarManager::kVZEROMultPercentile],
+            fVn[iTrkDetector*nEPDetectors+iEPDetector][h][3]->Fill(values[fCentralityVariable],
                     newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1));
           }
         }
@@ -388,7 +386,7 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
             break;
           }
           }
-          fDetectorResolutionCorrelations[ix][iCorr][h]->Fill(values[AliQnCorrectionsVarManager::kVZEROMultPercentile],detectorOneValue*detectorTwoValue);
+          fDetectorResolutionCorrelations[ix][iCorr][h]->Fill(values[fCentralityVariable],detectorOneValue*detectorTwoValue);
         }
       }
     }

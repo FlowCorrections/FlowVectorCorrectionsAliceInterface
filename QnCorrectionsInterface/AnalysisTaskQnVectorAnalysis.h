@@ -85,6 +85,7 @@ public:
   Bool_t IsEventSelected(Float_t* values);
 
   void SetEventCuts(QnCorrectionsCutsSet* cuts)  {fEventCuts = cuts;}
+  void SetCentralityVariable(Int_t var) { fCentralityVariable = var; }
 
  private:
   TList* fEventQAList;
@@ -103,6 +104,8 @@ public:
 
   TString fTrackDetectorNameInFile[nTrackDetectors];
   TString fEPDetectorNameInFile[nEPDetectors];
+
+  Int_t fCentralityVariable;
 
   ClassDef(AnalysisTaskQnVectorAnalysis, 1);
 };

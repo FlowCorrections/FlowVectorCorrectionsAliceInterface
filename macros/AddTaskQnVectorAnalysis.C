@@ -58,6 +58,7 @@ AliAnalysisTask* AddTaskQnVectorAnalysis(Bool_t bUseMultiplicity, Bool_t b2015Da
   }
   eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
   taskQn->SetEventCuts(eventCuts);
+  taskQn->SetCentralityVariable(varForEventMultiplicity);
 
   if (!b2015DataSet) {
     taskQn->SelectCollisionCandidates(AliVEvent::kMB);  // Events passing trigger and physics selection for analysis
