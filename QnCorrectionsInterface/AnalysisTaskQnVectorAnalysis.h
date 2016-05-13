@@ -39,8 +39,12 @@ public:
   enum enumEPdetectors{
     kVZEROA=0,
     kVZEROC,
+    kTZEROA,
+    kTZEROC,
     kFMDA,
     kFMDC,
+    kRawFMDA,
+    kRawFMDC,
     nEPDetectors
   };
 

@@ -35,7 +35,7 @@ ClassImp(AnalysisTaskQnVectorAnalysis)
 
 /* names for the different TProfile */
 TString namesQnTrackDetectors[AnalysisTaskQnVectorAnalysis::nTrackDetectors] = {"TPC","SPD"};
-TString namesQnEPDetectors[AnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","FMDA","FMDC"};
+TString namesQnEPDetectors[AnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","T0A","T0C","FMDA","FMDC","rawFMDA","rawFMDC"};
 TString namesQnComponents[AnalysisTaskQnVectorAnalysis::kNcorrelationComponents] = {"XX","XY","YX","YY"};
 
 /* centrality binning */
@@ -116,11 +116,15 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   fTrackDetectorNameInFile[kSPD] = "SPD";
   fEPDetectorNameInFile[kVZEROA] = "VZEROA";
   fEPDetectorNameInFile[kVZEROC] = "VZEROC";
-  fEPDetectorNameInFile[kFMDA] = "FMDAraw";
-  fEPDetectorNameInFile[kFMDC] = "FMDCraw";
+  fEPDetectorNameInFile[kTZEROA] = "TZEROA";
+  fEPDetectorNameInFile[kTZEROC] = "TZEROC";
+  fEPDetectorNameInFile[kFMDA] = "FMDA";
+  fEPDetectorNameInFile[kFMDC] = "FMDC";
+  fEPDetectorNameInFile[kRawFMDA] = "FMDAraw";
+  fEPDetectorNameInFile[kRawFMDC] = "FMDCraw";
 
   /* the detector resolution configurations */
-  fNDetectorResolutions = 4;
+  fNDetectorResolutions = 8;
   /* this is only valid in C++11
   fDetectorResolutionContributors = {
       {kTPC,kVZEROC,kVZEROA},
@@ -130,14 +134,22 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   }; */
   /* for the time being we do it in this awful way */
   Int_t config0[kNresolutionComponents] = {kTPC,kVZEROC,kVZEROA};
-  Int_t config1[kNresolutionComponents] = {kTPC,kFMDA,kFMDC};
-  Int_t config2[kNresolutionComponents] = {kSPD,kVZEROC,kVZEROA};
-  Int_t config3[kNresolutionComponents] = {kSPD,kFMDA,kFMDC};
+  Int_t config1[kNresolutionComponents] = {kTPC,kTZEROC,kTZEROA};
+  Int_t config2[kNresolutionComponents] = {kTPC,kFMDA,kFMDC};
+  Int_t config3[kNresolutionComponents] = {kTPC,kRawFMDA,kRawFMDC};
+  Int_t config4[kNresolutionComponents] = {kSPD,kVZEROC,kVZEROA};
+  Int_t config5[kNresolutionComponents] = {kSPD,kTZEROC,kTZEROA};
+  Int_t config6[kNresolutionComponents] = {kSPD,kFMDA,kFMDC};
+  Int_t config7[kNresolutionComponents] = {kSPD,kRawFMDA,kRawFMDC};
   for (Int_t i = 0; i < kNresolutionComponents; i++) {
     fDetectorResolutionContributors[0][i] = config0[i];
     fDetectorResolutionContributors[1][i] = config1[i];
     fDetectorResolutionContributors[2][i] = config2[i];
     fDetectorResolutionContributors[3][i] = config3[i];
+    fDetectorResolutionContributors[4][i] = config4[i];
+    fDetectorResolutionContributors[5][i] = config5[i];
+    fDetectorResolutionContributors[6][i] = config6[i];
+    fDetectorResolutionContributors[7][i] = config7[i];
   }
 
   /* create the needed TProfile for each of the track-EP detector combination
@@ -203,12 +215,8 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
       }
       }
       for(Int_t h=0; h < kNharmonics; h++) {
-        TString profileName = Form("corr_%sx%s_%s_h%d",
-            detectorOneName.Data(),
-            detectorTwoName.Data(),
-            correlationComponent.Data(),
-            h+1);
-        TString newProfileName = Form("new_corr_%sx%s_%s_h%d",
+        TString profileName = Form("corr_%s_%sx%s_%s_h%d",
+            namesQnEPDetectors[fDetectorResolutionContributors[ixDetectorConfig][0]].Data(),
             detectorOneName.Data(),
             detectorTwoName.Data(),
             correlationComponent.Data(),
