@@ -216,7 +216,7 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
       }
       for(Int_t h=0; h < kNharmonics; h++) {
         TString profileName = Form("corr_%s_%sx%s_%s_h%d",
-            namesQnEPDetectors[fDetectorResolutionContributors[ixDetectorConfig][0]].Data(),
+            namesQnTrackDetectors[fDetectorResolutionContributors[ixDetectorConfig][0]].Data(),
             detectorOneName.Data(),
             detectorTwoName.Data(),
             correlationComponent.Data(),
@@ -332,13 +332,17 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
         if (newEP_qvec[iEPDetector]->IsGoodQuality()) {
           for(Int_t h=0; h < kNharmonics; h++) {
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][0]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1));
+                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1),
+                    newTrk_qvec[iTrkDetector]->GetN());
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][1]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1));
+                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1),
+                    newTrk_qvec[iTrkDetector]->GetN());
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][2]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1));
+                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1),
+                    newTrk_qvec[iTrkDetector]->GetN());
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][3]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1));
+                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1),
+                    newTrk_qvec[iTrkDetector]->GetN());
           }
         }
       }
