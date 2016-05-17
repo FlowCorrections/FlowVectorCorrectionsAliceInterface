@@ -124,7 +124,6 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   fEPDetectorNameInFile[kRawFMDC] = "FMDCraw";
 
   /* the detector resolution configurations */
-  fNDetectorResolutions = 8;
   /* this is only valid in C++11
   fDetectorResolutionContributors = {
       {kTPC,kVZEROC,kVZEROA},
@@ -133,23 +132,26 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
       {kSPD,kFMDA,kFMDC}
   }; */
   /* for the time being we do it in this awful way */
-  Int_t config0[kNresolutionComponents] = {kTPC,kVZEROC,kVZEROA};
-  Int_t config1[kNresolutionComponents] = {kTPC,kTZEROC,kTZEROA};
-  Int_t config2[kNresolutionComponents] = {kTPC,kFMDA,kFMDC};
-  Int_t config3[kNresolutionComponents] = {kTPC,kRawFMDA,kRawFMDC};
-  Int_t config4[kNresolutionComponents] = {kSPD,kVZEROC,kVZEROA};
-  Int_t config5[kNresolutionComponents] = {kSPD,kTZEROC,kTZEROA};
-  Int_t config6[kNresolutionComponents] = {kSPD,kFMDA,kFMDC};
-  Int_t config7[kNresolutionComponents] = {kSPD,kRawFMDA,kRawFMDC};
-  for (Int_t i = 0; i < kNresolutionComponents; i++) {
-    fDetectorResolutionContributors[0][i] = config0[i];
-    fDetectorResolutionContributors[1][i] = config1[i];
-    fDetectorResolutionContributors[2][i] = config2[i];
-    fDetectorResolutionContributors[3][i] = config3[i];
-    fDetectorResolutionContributors[4][i] = config4[i];
-    fDetectorResolutionContributors[5][i] = config5[i];
-    fDetectorResolutionContributors[6][i] = config6[i];
-    fDetectorResolutionContributors[7][i] = config7[i];
+  const Int_t nDetectorResolutions = 12;
+  fNDetectorResolutions = nDetectorResolutions;
+  Int_t config[nDetectorResolutions][kNresolutionComponents] = {
+      {kTPC,kVZEROC,kVZEROA},
+      {kTPC,kTZEROC,kTZEROA},
+      {kTPC,kFMDA,kFMDC},
+      {kTPC,kRawFMDA,kRawFMDC},
+      {kTPC,kVZEROC,kTZEROA},
+      {kTPC,kTZEROC,kVZEROA},
+      {kSPD,kVZEROC,kVZEROA},
+      {kSPD,kTZEROC,kTZEROA},
+      {kSPD,kFMDA,kFMDC},
+      {kSPD,kRawFMDA,kRawFMDC},
+      {kSPD,kVZEROC,kTZEROA},
+      {kSPD,kTZEROC,kVZEROA},
+  };
+  for (Int_t ixConfig = 0; ixConfig < fNDetectorResolutions; ixConfig++) {
+    for (Int_t i = 0; i < kNresolutionComponents; i++) {
+      fDetectorResolutionContributors[ixConfig][i] = config[ixConfig][i];
+    }
   }
 
   /* create the needed TProfile for each of the track-EP detector combination
@@ -215,8 +217,9 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
       }
       }
       for(Int_t h=0; h < kNharmonics; h++) {
-        TString profileName = Form("corr_%s_%sx%s_%s_h%d",
+        TString profileName = Form("corr_%s%d_%sx%s_%s_h%d",
             namesQnTrackDetectors[fDetectorResolutionContributors[ixDetectorConfig][0]].Data(),
+            ixDetectorConfig,
             detectorOneName.Data(),
             detectorTwoName.Data(),
             correlationComponent.Data(),
@@ -332,17 +335,13 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
         if (newEP_qvec[iEPDetector]->IsGoodQuality()) {
           for(Int_t h=0; h < kNharmonics; h++) {
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][0]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1),
-                    newTrk_qvec[iTrkDetector]->GetN());
+                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newEP_qvec[iEPDetector]->QxNorm(h+1));
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][1]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1),
-                    newTrk_qvec[iTrkDetector]->GetN());
+                    newTrk_qvec[iTrkDetector]->Qx(h+1) * newEP_qvec[iEPDetector]->QyNorm(h+1));
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][2]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QxNorm(h+1),
-                    newTrk_qvec[iTrkDetector]->GetN());
+                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newEP_qvec[iEPDetector]->QxNorm(h+1));
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][3]->Fill(values[fCentralityVariable],
-                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newTrk_qvec[iTrkDetector]->GetN() * newEP_qvec[iEPDetector]->QyNorm(h+1),
-                    newTrk_qvec[iTrkDetector]->GetN());
+                    newTrk_qvec[iTrkDetector]->Qy(h+1) * newEP_qvec[iEPDetector]->QyNorm(h+1));
           }
         }
       }
