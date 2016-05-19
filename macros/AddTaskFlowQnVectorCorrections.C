@@ -412,7 +412,7 @@ void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
   /////////////// Add TZERO subdetectors ///////////////////
 
   Bool_t TZEROchannels[2][24];
-  for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<23; ich++) TZEROchannels[iv0][ich] = kFALSE;
+  for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<24; ich++) TZEROchannels[iv0][ich] = kFALSE;
 
   for(Int_t ich=12; ich<24; ich++) TZEROchannels[0][ich] = kTRUE;  // channel list: value 1 if channel should be used
   for(Int_t ich=0; ich<12; ich++) TZEROchannels[1][ich] = kTRUE;
