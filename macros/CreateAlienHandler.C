@@ -46,6 +46,7 @@ AliAnalysisGrid* CreateAlienHandler(const char *runMode,Bool_t gridMerge)
   plugin->SetGridOutputDir("output"); // In this case will be $HOME/work/output
   plugin->SetOutputToRunNo(); // we want the run number as output subdirectory
   plugin->SetDefaultOutputs(kTRUE);
+  plugin->SetMergeExcludes("AliAOD.pass2.root");
 
 //  plugin->SetMergeExcludes("Viscosity.root EventStat_temp.root");
   plugin->SetMergeViaJDL(gridMerge);
