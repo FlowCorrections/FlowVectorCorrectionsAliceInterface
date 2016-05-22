@@ -56,7 +56,9 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis() :
   fDetectorResolutionCorrelations(),
   fTrackDetectorNameInFile(),
   fEPDetectorNameInFile(),
-  fCentralityVariable(-1)
+  fCentralityVariable(-1),
+  fExpectedCorrectionPass("rec"),
+  fAlternativeCorrectionPass("rec")
 {
   //
   // Default constructor
@@ -76,7 +78,9 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   fDetectorResolutionCorrelations(),
   fTrackDetectorNameInFile(),
   fEPDetectorNameInFile(),
-  fCentralityVariable(-1)
+  fCentralityVariable(-1),
+  fExpectedCorrectionPass("rec"),
+  fAlternativeCorrectionPass("rec")
 {
   //
   // Constructor
@@ -304,13 +308,11 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
 
 
   /* get data structures for the different track detectors */
-  const char *szCorrectionPass = "align";
-  const char *szAltCorrectionPass = "rec";
   for (Int_t iTrk = 0; iTrk < nTrackDetectors; iTrk++) {
     newTrkQvecList[iTrk] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s", fTrackDetectorNameInFile[iTrk].Data())));
-    newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(szCorrectionPass);
+    newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fExpectedCorrectionPass.Data());
     if (newTrk_qvec[iTrk] == NULL) {
-      newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(szAltCorrectionPass);
+      newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fAlternativeCorrectionPass.Data());
       if (newTrk_qvec[iTrk] == NULL) return; /* neither the expected nor the alternative were there */
     }
   }
@@ -318,9 +320,9 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
   /* and now for the EP detectors */
   for (Int_t iEP = 0; iEP < nEPDetectors; iEP++) {
     newEPQvecList[iEP] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s",fEPDetectorNameInFile[iEP].Data())));
-    newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(szCorrectionPass);
+    newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fExpectedCorrectionPass.Data());
     if (newEP_qvec[iEP] == NULL) {
-      newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(szAltCorrectionPass);
+      newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fAlternativeCorrectionPass.Data());
       if (newEP_qvec[iEP] == NULL) return; /* neither the expected nor the alternative were there */
     }
   }

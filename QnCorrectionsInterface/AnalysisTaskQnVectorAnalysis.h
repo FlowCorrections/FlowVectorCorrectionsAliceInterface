@@ -90,6 +90,8 @@ public:
 
   void SetEventCuts(QnCorrectionsCutsSet* cuts)  {fEventCuts = cuts;}
   void SetCentralityVariable(Int_t var) { fCentralityVariable = var; }
+  void SetExpectedCorrectionPass(const char *pass) { fExpectedCorrectionPass = pass; }
+  void SetAlternativeCorrectionPass(const char *pass) { fAlternativeCorrectionPass = pass; }
 
  private:
   TList* fEventQAList;
@@ -110,6 +112,8 @@ public:
   TString fEPDetectorNameInFile[nEPDetectors];
 
   Int_t fCentralityVariable;
+  TString fExpectedCorrectionPass;
+  TString fAlternativeCorrectionPass;
 
   ClassDef(AnalysisTaskQnVectorAnalysis, 1);
 };
