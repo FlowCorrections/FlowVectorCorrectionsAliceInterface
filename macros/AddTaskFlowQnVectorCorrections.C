@@ -120,6 +120,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
     histClass+= "TrackletQA_SPD;";
     AddVZERO(taskQnCorrections, QnManager);
     AddTZERO(taskQnCorrections, QnManager);
+    AddFMD(taskQnCorrections, QnManager);
     AddRawFMD(taskQnCorrections, QnManager);
     AddZDC(taskQnCorrections, QnManager);
   }
@@ -217,9 +218,6 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
 
   return cOutputQvecList;
 }
-
-
-
 
 void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
 
