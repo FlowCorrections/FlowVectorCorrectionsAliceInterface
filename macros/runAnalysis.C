@@ -88,7 +88,8 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
 
   /* run the Qn vector analysis task */
   Bool_t bRunQnVectorAnalysisTask = kTRUE;
-  const char *pszCorrectionPass = "rec";
+  const char *pszCorrectionPass = "align";
+  const char *pszAltCorrectionPass = "rec";
 
   // Centrality
   Bool_t UseCentrality  = kTRUE;
@@ -205,7 +206,7 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
     gROOT->LoadMacro("AddTaskQnVectorAnalysis.C");
     AnalysisTaskQnVectorAnalysis* taskQn = AddTaskQnVectorAnalysis(bUseMultiplicity, b2015DataSet);
     taskQn->SetExpectedCorrectionPass(pszCorrectionPass);
-    taskQn->SetAlternativeCorrectionPass(pszCorrectionPass);
+    taskQn->SetAlternativeCorrectionPass(pszAltCorrectionPass);
 
     mgr->AddTask(taskQn);
 
