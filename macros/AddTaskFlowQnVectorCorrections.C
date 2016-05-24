@@ -34,6 +34,7 @@
 //
 ///////////////////////////////////////////////////////////////
 
+#ifdef __ECLIPSE_IDE
 
 #include <TTree.h>
 #include <TSystem.h>
@@ -59,6 +60,8 @@
 #include "QnCorrectionsQnVectorRecentering.h"
 #include "QnCorrectionsQnVectorAlignment.h"
 #include "AnalysisTaskFlowVectorCorrections.h"
+
+#endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
 #include "runAnalysis.H"
 
