@@ -1,3 +1,6 @@
 # ECLIPSE project files
 .cproject
 .project
+
+# text files backup
+*.txt~
