@@ -36,7 +36,11 @@
 //
 ///////////////////////////////////////////////////////////////
 
+#ifdef __ECLIPSE_IDE
+
 #include "AnalysisTaskQnVectorAnalysis.h"
+
+#endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
 #define VAR AnalysisTaskQnVectorAnalysis
 
