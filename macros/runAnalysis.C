@@ -68,40 +68,9 @@ AliMultSelectionTask *AddTaskMultSelection(
 #include "runAnalysis.H"
 
 void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
-  /* WARNING!!! HANDLE WITH CARE!!! precedes GRID and MC */
-  Bool_t bASCIIoutput           = kFALSE;
-
-  Bool_t bUseESD                     = kTRUE;
-  Bool_t bUseAOD                     = kFALSE;
-
-  Bool_t useTender              = kFALSE;
-  Bool_t useCDB                 = kFALSE;
-  Bool_t isPhysicsSelection     = kTRUE;
-
-  /* PIDresponse is not optional any longer so,
-   * do NOT change this flag at all */
-  Bool_t usePIDResponse         = kFALSE;
-
-  Bool_t bRunPIDCombinedTask = kFALSE;
-
-  Bool_t isHeavyIon     = kTRUE;
-
-  /* run the Qn vector analysis task */
-  Bool_t bRunQnVectorAnalysisTask = kTRUE;
-  const char *pszCorrectionPass = "align";
-  const char *pszAltCorrectionPass = "rec";
-
-  // Centrality
-  Bool_t UseCentrality  = kTRUE;
-  Bool_t UseMultiplicity = kTRUE;
 
   gROOT->LoadMacro("loadRunOptions.C");
   loadRunOptions();
-
-  /* SANITY CHECKS! DON'T CHANGE THIS! */
-  if (bASCIIoutput) {
-    bGRIDPlugin = kFALSE;
-  }
 
   gSystem->AddIncludePath("-I$ALICE_PHYSICS/include");
 
@@ -113,100 +82,104 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   AliLog::SetGlobalLogLevel(AliLog::kDebug);
 
 
-  if (bUseESD) {
-    AliESDInputHandler* esdH = new AliESDInputHandler();
-    mgr->SetInputEventHandler(esdH);
-  //  esdH->SetReadFriends(kFALSE);
-  }
-  else if (bUseAOD) {
-    AliAODInputHandler* aodH = new AliAODInputHandler();
-    mgr->SetInputEventHandler(aodH);
-  }
-  else {
-    cout << "Neither AOD nor ESD data specified. ABORTING!!!" << endl;
-    return;
-  }
-
-  if(bGRIDPlugin) {
-    gROOT->LoadMacro("CreateAlienHandler.C");
-    alienHandler = CreateAlienHandler(sRunMode,gridMerge);
-    if (!alienHandler) return;
-
-    mgr->SetGridHandler(alienHandler);
-  }
-
-  if(bMC ){
-      AliMCEventHandler* mcH = new AliMCEventHandler();
-      mgr->SetMCtruthEventHandler(mcH);
-  }
-
-  if( usePIDResponse ) {
-    gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
-    AliAnalysisTaskPIDResponse *pidTask = AddTaskPIDResponse(bMC,kTRUE,kTRUE,2);
-  }
-
-  if( useTender ) {
-    gROOT->LoadMacro("$ALICE_PHYSICS/TENDER/TenderSupplies/AddTaskTender.C");
-    AliAnalysisTaskSE *tender = AddTaskTender(kFALSE,  /* V0 */
-                                              kTRUE,   /* TPC */
-                                              kTRUE,   /* TOF */
-                                              kFALSE,  /* TRD */
-                                              kTRUE,   /* PID */
-                                              kFALSE,  /* VTX */
-                                              kTRUE,   /* T0 */
-                                              kFALSE,   /* EMCAL, no EMCAL for the time being */
-                                              kFALSE); /* TRACKFIX */
-  }
-
-  if(bUseESD) {
-    if(isPhysicsSelection) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
-      AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(bMC);
+  if (!bTrainScope) {
+    /* we only do this outside trains scope */
+    if (bUseESD) {
+      AliESDInputHandler* esdH = new AliESDInputHandler();
+      mgr->SetInputEventHandler(esdH);
+    //  esdH->SetReadFriends(kFALSE);
+    }
+    else if (bUseAOD) {
+      AliAODInputHandler* aodH = new AliAODInputHandler();
+      mgr->SetInputEventHandler(aodH);
+    }
+    else {
+      cout << "Neither AOD nor ESD data specified. ABORTING!!!" << endl;
+      return;
     }
 
-    if (UseMultiplicity) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
-      AliMultSelectionTask * task = AddTaskMultSelection(kFALSE); // user mode:
+    if(bMC ){
+        AliMCEventHandler* mcH = new AliMCEventHandler();
+        mgr->SetMCtruthEventHandler(mcH);
     }
 
-    if( UseCentrality  ) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskCentrality.C");
-      AliCentralitySelectionTask *taskCentrality = AddTaskCentrality();
-      if (bMC) {
-        taskCentrality->SetMCInput();
+    if(bGRIDPlugin) {
+      gROOT->LoadMacro("CreateAlienHandler.C");
+      alienHandler = CreateAlienHandler(sRunMode,gridMerge);
+      if (!alienHandler) return;
+
+      mgr->SetGridHandler(alienHandler);
+    }
+
+    if( bUsePIDResponse ) {
+      gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
+      AliAnalysisTaskPIDResponse *pidTask = AddTaskPIDResponse(bMC,kTRUE,kTRUE,2);
+    }
+
+    if( bUseTender ) {
+      gROOT->LoadMacro("$ALICE_PHYSICS/TENDER/TenderSupplies/AddTaskTender.C");
+      AliAnalysisTaskSE *tender = AddTaskTender(kFALSE,  /* V0 */
+                                                kTRUE,   /* TPC */
+                                                kTRUE,   /* TOF */
+                                                kFALSE,  /* TRD */
+                                                kTRUE,   /* PID */
+                                                kFALSE,  /* VTX */
+                                                kTRUE,   /* T0 */
+                                                kFALSE,   /* EMCAL, no EMCAL for the time being */
+                                                kFALSE); /* TRACKFIX */
+    }
+
+    if(bUseESD) {
+      if(bUsePhysicsSelection) {
+        gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C");
+        AliPhysicsSelectionTask* physSelTask = AddTaskPhysicsSelection(bMC);
+      }
+
+      if (bUseMultiplicityTask) {
+        gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
+        AliMultSelectionTask * task = AddTaskMultSelection(kFALSE); // user mode:
+      }
+
+      if( bUseCentralityTask  ) {
+        gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/AddTaskCentrality.C");
+        AliCentralitySelectionTask *taskCentrality = AddTaskCentrality();
+        if (bMC) {
+          taskCentrality->SetMCInput();
+        }
       }
     }
-  }
 
 
-  if (useCDB) {
-    gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/PilotTrain/AddTaskCDBconnect.C");
-    AliTaskCDBconnect* cdbTask = AddTaskCDBconnect();
-  }
+    if (bUseCDB) {
+      gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/PilotTrain/AddTaskCDBconnect.C");
+      AliTaskCDBconnect* cdbTask = AddTaskCDBconnect();
+    }
 
-  AliAnalysisDataContainer *cinput1 = NULL;
-  cinput1 = mgr->GetCommonInputContainer();
+    AliAnalysisDataContainer *cinput1 = NULL;
+    cinput1 = mgr->GetCommonInputContainer();
 
-  if (bRunPIDCombinedTask == kTRUE){
-    AliAnalysisTaskPIDCombined *taskPIDCombined = new AliAnalysisTaskPIDCombined("PID Combined");
-    mgr->AddTask(taskPIDCombined);
+    if (bRunPIDCombinedTask == kTRUE){
+      AliAnalysisTaskPIDCombined *taskPIDCombined = new AliAnalysisTaskPIDCombined("PID Combined");
+      mgr->AddTask(taskPIDCombined);
 
-    AliAnalysisDataContainer *coutput = mgr->CreateContainer("PID Combined", TList::Class(),  AliAnalysisManager::kOutputContainer, "Viscosity.root");
-    mgr->ConnectInput( taskPIDCombined, 0,  cinput1);
-    mgr->ConnectOutput(taskPIDCombined, 1,  coutput);
-    cout << "Info: created PID combined task" << endl;
+      AliAnalysisDataContainer *coutput = mgr->CreateContainer("PID Combined", TList::Class(),  AliAnalysisManager::kOutputContainer, "Viscosity.root");
+      mgr->ConnectInput( taskPIDCombined, 0,  cinput1);
+      mgr->ConnectOutput(taskPIDCombined, 1,  coutput);
+      cout << "Info: created PID combined task" << endl;
+    }
+    /* this ends what we do outside the trains scope */
   }
 
   TString inputHistogramFileName = Form("%s/%s", (const char*) szCorrectionsFilePath, (const char*) szCorrectionsFileName);
 
-  gROOT->LoadMacro("AddTaskFlowQnVectorCorrections.C");
+  gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/AddTaskFlowQnVectorCorrections.C");
   AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
 
   if (bRunQnVectorAnalysisTask) {
-    gROOT->LoadMacro("AddTaskQnVectorAnalysis.C");
+    gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/AddTaskQnVectorAnalysis.C");
     AnalysisTaskQnVectorAnalysis* taskQn = AddTaskQnVectorAnalysis(bUseMultiplicity, b2015DataSet);
-    taskQn->SetExpectedCorrectionPass(pszCorrectionPass);
-    taskQn->SetAlternativeCorrectionPass(pszAltCorrectionPass);
+    taskQn->SetExpectedCorrectionPass(szCorrectionPass.Data());
+    taskQn->SetAlternativeCorrectionPass(szAltCorrectionPass.Data());
 
     mgr->AddTask(taskQn);
 
@@ -222,46 +195,50 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
     mgr->ConnectOutput(taskQn, 1, cOutputQnAnaEventQA );
   }
 
-  TChain* chain = 0;
+  if (!bTrainScope) {
+    /* we only do this outside trains scope */
+    TChain* chain = 0;
 
-  if( ! bGRIDPlugin ) {
-    Int_t numFiles = 0;
-    ifstream dataInStream;
-    dataInStream.open(szLocalFileList.Data());
-    if ( !dataInStream ) {
-      cout<<"Data list file does not exist: "<<szLocalFileList.Data()<<endl;
-      return;
-    }
+    if( ! bGRIDPlugin ) {
+      Int_t numFiles = 0;
+      ifstream dataInStream;
+      dataInStream.open(szLocalFileList.Data());
+      if ( !dataInStream ) {
+        cout<<"Data list file does not exist: "<<szLocalFileList.Data()<<endl;
+        return;
+      }
 
-    string line;
+      string line;
 
-    while ( !dataInStream.eof() ) {
-      getline(dataInStream, line);
-      if(line.compare("") != 0) {//checks if there is an empty line in the data list
-        numFiles++;
+      while ( !dataInStream.eof() ) {
+        getline(dataInStream, line);
+        if(line.compare("") != 0) {//checks if there is an empty line in the data list
+          numFiles++;
+        }
+      }
+      // No need to create a chain - this is handled by the plugin
+      if (bUseESD) {
+        gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/CreateESDChain.C");
+        chain = CreateESDChain(szLocalFileList,numFiles);
+      }
+      else if (bUseAOD) {
+        gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/CreateAODChain.C");
+        chain = CreateAODChain(szLocalFileList,numFiles);
       }
     }
-    // No need to create a chain - this is handled by the plugin
-    if (bUseESD) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/CreateESDChain.C");
-      chain = CreateESDChain(szLocalFileList,numFiles);
-    }
-    else if (bUseAOD) {
-      gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/CreateAODChain.C");
-      chain = CreateAODChain(szLocalFileList,numFiles);
-    }
-  }
 
-  if (!mgr->InitAnalysis())
-    return;
+    if (!mgr->InitAnalysis())
+      return;
 
-  mgr->PrintStatus();
-  // Start analysis in grid.
-  if (bGRIDPlugin){
-    mgr->StartAnalysis("grid");
-  }
-  else{
-    mgr->StartAnalysis("local",chain);
+    mgr->PrintStatus();
+    // Start analysis in grid.
+    if (bGRIDPlugin){
+      mgr->StartAnalysis("grid");
+    }
+    else{
+      mgr->StartAnalysis("local",chain);
+    }
+    /* this ends what we do outside the trains scope */
   }
 }
 

@@ -27,6 +27,39 @@ using namespace std;
 Bool_t bOptionsLoaded = kFALSE;
 void CleanOptions();
 
+/* tasks to execute: keep the same order than in teh runoptions file */
+const Int_t nNoOfTasks = 7;
+const char *taskNameInFile[nNoOfTasks] = {
+    "Tender", "CDB", "PhysicsSelection", "PIDResponse", "PIDCombinedTask", "CentralityTask", "MultiplicityTask"
+};
+Bool_t *taskVar[nNoOfTasks] = {
+    &bUseTender, &bUseCDB, &bUsePhysicsSelection, &bUsePIDResponse, &bRunPIDCombinedTask, &bUseCentralityTask, &bUseMultiplicityTask
+};
+
+/// \brief get the condition of "Use name: yes/no"
+/// The search for "Use name:" is started on the first read line and on.
+/// The file name is left after reading the line that contains "Use name:"
+/// or the last read line if not found.
+/// \param optionsfile the options file
+/// \param name the name to insert to search for its use
+/// \return 1 if use = yes, 0 if use = no, -1 if not found or error
+Int_t getUse(const ifstream &optionsfile, const char *name) {
+  TString currline;
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith(Form("Use %s: ",name))) {
+    currline.Remove(0,strlen(Form("Use %s: ",name)));
+    if (currline.Contains("yes"))
+      return 1;
+    else if (currline.Contains("no"))
+      return 0;
+    else
+      { printf("ERROR: wrong Use %s option in options file\n", name); return -1; }
+  }
+  else
+    { printf("ERROR: wrong Use %s option in options file\n", name); return -1; }
+}
+
 /// \brief Load the run options for the current task
 /// The run options as present in the input file are taken over the global variables
 /// \param verb flag for verbose output
@@ -44,15 +77,23 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
 
   /* Load run options */
   if (!currline.EqualTo("Run options:")) { printf("ERROR: wrong run options file %s\n", filename); return kFALSE; }
-  /* grid option */
+  /* run option */
   currline.ReadLine(optionsfile);
   while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
-  if (currline.EqualTo("grid"))
+  if (currline.EqualTo("grid")) {
     bGRIDPlugin = kTRUE;
-  else if (currline.EqualTo("local"))
+    bTrainScope = kFALSE;
+  }
+  else if (currline.EqualTo("local")) {
     bGRIDPlugin = kFALSE;
+    bTrainScope = kFALSE;
+  }
+  else if (currline.EqualTo("train")) {
+    bGRIDPlugin = kFALSE;
+    bTrainScope = kTRUE;
+  }
   else
-    { printf("ERROR: wrong grid option in options file %s\n", filename); return kFALSE; }
+    { printf("ERROR: wrong run option in options file %s\n", filename); return kFALSE; }
   printf("  Running in %s\n", bGRIDPlugin ? "grid" : "local");
 
   /* MC option */
@@ -76,6 +117,18 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
     { printf("ERROR: wrong Aliphysics SW version in options file %s\n", filename); return kFALSE; }
   if (bGRIDPlugin)
     cout << "    Grid AliPhysics version: " << szAliPhysicsVersion << endl;
+
+  /* tasks to execute */
+  for (Int_t itask = 0; itask < nNoOfTasks; itask++) {
+    Int_t use = getUse(optionsfile,taskNameInFile[itask]);
+    switch (use) {
+    case 0: *taskVar[itask] = kFALSE; break;
+    case 1: *taskVar[itask] = kTRUE; break;
+    default: return kFALSE;
+    }
+    printf("  Use %s: %s\n", taskNameInFile[itask], *taskVar[itask] ? "yes" : "no");
+  }
+
 
   /* Execution conditions */
   currline.ReadLine(optionsfile);
@@ -107,6 +160,24 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   else
     { printf("ERROR: wrong Is 2015 dataset option in options file %s\n", filename); return kFALSE; }
   printf("  Is 2015 dataset: %s\n", b2015DataSet ? "yes" : "no");
+
+  /* ESD input format */
+  Int_t useESDinput = getUse(optionsfile, "ESD");
+  switch (useESDinput) {
+  case 0: bUseESD = kFALSE; break;
+  case 1: bUseESD = kTRUE; break;
+  default: return kFALSE;
+  }
+  printf(" Use ESD: %s\n", bUseESD ? "yes" : "no");
+
+  /* AOD input format */
+  Int_t useAODinput = getUse(optionsfile, "AOD");
+  switch (useAODinput) {
+  case 0: bUseAOD = kFALSE; break;
+  case 1: bUseAOD = kTRUE; break;
+  default: return kFALSE;
+  }
+  printf(" Use AOD: %s\n", bUseAOD ? "yes" : "no");
 
   currline.ReadLine(optionsfile);
   while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
@@ -189,8 +260,55 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
     szCorrectionsFileName = currline;
   }
   else
-    { printf("ERROR: wrong corrections file naem in options file %s\n", filename); return kFALSE; }
+    { printf("ERROR: wrong corrections file name in options file %s\n", filename); return kFALSE; }
   printf("  filename: %s\n", (const char *) szCorrectionsFileName);
+
+  /* the Qn vector analysis task */
+  Int_t useQnTask = getUse(optionsfile, "QnVectorAnalysisTask");
+  switch (useQnTask) {
+  case 0: bRunQnVectorAnalysisTask = kFALSE; break;
+  case 1: bRunQnVectorAnalysisTask = kTRUE; break;
+  default: return kFALSE;
+  }
+  printf(" Use QnVectorAnalysisTask: %s\n", bRunQnVectorAnalysisTask ? "yes" : "no");
+
+  /* the expected correction step on the Qn vector */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith("Expected correction step: ")) {
+    currline.Remove(0,strlen("Expected correction step: "));
+    if (currline.EqualTo("raw")) szCorrectionPass = "raw";
+    else if (currline.EqualTo("plain")) szCorrectionPass = "plain";
+    else if (currline.EqualTo("rec")) szCorrectionPass = "rec";
+    else if (currline.EqualTo("align")) szCorrectionPass = "align";
+    else if (currline.EqualTo("twist")) szCorrectionPass = "twist";
+    else if (currline.EqualTo("scale")) szCorrectionPass = "scale";
+    else if (currline.EqualTo("last")) szCorrectionPass = "last";
+    else
+      { printf("ERROR: wrong Expected correction step %s in options file %s\n", currline.Data(), filename); return kFALSE; }
+  }
+  else
+    { printf("ERROR: wrong Expected correction step option in options file %s\n", filename); return kFALSE; }
+  printf("  Expected correction step: %s\n", szCorrectionPass.Data());
+
+  /* the alternative expected correction step on the Qn vector */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.BeginsWith("Alternative correction step: ")) {
+    currline.Remove(0,strlen("Alternative correction step: "));
+    if (currline.EqualTo("raw")) szAltCorrectionPass = "raw";
+    else if (currline.EqualTo("plain")) szAltCorrectionPass = "plain";
+    else if (currline.EqualTo("rec")) szAltCorrectionPass = "rec";
+    else if (currline.EqualTo("align")) szAltCorrectionPass = "align";
+    else if (currline.EqualTo("twist")) szAltCorrectionPass = "twist";
+    else if (currline.EqualTo("scale")) szAltCorrectionPass = "scale";
+    else if (currline.EqualTo("last")) szAltCorrectionPass = "last";
+    else
+      { printf("ERROR: wrong Alternative correction step %s in options file %s\n", currline.Data(), filename); return kFALSE; }
+  }
+  else
+    { printf("ERROR: wrong Alternative correction step option in options file %s\n", filename); return kFALSE; }
+  printf("  Alternative correction step: %s\n", szAltCorrectionPass.Data());
 
   /* closing the options file */
   if (verb) printf(" Closing the options file\n");
@@ -217,7 +335,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
     }
     else
       { cout << "ERROR: wrong Data pattern in data location file " << szDataLocFile << endl; return kFALSE; }
-    cout << "  GRID data pattern: " << szDataPattern << endl;
+    cout << " GRID data pattern: " << szDataPattern << endl;
     /* the grid data dir */
     currline.ReadLine(datalocfile);
     while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(datalocfile);
@@ -226,7 +344,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
     }
     else
       { cout << "ERROR: wrong GRID Data dir in data location file " << szDataLocFile << endl; return kFALSE; }
-    cout << "  GRID data dir: " << szDataDir << endl;
+    cout << " GRID data dir: " << szDataDir << endl;
     /* the number of input files */
     currline.ReadLine(datalocfile);
     while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(datalocfile);

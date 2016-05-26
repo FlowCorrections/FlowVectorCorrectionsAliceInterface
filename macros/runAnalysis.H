@@ -16,11 +16,27 @@
 #define RUNANALYSIS_H_
 
 Bool_t bGRIDPlugin;
+Bool_t bTrainScope;
 Bool_t bMC;
+
+/* tasks to use */
+/* only valid if not under train scope */
+Bool_t bUseTender;
+Bool_t bUseCDB;
+Bool_t bUsePhysicsSelection;
+Bool_t bUsePIDResponse;
+Bool_t bRunPIDCombinedTask;
+Bool_t bUseCentralityTask;
+Bool_t bUseMultiplicityTask;
 
 /* temporal flag to use multiplicity instead of centrality and to inhibit detectors for 2015 dataset */
 Bool_t bUseMultiplicity;
 Bool_t b2015DataSet;
+
+/* data input */
+Bool_t bUseESD;
+Bool_t bUseAOD;
+
 
 /* Task level cuts */
 Double_t centralityMin;
@@ -39,6 +55,11 @@ TObjArray listOfActiveRuns;
 TString szCorrectionsSource;
 TString szCorrectionsFilePath;
 TString szCorrectionsFileName;
+
+/* run the Qn vector analysis task */
+Bool_t bRunQnVectorAnalysisTask;
+TString szCorrectionPass;
+TString szAltCorrectionPass;
 
 TString szLocalFileList;
 
