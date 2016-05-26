@@ -310,20 +310,22 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
   /* get data structures for the different track detectors */
   for (Int_t iTrk = 0; iTrk < nTrackDetectors; iTrk++) {
     newTrkQvecList[iTrk] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s", fTrackDetectorNameInFile[iTrk].Data())));
+    if (newTrkQvecList[iTrk] == NULL) continue; /* the detector was not there */
     newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fExpectedCorrectionPass.Data());
     if (newTrk_qvec[iTrk] == NULL) {
       newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fAlternativeCorrectionPass.Data());
-      if (newTrk_qvec[iTrk] == NULL) return; /* neither the expected nor the alternative were there */
+      if (newTrk_qvec[iTrk] == NULL) continue; /* neither the expected nor the alternative were there */
     }
   }
 
   /* and now for the EP detectors */
   for (Int_t iEP = 0; iEP < nEPDetectors; iEP++) {
     newEPQvecList[iEP] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s",fEPDetectorNameInFile[iEP].Data())));
+    if (newEPQvecList[iEP] == NULL) continue; /* the detector was not there */
     newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fExpectedCorrectionPass.Data());
     if (newEP_qvec[iEP] == NULL) {
       newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fAlternativeCorrectionPass.Data());
-      if (newEP_qvec[iEP] == NULL) return; /* neither the expected nor the alternative were there */
+      if (newEP_qvec[iEP] == NULL) continue; /* neither the expected nor the alternative were there */
     }
   }
 
@@ -331,10 +333,14 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
   /* TODO: correct for the normalization */
   for(Int_t iTrkDetector=0; iTrkDetector < nTrackDetectors; iTrkDetector++) {
     /* sanity check */
-    if (newTrk_qvec[iTrkDetector]->IsGoodQuality()) {
+    if ((newTrkQvecList[iTrkDetector] != NULL) &&
+        (newTrk_qvec[iTrkDetector] != NULL) &&
+        (newTrk_qvec[iTrkDetector]->IsGoodQuality())) {
       for (Int_t iEPDetector=0; iEPDetector < nEPDetectors; iEPDetector++) {
         /*sanity check */
-        if (newEP_qvec[iEPDetector]->IsGoodQuality()) {
+        if ((newEPQvecList[iEPDetector] != NULL) &&
+            (newEP_qvec[iEPDetector] != NULL) &&
+            (newEP_qvec[iEPDetector]->IsGoodQuality())) {
           for(Int_t h=0; h < kNharmonics; h++) {
             fVn[iTrkDetector*nEPDetectors+iEPDetector][h][0]->Fill(values[fCentralityVariable],
                     newTrk_qvec[iTrkDetector]->Qx(h+1) * newEP_qvec[iEPDetector]->QxNorm(h+1));
@@ -356,8 +362,11 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
     if(fDetectorResolutionContributors[ix][0] == -1) continue;
 
     /* sanity checks */
-    if((newTrk_qvec[fDetectorResolutionContributors[ix][0]] != NULL) &&
+    if((newTrkQvecList[fDetectorResolutionContributors[ix][0]] != NULL) &&
+        (newTrk_qvec[fDetectorResolutionContributors[ix][0]] != NULL) &&
+        (newEPQvecList[fDetectorResolutionContributors[ix][1]] != NULL) &&
         (newEP_qvec[fDetectorResolutionContributors[ix][1]] != NULL) &&
+        (newEPQvecList[fDetectorResolutionContributors[ix][2]] != NULL) &&
         (newEP_qvec[fDetectorResolutionContributors[ix][2]] != NULL) &&
         (newTrk_qvec[fDetectorResolutionContributors[ix][0]]->GetN() != 0) &&
         (newEP_qvec[fDetectorResolutionContributors[ix][1]]->GetN() != 0) &&
