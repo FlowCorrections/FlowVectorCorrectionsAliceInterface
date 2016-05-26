@@ -102,7 +102,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   }
   else
     { printf("ERROR: wrong run option in options file %s\n", filename); return kFALSE; }
-  printf("  Running in %s\n", bGRIDPlugin ? "grid" : "local");
+  printf("  Running in %s\n", bTrainScope ? "train" : (bGRIDPlugin ? "grid" : "local"));
 
   /* MC option */
   currline.ReadLine(optionsfile);
