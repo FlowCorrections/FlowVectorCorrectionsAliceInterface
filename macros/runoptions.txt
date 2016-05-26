@@ -33,6 +33,16 @@ Centrality: 00-90
 zvertex: -10.0:10.0
 end
 
+Detectors:
+# detectors to use
+Use TPC: yes
+Use SPD: yes
+Use VZERO: yes
+Use TZERO: yes
+Use FMD: yes
+Use rawFMD: no
+Use ZDC: yes
+
 # the corrections file
 Corrections file:
 # source: local, alien, OADB or OCDB

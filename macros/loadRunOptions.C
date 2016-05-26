@@ -36,6 +36,14 @@ Bool_t *taskVar[nNoOfTasks] = {
     &bUseTender, &bUseCDB, &bUsePhysicsSelection, &bUsePIDResponse, &bRunPIDCombinedTask, &bUseCentralityTask, &bUseMultiplicityTask
 };
 
+const Int_t nNoOfDetectors = 7;
+const char *detectorNameInFile[nNoOfDetectors] = {
+    "TPC", "SPD", "VZERO", "TZERO", "FMD", "rawFMD", "ZDC"
+};
+Bool_t *detectorVar[nNoOfDetectors] = {
+    &bUseTPC, &bUseSPD, &bUseVZERO, &bUseTZERO, &bUseFMD, &bUseRawFMD, &bUseZDC
+};
+
 /// \brief get the condition of "Use name: yes/no"
 /// The search for "Use name:" is started on the first read line and on.
 /// The file name is left after reading the line that contains "Use name:"
@@ -179,9 +187,11 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   }
   printf(" Use AOD: %s\n", bUseAOD ? "yes" : "no");
 
+  /* task level cuts */
   currline.ReadLine(optionsfile);
   while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
   if (currline.EqualTo("Task level:")) {
+    printf(" Task cuts: \n");
     currline.ReadLine(optionsfile);
     while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
     while(!currline.EqualTo("end")) {
@@ -216,6 +226,24 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   }
   else
     { printf("ERROR: wrong Task cuts section in options file %s\n", filename); return kFALSE; }
+
+  /* now the detector selected */
+  currline.ReadLine(optionsfile);
+  while (currline.BeginsWith("#") || currline.IsWhitespace()) currline.ReadLine(optionsfile);
+  if (currline.EqualTo("Detectors:")) {
+    printf(" Detectors: \n");
+    for (Int_t idetector = 0; idetector < nNoOfDetectors; idetector++) {
+      Int_t use = getUse(optionsfile,detectorNameInFile[idetector]);
+      switch (use) {
+      case 0: *detectorVar[idetector] = kFALSE; break;
+      case 1: *detectorVar[idetector] = kTRUE; break;
+      default: return kFALSE;
+      }
+      printf("  Use %s: %s\n", detectorNameInFile[idetector], *detectorVar[idetector] ? "yes" : "no");
+    }
+  }
+  else
+    { printf("ERROR: wrong Detectors section in options file %s\n", filename); return kFALSE; }
 
   /* now the corrections file */
   currline.ReadLine(optionsfile);

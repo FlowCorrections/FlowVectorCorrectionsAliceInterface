@@ -116,29 +116,30 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   histClass += "Event_Analysis;";
   histClass+= "TrackQA_NoCuts;";
 
-  if (b2015DataSet) {
+  /* add the selected detectors */
+  if (bUseTPC) {
     AddTPC(taskQnCorrections, QnManager);
     histClass+= "TrackQA_TPC;";
+  }
+  if (bUseSPD) {
     AddSPD(taskQnCorrections, QnManager);
     histClass+= "TrackletQA_SPD;";
+  }
+  if (bUseVZERO) {
     AddVZERO(taskQnCorrections, QnManager);
+  }
+  if (bUseTZERO) {
     AddTZERO(taskQnCorrections, QnManager);
+  }
+  if (bUseFMD) {
     AddFMD(taskQnCorrections, QnManager);
+  }
+  if (bUseRawFMD) {
     AddRawFMD(taskQnCorrections, QnManager);
+  }
+  if (bUseZDC) {
     AddZDC(taskQnCorrections, QnManager);
   }
-  else {
-    AddTPC(taskQnCorrections, QnManager);
-    histClass+= "TrackQA_TPC;";
-    AddSPD(taskQnCorrections, QnManager);
-    histClass+= "TrackletQA_SPD;";
-    AddVZERO(taskQnCorrections, QnManager);
-    AddTZERO(taskQnCorrections, QnManager);
-    AddFMD(taskQnCorrections, QnManager);
-    AddRawFMD(taskQnCorrections, QnManager);
-    AddZDC(taskQnCorrections, QnManager);
-  }
-
 
   QnManager->SetShouldFillQnVectorTree(kFALSE);
   QnManager->SetShouldFillQAHistograms(kTRUE);

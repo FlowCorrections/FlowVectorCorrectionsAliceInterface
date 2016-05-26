@@ -56,6 +56,15 @@ TString szCorrectionsSource;
 TString szCorrectionsFilePath;
 TString szCorrectionsFileName;
 
+/* detectors */
+Bool_t bUseTPC;
+Bool_t bUseSPD;
+Bool_t bUseVZERO;
+Bool_t bUseTZERO;
+Bool_t bUseFMD;
+Bool_t bUseRawFMD;
+Bool_t bUseZDC;
+
 /* run the Qn vector analysis task */
 Bool_t bRunQnVectorAnalysisTask;
 TString szCorrectionPass;
