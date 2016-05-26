@@ -75,12 +75,18 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
   gSystem->AddIncludePath("-I$ALICE_PHYSICS/include");
 
   AliAnalysisGrid      *alienHandler   =   NULL;
-  AliAnalysisManager *mgr = new AliAnalysisManager("Flow Qn vector corrections");
 
-  // Enable debug printouts
-  mgr->SetDebugLevel(AliLog::kError);
-  AliLog::SetGlobalLogLevel(AliLog::kDebug);
+  AliAnalysisManager *mgr;
+  if (!bTrainScope) {
+    mgr = new AliAnalysisManager("Flow Qn vector corrections");
 
+    // Enable debug printouts
+    mgr->SetDebugLevel(AliLog::kError);
+    AliLog::SetGlobalLogLevel(AliLog::kDebug);
+  }
+  else {
+    mgr = AliAnalysisManager::GetAnalysisManager();
+  }
 
   if (!bTrainScope) {
     /* we only do this outside trains scope */
