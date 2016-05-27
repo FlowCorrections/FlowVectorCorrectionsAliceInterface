@@ -344,7 +344,7 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
   if (verb) printf(" Options file closed\n");
 
   /* now get the data files location */
-  if (bGRIDPlugin) {
+  if (bGRIDPlugin || bTrainScope) {
     TString szDataLocFile;
     ifstream datalocfile;
 
