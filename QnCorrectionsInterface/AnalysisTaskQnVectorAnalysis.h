@@ -43,8 +43,8 @@ public:
     kTZEROC,
     kFMDA,
     kFMDC,
-    kRawFMDA,
-    kRawFMDC,
+//    kRawFMDA,
+//    kRawFMDC,
     nEPDetectors
   };
 

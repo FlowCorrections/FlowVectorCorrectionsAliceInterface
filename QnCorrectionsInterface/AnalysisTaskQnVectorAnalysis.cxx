@@ -35,7 +35,7 @@ ClassImp(AnalysisTaskQnVectorAnalysis)
 
 /* names for the different TProfile */
 TString namesQnTrackDetectors[AnalysisTaskQnVectorAnalysis::nTrackDetectors] = {"TPC","SPD"};
-TString namesQnEPDetectors[AnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","T0A","T0C","FMDA","FMDC","rawFMDA","rawFMDC"};
+TString namesQnEPDetectors[AnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","T0A","T0C","FMDA","FMDC"/*,"rawFMDA","rawFMDC"*/};
 TString namesQnComponents[AnalysisTaskQnVectorAnalysis::kNcorrelationComponents] = {"XX","XY","YX","YY"};
 
 /* centrality binning */
@@ -124,8 +124,8 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   fEPDetectorNameInFile[kTZEROC] = "TZEROC";
   fEPDetectorNameInFile[kFMDA] = "FMDA";
   fEPDetectorNameInFile[kFMDC] = "FMDC";
-  fEPDetectorNameInFile[kRawFMDA] = "FMDAraw";
-  fEPDetectorNameInFile[kRawFMDC] = "FMDCraw";
+//  fEPDetectorNameInFile[kRawFMDA] = "FMDAraw";
+//  fEPDetectorNameInFile[kRawFMDC] = "FMDCraw";
 
   /* the detector resolution configurations */
   /* this is only valid in C++11
@@ -136,19 +136,19 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
       {kSPD,kFMDA,kFMDC}
   }; */
   /* for the time being we do it in this awful way */
-  const Int_t nDetectorResolutions = 12;
+  const Int_t nDetectorResolutions = 10;
   fNDetectorResolutions = nDetectorResolutions;
   Int_t config[nDetectorResolutions][kNresolutionComponents] = {
       {kTPC,kVZEROC,kVZEROA},
       {kTPC,kTZEROC,kTZEROA},
       {kTPC,kFMDA,kFMDC},
-      {kTPC,kRawFMDA,kRawFMDC},
+//      {kTPC,kRawFMDA,kRawFMDC},
       {kTPC,kVZEROC,kTZEROA},
       {kTPC,kTZEROC,kVZEROA},
       {kSPD,kVZEROC,kVZEROA},
       {kSPD,kTZEROC,kTZEROA},
       {kSPD,kFMDA,kFMDC},
-      {kSPD,kRawFMDA,kRawFMDC},
+//      {kSPD,kRawFMDA,kRawFMDC},
       {kSPD,kVZEROC,kTZEROA},
       {kSPD,kTZEROC,kVZEROA},
   };
