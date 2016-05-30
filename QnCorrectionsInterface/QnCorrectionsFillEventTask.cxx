@@ -189,7 +189,7 @@ void QnCorrectionsFillEventTask::FillEventInfo() {
   }
 
   AliMultSelection *MultSelection = (AliMultSelection * ) fEvent->FindListObject("MultSelection");
-  fDataBank[kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
+  if(MultSelection) fDataBank[kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
 
   AliESDEvent* esdEvent = static_cast<AliESDEvent*>(fEvent);
   AliCentrality* cent = esdEvent->GetCentrality();
@@ -238,6 +238,7 @@ void QnCorrectionsFillEventTask::FillTrackInfo(AliVParticle* particle) {
   fDataBank[kTPCchi2]       = aodTrack->Chi2perNDF();
   fDataBank[kTPCsignal]     = aodTrack->GetTPCsignal();
   for(Int_t ibit=0; ibit<9; ibit++) fDataBank[kFilterBit+ibit]     = aodTrack->TestFilterBit(BIT(ibit));
+  fDataBank[kFilterBitMask768]  = (aodTrack->TestFilterBit(BIT(8))||aodTrack->TestFilterBit(BIT(9)));
 
 }
 

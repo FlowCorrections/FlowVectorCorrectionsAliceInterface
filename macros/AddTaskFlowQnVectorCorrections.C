@@ -73,6 +73,7 @@ void AddVZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnM
 void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 void AddTZERO(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
+void AddFMDTaskForESDanalysis();
 void AddRawFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
 void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager);
@@ -86,6 +87,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
     Error("AddTaskFlowQnVectorCorrections", "No analysis manager found.");
     return 0;
   }
+
 
   QnCorrectionsManager *QnManager = QnCorrectionsManager::GetInstance();
   AnalysisTaskFlowVectorCorrections *taskQnCorrections = new AnalysisTaskFlowVectorCorrections("FlowQnVectorCorrections");
@@ -108,8 +110,6 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   }
   else
     taskQnCorrections->SelectCollisionCandidates(AliVEvent::kMB|AliVEvent::kINT7);  // Events passing trigger and physics selection for analysis
-
-  taskQnCorrections->SetUseTPCStandaloneTracks(kFALSE);  // Use of TPC standalone tracks or Global tracks (only for ESD analysis)
 
   TString histClass = "";
   histClass += "Event_NoCuts;";
@@ -353,13 +353,34 @@ void AddTPC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   TPCconf->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* define the cuts to apply */
+  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
+  Bool_t isESD=mgr->GetInputEventHandler()->IsA()==AliESDInputHandler::Class();
   QnCorrectionsCutsSet *cutsTPC = new QnCorrectionsCutsSet();
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaXY,-0.3,0.3));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-0.3,0.3));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCncls,70.0,161.0));
-  cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2,0.2,4.0));
+  if(!isESD){
+    cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kFilterBitMask768,0.5,1.5));
+    cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
+    cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
+  }
+  else {
+    Bool_t UseTPConlyTracks=kFALSE;   // Use of TPC standalone tracks or Global tracks (only for ESD analysis)
+    task->SetUseTPCStandaloneTracks(UseTPConlyTracks);
+    if(UseTPConlyTracks){
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaXY,-3.0,3.0));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-3.0,3.0));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCnclsIter1,70.0,161.0));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2Iter1,0.2,4.0));
+    }
+    else{
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaXY,-0.3,0.3));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kDcaZ,-0.3,0.3));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kEta,-0.8,0.8));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kPt,0.2,5.));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCncls,70.0,161.0));
+      cutsTPC->Add(new QnCorrectionsCutWithin(VAR::kTPCchi2,0.2,4.0));
+    }
+  }
   TPCconf->SetCuts(cutsTPC);
 
   /* add the configuration to the detector */
@@ -573,8 +594,7 @@ void AddZDC(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   QnManager->AddDetector(ZDC);
 }
 
-
-void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
+void AddFMDTaskForESDanalysis(){
 
   gSystem->Load("libPWGLFforward2");  // for FMD
 
@@ -612,6 +632,15 @@ void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
   mgr->ConnectInput(taskFmd, 0, mgr->GetCommonInputContainer());
   mgr->ConnectOutput(taskFmd, 1, histOut);
   mgr->ConnectOutput(taskFmd, 2, output);
+
+}
+
+void AddFMD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnManager){
+
+  AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
+  Bool_t isESD=mgr->GetInputEventHandler()->IsA()==AliESDInputHandler::Class();
+  if(isESD) AddFMDTaskForESDanalysis();
+
 
   Bool_t FMDchannels[2][4000];
   for(Int_t iv0=0; iv0<2; iv0++) for(Int_t ich=0; ich<4000; ich++) FMDchannels[iv0][ich] = kFALSE;
@@ -1026,6 +1055,8 @@ void DefineHistograms(QnCorrectionsManager* QnManager, AliQnCorrectionsHistos* h
           1000, -10.0, 10.0, VAR::kDcaZ);
       histos->AddHistogram(classStr.Data(), "TPCncls", "TPCncls; TPCncls", kFALSE,
           160, 0.0, 160.0, VAR::kTPCncls);
+      histos->AddHistogram(classStr.Data(), "TPCsa_TPCncls", "TPC standalone TPCncls; TPCncls", kFALSE,
+          160, 0.0, 160.0, VAR::kTPCnclsIter1);
 
       // run dependence
       histos->AddHistogram(classStr.Data(), "Pt_Run", "<p_{T}> vs run; run;", kTRUE,

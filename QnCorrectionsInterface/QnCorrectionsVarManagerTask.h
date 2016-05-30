@@ -225,7 +225,8 @@ public:
     kDeltaTheta,        
     kDeltaEta,          
     kFilterBit,         
-    kDetector=kFilterBit+9,
+    kFilterBitMask768=kFilterBit+9,
+    kDetector,
     kQvectorX,
     kQvectorY,
     kNVars
