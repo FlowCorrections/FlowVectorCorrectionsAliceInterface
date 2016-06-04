@@ -57,7 +57,7 @@ AliPhysicsSelectionTask* AddTaskPhysicsSelection(
     Bool_t useSpecialOutput=kFALSE);
 extern AliAnalysisTask *AddTaskTender(Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t,Bool_t);
 extern AliTaskCDBconnect* AddTaskCDBconnect(const char *path="raw://", Int_t run=0);
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputHistogramFileName);
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections();
 AliMultSelectionTask *AddTaskMultSelection(
     Bool_t lCalibration = kFALSE,
     TString lExtraOptions = "",
@@ -176,10 +176,8 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
     /* this ends what we do outside the trains scope */
   }
 
-  TString inputHistogramFileName = Form("%s/%s", (const char*) szCorrectionsFilePath, (const char*) szCorrectionsFileName);
-
   gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/AddTaskFlowQnVectorCorrections.C");
-  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections(inputHistogramFileName);
+  AliAnalysisDataContainer *corrTask = AddTaskFlowQnVectorCorrections();
 
   if (bRunQnVectorAnalysisTask) {
     gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/AddTaskQnVectorAnalysis.C");

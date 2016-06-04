@@ -9,6 +9,7 @@ Instructions in AddTask_EPcorrectionsExample.C
 
 #include <Riostream.h>
 
+#include <TGrid.h>
 #include <TROOT.h>
 #include <TTimeStamp.h>
 #include <TStopwatch.h>
@@ -32,6 +33,8 @@ ClassImp(AnalysisTaskFlowVectorCorrections)
 AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections() :
 QnCorrectionsFillEventTask(),
 fCalibrateByRun(kTRUE),
+fCalibrationFile(""),
+fCalibrationFileSource(CALIBSRC_local),
 fTriggerMask(0),
 fEventQAList(0x0),
 fEventCuts(NULL),
@@ -54,6 +57,8 @@ fOutputSlotTree(-1)
 AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections(const char* name) :
     QnCorrectionsFillEventTask(name),
 fCalibrateByRun(kTRUE),
+fCalibrationFile(""),
+fCalibrationFileSource(CALIBSRC_local),
 fTriggerMask(0),
 fEventQAList(0x0),
 fEventCuts(NULL),
@@ -115,8 +120,33 @@ void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
   }
 }
 
-void AnalysisTaskFlowVectorCorrections::SetCalibrationHistograms(TFile* calibfile) {
-  fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+void AnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(CalibrationFileSource source, const char *filename) {
+  TFile *calibfile = NULL;
+
+  fCalibrationFile = filename;
+  fCalibrationFileSource = source;
+
+  switch (fCalibrationFileSource) {
+  case CALIBSRC_local:
+    if (fCalibrationFile.Length() != 0) {
+      if(fCalibrationFile.Contains("alien"))
+        TGrid::Connect("alien://");
+      calibfile = TFile::Open(fCalibrationFile);
+    }
+    if (calibfile != NULL && calibfile->IsOpen()) {
+      AliInfo(Form("\t Calibration file %s open", fCalibrationFile.Data()));
+      fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      calibfile->Close();
+    }
+    break;
+  case CALIBSRC_alien:
+    /* sanity check before we go to the grid */
+    if (!fCalibrationFile.Contains("alien"))
+      AliFatal(Form("\t alien was selected as source but %s filename does not contain \"alien\". Aborting!!!", fCalibrationFile.Data()));
+    break;
+  default:
+    AliFatal("Calibration file source not supported. Aborting!!!");
+  }
 }
 
 //_________________________________________________________________________________
@@ -127,6 +157,27 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
   //
   this->SetDefaultVarNames();
   this->SetDetectors();
+
+  TFile *calibfile = NULL;
+
+  /* get the calibration file if needed */
+  switch (fCalibrationFileSource) {
+  case CALIBSRC_local:
+    break;
+  case CALIBSRC_alien:
+    if (fCalibrationFile.Length() != 0) {
+      TGrid::Connect("alien://");
+      calibfile = TFile::Open(fCalibrationFile);
+    }
+    if (calibfile != NULL && calibfile->IsOpen()) {
+      AliInfo(Form("\t Calibration file %s open", fCalibrationFile.Data()));
+      fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      calibfile->Close();
+    }
+    break;
+  default:
+    break;
+  }
 
   fQnCorrectionsManager->InitializeQnCorrectionsFramework();
 
