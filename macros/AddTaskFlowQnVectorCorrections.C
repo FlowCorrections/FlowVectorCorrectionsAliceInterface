@@ -79,7 +79,7 @@ void AddSPD(AnalysisTaskFlowVectorCorrections *task, QnCorrectionsManager* QnMan
 
 Int_t varForEventMultiplicity;
 
-AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibrationFilename) {
+AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
 
   AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
   if (!mgr) {
@@ -152,17 +152,20 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections(const char *inputCalibr
   taskQnCorrections->DefineInOutput();
   taskQnCorrections->SetRunsLabels(&listOfRuns);
 
-  /* let's get the calibration file */
+  /* let's handle the calibration file */
   cout << "=================== CALIBRATION FILE =============================================" << endl;
-  TString inputfilename = inputCalibrationFilename;
-  if (inputfilename.Length() != 0) {
-    TFile *inputfile = new TFile(inputCalibrationFilename,"READ");
-    if (inputfile != NULL && inputfile->IsOpen()) {
-      taskQnCorrections->SetCalibrationHistograms(inputfile);
-      cout << "\t " << inputfilename << endl;
-    }
-    else
-      cout << "\t NOT FOUND" << endl;
+  TString inputCalibrationFilename = Form("%s/%s", szCorrectionsFilePath.Data(), szCorrectionsFileName.Data());
+  if (szCorrectionsSource.EqualTo("local")) {
+    cout << "\t File " << inputCalibrationFilename << " being taken locally when building the task object" << endl;
+    taskQnCorrections->SetCalibrationHistogramsFile(AnalysisTaskFlowVectorCorrections::CALIBSRC_local, inputCalibrationFilename.Data());
+  }
+  else if (szCorrectionsSource.EqualTo("alien")) {
+    cout << "\t File " << inputCalibrationFilename << " being taken from alien in the execution nodes" << endl;
+    taskQnCorrections->SetCalibrationHistogramsFile(AnalysisTaskFlowVectorCorrections::CALIBSRC_alien, inputCalibrationFilename.Data());
+  }
+  else {
+    Error("\t CALIBRATION FILE SOURCE NOT SUPPORTED. ABORTING!!!");
+    return NULL;
   }
   cout << "==================================================================================" << endl;
 

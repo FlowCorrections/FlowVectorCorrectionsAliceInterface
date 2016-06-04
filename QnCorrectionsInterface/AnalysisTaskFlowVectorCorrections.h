@@ -27,6 +27,14 @@ class AliQnCorrectionsHistos;
 class AnalysisTaskFlowVectorCorrections : public QnCorrectionsFillEventTask {
 
 public:
+  /// \enum CalibrationFileSource
+  /// \brief The supported sources for the calibration file
+  enum CalibrationFileSource {
+    CALIBSRC_local,    ///< the calibration file will be taken locally when the task object is created
+    CALIBSRC_alien,    ///< the calibration file will be taken from alien on each executio node
+  };
+
+
   AnalysisTaskFlowVectorCorrections();
   AnalysisTaskFlowVectorCorrections(const char *name);
   virtual ~AnalysisTaskFlowVectorCorrections(){}
@@ -45,7 +53,7 @@ public:
   void SetFillEventQA(Bool_t enable = kTRUE) { fFillEventQA = enable; }
   void SetTrigger(UInt_t triggerbit) {fTriggerMask=triggerbit;}
   void AddHistogramClass(TString hist) {fQAhistograms+=hist+";";}
-  void SetCalibrationHistograms(TFile* calibfile);
+  void SetCalibrationHistogramsFile(CalibrationFileSource source, const char *filename);
   void DefineInOutput();
   void SetRunsLabels(TObjArray *runsList) { fQnCorrectionsManager->SetListOfProcessesNames(runsList); }
 
@@ -63,6 +71,8 @@ public:
 
 private:
   Bool_t fCalibrateByRun;
+  TString fCalibrationFile;                       ///< the name of the calibration file
+  CalibrationFileSource fCalibrationFileSource;   ///< the source of the calibration file
   UInt_t fTriggerMask;
   TList* fEventQAList;
   QnCorrectionsCutsSet *fEventCuts;
@@ -79,7 +89,7 @@ private:
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
 
-  ClassDef(AnalysisTaskFlowVectorCorrections, 1);
+  ClassDef(AnalysisTaskFlowVectorCorrections, 2);
 };
 
 #endif // ANALYSISTASKFLOWVECTORCORRECTION_H
