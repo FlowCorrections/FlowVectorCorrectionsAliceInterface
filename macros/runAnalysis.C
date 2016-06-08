@@ -74,6 +74,9 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
 
   gSystem->AddIncludePath("-I$ALICE_PHYSICS/include");
 
+  gSystem->Load("libPWGPPevcharQn.so");
+  gSystem->Load("libPWGPPevcharQnInterface.so");
+
   AliAnalysisGrid      *alienHandler   =   NULL;
 
   AliAnalysisManager *mgr;
