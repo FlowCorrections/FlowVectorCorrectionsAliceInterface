@@ -580,7 +580,7 @@ void QnCorrectionsFillEventTask::FillRawFMD()
           Double_t eta  =  esdFmd->Eta(detectorNumber[detector], ringId[ring], sector, strip);
           Float_t m = esdFmd->Multiplicity(detectorNumber[detector], ringId[ring], sector, strip);
           if(m !=  AliESDFMD::kInvalidMult) {
-            fDataBank[AliQnCorrectionsVarManager::kFMDEta] = eta;
+            fDataBank[kFMDEta] = eta;
             fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, nSectorId);   // 1st ich is position in array, 2nd ich is channel id
           }
         }  // end loop over strips
