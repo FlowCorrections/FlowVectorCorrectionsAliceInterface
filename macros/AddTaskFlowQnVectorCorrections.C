@@ -55,6 +55,8 @@
 #include "QnCorrectionsDataVector.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsDetector.h"
+#include "QnCorrectionsDetectorConfigurationTracks.h"
+#include "QnCorrectionsDetectorConfigurationChannels.h"
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsInputGainEqualization.h"
 #include "QnCorrectionsQnVectorRecentering.h"
