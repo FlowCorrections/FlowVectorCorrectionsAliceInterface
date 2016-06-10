@@ -49,8 +49,8 @@
 #include "AliAnalysisManager.h"
 #include "AliQnCorrectionsHistos.h"
 
-#include "QnCorrectionsEventClasses.h"
-#include "QnCorrectionsCuts.h"
+#include "QnCorrectionsEventClassVariablesSet.h"
+#include "QnCorrectionsCutsBase.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsDataVector.h"
 #include "QnCorrectionsQnVector.h"
