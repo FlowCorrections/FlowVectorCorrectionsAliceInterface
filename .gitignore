@@ -4,3 +4,11 @@
 
 # text files backup
 *.txt~
+*.sh~
+*.cxx~
+*.h~
+*.C~
+*.H~
+
+# the renaming support directory
+AliQnCorrectionsInterface
