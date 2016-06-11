@@ -20,7 +20,7 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <AliAnalysisManager.h>
 #include <AliCentrality.h>
 #include <AliESDEvent.h>
-#include "QnCorrectionsCuts.h"
+#include "QnCorrectionsCutsSet.h"
 #include "QnCorrectionsManager.h"
 #include "AliQnCorrectionsHistos.h"
 #include "AliLog.h"

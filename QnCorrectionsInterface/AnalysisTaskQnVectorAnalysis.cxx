@@ -23,7 +23,7 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <TList.h>
 #include <TGraphErrors.h>
 #include <AliLog.h>
-#include "QnCorrectionsCuts.h"
+#include "QnCorrectionsCutsSet.h"
 #include "QnCorrectionsManager.h"
 #include "AliQnCorrectionsHistos.h"
 #include "AnalysisTaskQnVectorAnalysis.h"
