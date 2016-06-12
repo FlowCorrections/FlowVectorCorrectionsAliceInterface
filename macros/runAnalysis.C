@@ -19,7 +19,7 @@
 #include "TSystem.h"
 #include "TChain.h"
 #include "AliAnalysisTaskSE.h"
-#include "AliAnalysisTaskFlowVectorCorrections.h"
+#include "AnalysisTaskFlowVectorCorrections.h"
 #include "AliAnalysisTask.h"
 #include "AliAnalysisManager.h"
 #include "AliAODInputHandler.h"
