@@ -89,7 +89,7 @@ private:
   AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
   AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
 
-  ClassDef(AnalysisTaskFlowVectorCorrections, 2);
+  ClassDef(AnalysisTaskFlowVectorCorrections, 3);
 };
 
 #endif // ANALYSISTASKFLOWVECTORCORRECTION_H
