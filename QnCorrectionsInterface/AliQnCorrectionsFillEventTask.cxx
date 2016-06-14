@@ -35,12 +35,12 @@
 
 #include <Riostream.h>
 
-#include "QnCorrectionsFillEventTask.h"
-#include "QnCorrectionsVarManagerTask.h"
+#include "AliQnCorrectionsFillEventTask.h"
+#include "AliQnCorrectionsVarManagerTask.h"
 
-#include "QnCorrectionsDataVector.h"
-#include "QnCorrectionsDetector.h"
-#include "QnCorrectionsManager.h"
+#include "AliQnCorrectionsDataVector.h"
+#include "AliQnCorrectionsDetector.h"
+#include "AliQnCorrectionsManager.h"
 
 #include "AliQnCorrectionsHistos.h"
 
@@ -78,17 +78,17 @@
 #include <AliLog.h>
 
 
-ClassImp(QnCorrectionsFillEventTask)
+ClassImp(AliQnCorrectionsFillEventTask)
 
-const Float_t QnCorrectionsFillEventTask::fVZEROSignalThreshold = 0.01;
-const Float_t QnCorrectionsFillEventTask::fTZEROSignalThreshold = 0.01;
-const Float_t QnCorrectionsFillEventTask::fZDCSignalThreshold = 100.0;
-const Float_t QnCorrectionsFillEventTask::fFMDSignalThreshold = 0.01;
+const Float_t AliQnCorrectionsFillEventTask::fVZEROSignalThreshold = 0.01;
+const Float_t AliQnCorrectionsFillEventTask::fTZEROSignalThreshold = 0.01;
+const Float_t AliQnCorrectionsFillEventTask::fZDCSignalThreshold = 100.0;
+const Float_t AliQnCorrectionsFillEventTask::fFMDSignalThreshold = 0.01;
 
-QnCorrectionsFillEventTask::QnCorrectionsFillEventTask() :
-QnCorrectionsVarManagerTask(),
+AliQnCorrectionsFillEventTask::AliQnCorrectionsFillEventTask() :
+AliQnCorrectionsVarManagerTask(),
 fEvent(NULL),
-fQnCorrectionsManager(NULL),
+fAliQnCorrectionsManager(NULL),
 fEventHistos(NULL),
 fDataBank(NULL),
 fUseTPCStandaloneTracks(kFALSE),
@@ -108,10 +108,10 @@ fIsESD(kFALSE)
 
 }
 
-QnCorrectionsFillEventTask::QnCorrectionsFillEventTask(const char *name) :
-QnCorrectionsVarManagerTask(name),
+AliQnCorrectionsFillEventTask::AliQnCorrectionsFillEventTask(const char *name) :
+AliQnCorrectionsVarManagerTask(name),
 fEvent(NULL),
-fQnCorrectionsManager(NULL),
+fAliQnCorrectionsManager(NULL),
 fEventHistos(NULL),
 fDataBank(NULL),
 fUseTPCStandaloneTracks(kFALSE),
@@ -133,7 +133,7 @@ fIsESD(kFALSE)
 
 
 //_____________________________________________________________________________
-QnCorrectionsFillEventTask::~QnCorrectionsFillEventTask()
+AliQnCorrectionsFillEventTask::~AliQnCorrectionsFillEventTask()
 {
   //
   // Destructor
@@ -143,21 +143,21 @@ QnCorrectionsFillEventTask::~QnCorrectionsFillEventTask()
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEventTask::SetDetectors() {
+void AliQnCorrectionsFillEventTask::SetDetectors() {
   //
   // determine which detectors are used (to call only the necessary detector fill functions)
-  if(fQnCorrectionsManager->FindDetector(kTPC  ) != NULL)    fFillTPC = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kVZERO) != NULL)  fFillVZERO = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kTZERO) != NULL)  fFillTZERO = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kZDC  ) != NULL)    fFillZDC = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kFMD  ) != NULL)    fFillFMD = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kFMDraw) != NULL)fFillRawFMD = kTRUE;
-  if(fQnCorrectionsManager->FindDetector(kSPD  ) != NULL)    fFillSPD = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kTPC  ) != NULL)    fFillTPC = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kVZERO) != NULL)  fFillVZERO = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kTZERO) != NULL)  fFillTZERO = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kZDC  ) != NULL)    fFillZDC = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kFMD  ) != NULL)    fFillFMD = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kFMDraw) != NULL)fFillRawFMD = kTRUE;
+  if(fAliQnCorrectionsManager->FindDetector(kSPD  ) != NULL)    fFillSPD = kTRUE;
 }
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEventTask::FillEventData() {
+void AliQnCorrectionsFillEventTask::FillEventData() {
 
   TString aod = "AOD";
   TString esd = "ESD";
@@ -170,7 +170,7 @@ void QnCorrectionsFillEventTask::FillEventData() {
 }
 
 //__________________________________________________________________
-void QnCorrectionsFillEventTask::FillEventInfo() {
+void AliQnCorrectionsFillEventTask::FillEventInfo() {
   //
   // fill event info
   //
@@ -214,7 +214,7 @@ void QnCorrectionsFillEventTask::FillEventInfo() {
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEventTask::FillTrackInfo(AliVParticle* particle) {
+void AliQnCorrectionsFillEventTask::FillTrackInfo(AliVParticle* particle) {
 
   Float_t dcaxy=0.0;
   Float_t dcaz=0.0;
@@ -244,7 +244,7 @@ void QnCorrectionsFillEventTask::FillTrackInfo(AliVParticle* particle) {
 
 
 //__________________________________________________________________
-void QnCorrectionsFillEventTask::FillTrackInfo(AliESDtrack* particle) {
+void AliQnCorrectionsFillEventTask::FillTrackInfo(AliESDtrack* particle) {
 
   Float_t dcaxy=0.0;
   Float_t dcaz=0.0;
@@ -273,7 +273,7 @@ void QnCorrectionsFillEventTask::FillTrackInfo(AliESDtrack* particle) {
 }
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillDetectors(){
+void AliQnCorrectionsFillEventTask::FillDetectors(){
 
   if(fFillTPC)   FillTPC();
   if(fFillVZERO) FillVZERO();
@@ -286,7 +286,7 @@ void QnCorrectionsFillEventTask::FillDetectors(){
 
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillTPC(){
+void AliQnCorrectionsFillEventTask::FillTPC(){
   //
   // fill TPC info
   //
@@ -297,7 +297,7 @@ void QnCorrectionsFillEventTask::FillTPC(){
 
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillAodTPC(){
+void AliQnCorrectionsFillEventTask::FillAodTPC(){
   //
   // fill AOD TPC info
   //
@@ -312,11 +312,11 @@ void QnCorrectionsFillEventTask::FillAodTPC(){
     FillTrackInfo(vTrack);
     fEventHistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kTPC, vTrack->Phi());
+    Int_t nNoOfAcceptedConf = fAliQnCorrectionsManager->AddDataVector(kTPC, vTrack->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
         fEventHistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
+            fAliQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
             fDataBank);
     }
   }
@@ -326,7 +326,7 @@ void QnCorrectionsFillEventTask::FillAodTPC(){
 
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillEsdTPC(){
+void AliQnCorrectionsFillEventTask::FillEsdTPC(){
   //
   // fill ESD TPC info
   //
@@ -347,11 +347,11 @@ void QnCorrectionsFillEventTask::FillEsdTPC(){
     FillTrackInfo(track);
     fEventHistos->FillHistClass("TrackQA_NoCuts", fDataBank);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kTPC, track->Phi());
+    Int_t nNoOfAcceptedConf = fAliQnCorrectionsManager->AddDataVector(kTPC, track->Phi());
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
         fEventHistos->FillHistClass(Form("TrackQA_%s",
-            fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
+            fAliQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kTPC, conf)),
             fDataBank);
     }
 
@@ -362,7 +362,7 @@ void QnCorrectionsFillEventTask::FillEsdTPC(){
 
 
 //_________________________________________________________________________________
-void QnCorrectionsFillEventTask::FillSPDTracklets() {
+void AliQnCorrectionsFillEventTask::FillSPDTracklets() {
   //
   // fill SPD info
   //
@@ -375,17 +375,17 @@ void QnCorrectionsFillEventTask::FillSPDTracklets() {
     fDataBank[kSPDtrackletEta]    = mult->GetEta(iTracklet);
     fDataBank[kSPDtrackletPhi]    = mult->GetPhi(iTracklet);
 
-    Int_t nNoOfAcceptedConf = fQnCorrectionsManager->AddDataVector(kSPD, fDataBank[kSPDtrackletPhi]);
+    Int_t nNoOfAcceptedConf = fAliQnCorrectionsManager->AddDataVector(kSPD, fDataBank[kSPDtrackletPhi]);
 
     for(Int_t conf=0; conf < nNoOfAcceptedConf; conf++){
       fEventHistos->FillHistClass(Form("TrackletQA_%s",
-          fQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kSPD, conf)),
+          fAliQnCorrectionsManager->GetAcceptedDataDetectorConfigurationName(kSPD, conf)),
           fDataBank);
     }
   }
 }
 
-void QnCorrectionsFillEventTask::FillVZERO(){
+void AliQnCorrectionsFillEventTask::FillVZERO(){
   //
   // fill VZERO info
   //
@@ -402,14 +402,14 @@ void QnCorrectionsFillEventTask::FillVZERO(){
   for(Int_t ich=0; ich<64; ich++){
     weight=vzero->GetMultiplicity(ich);
     if(weight > fVZEROSignalThreshold) {
-      fQnCorrectionsManager->AddDataVector(kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+      fAliQnCorrectionsManager->AddDataVector(kVZERO, phi[ich%8], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
     }
   }
 }
 
 
 
-void QnCorrectionsFillEventTask::FillTZERO(){
+void AliQnCorrectionsFillEventTask::FillTZERO(){
   //
   // fill ESD TZERO info
   //
@@ -435,7 +435,7 @@ void QnCorrectionsFillEventTask::FillTZERO(){
   for(Int_t ich=0; ich<24; ich++){
     weight=tzero->GetT0amplitude()[ich];
     if(weight > fTZEROSignalThreshold) {
-      fQnCorrectionsManager->AddDataVector(kTZERO, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+      fAliQnCorrectionsManager->AddDataVector(kTZERO, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
     }
   }
 }
@@ -444,7 +444,7 @@ void QnCorrectionsFillEventTask::FillTZERO(){
 
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillZDC(){
+void AliQnCorrectionsFillEventTask::FillZDC(){
   //
   // fill ZDC info
   //
@@ -471,13 +471,13 @@ void QnCorrectionsFillEventTask::FillZDC(){
     if(ich==5) continue;
     weight=ZDCenergy[ich];
     if(weight > fZDCSignalThreshold) {
-      fQnCorrectionsManager->AddDataVector(kZDC, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
+      fAliQnCorrectionsManager->AddDataVector(kZDC, phi[ich], weight, ich);   // 1st ich is position in array, 2nd ich is channel id
     }
   }
 }
 
 
-void QnCorrectionsFillEventTask::FillFMD()
+void AliQnCorrectionsFillEventTask::FillFMD()
 {
   //
   // fill ESD FMD info
@@ -520,7 +520,7 @@ void QnCorrectionsFillEventTask::FillFMD()
       m     =  d2Ndetadphi.GetBinContent(iEta, iPhi);
       if(m > fFMDSignalThreshold) {
         nFMD++;
-        fQnCorrectionsManager->AddDataVector(kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
+        fAliQnCorrectionsManager->AddDataVector(kFMD, phi, m, iEta*nPhi+iPhi);   // 1st ich is position in array, 2nd ich is channel id
       }
     }
   }
@@ -529,7 +529,7 @@ void QnCorrectionsFillEventTask::FillFMD()
 
 
 //_________________________________
-void QnCorrectionsFillEventTask::FillRawFMD()
+void AliQnCorrectionsFillEventTask::FillRawFMD()
 {
   //
   // fill Raw FMD info
@@ -581,7 +581,7 @@ void QnCorrectionsFillEventTask::FillRawFMD()
           Float_t m = esdFmd->Multiplicity(detectorNumber[detector], ringId[ring], sector, strip);
           if(m !=  AliESDFMD::kInvalidMult) {
             fDataBank[kFMDEta] = eta;
-            fQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, nSectorId);   // 1st ich is position in array, 2nd ich is channel id
+            fAliQnCorrectionsManager->AddDataVector(kFMDraw, phi, m, nSectorId);   // 1st ich is position in array, 2nd ich is channel id
           }
         }  // end loop over strips
         nSectorId++;

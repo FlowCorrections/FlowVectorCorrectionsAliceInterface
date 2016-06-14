@@ -8,17 +8,17 @@
 
 //#include "AliSysInfo.h"
 
-#ifndef ANALYSISTASKQNANALYSIS_H
-#define ANALYSISTASKQNANALYSIS_H
+#ifndef ALIANALYSISTASKQNANALYSIS_H
+#define ALIANALYSISTASKQNANALYSIS_H
 
 #include "TFile.h"
 #include "TTree.h"
 #include "AliAnalysisTaskSE.h"
-#include "QnCorrectionsFillEventTask.h"
+#include "AliQnCorrectionsFillEventTask.h"
 
 class AliAnalysis;
-class QnCorrectionsManager;
-class QnCorrectionsCutsSet;
+class AliQnCorrectionsManager;
+class AliQnCorrectionsCutsSet;
 class AliQnCorrectionsHistos;
 class TList;
 class TProfile;
@@ -26,7 +26,7 @@ class TGraphErrors;
 
 
 //_________________________________________________________
-class AnalysisTaskQnVectorAnalysis : public QnCorrectionsFillEventTask {
+class AliAnalysisTaskQnVectorAnalysis : public AliQnCorrectionsFillEventTask {
 
 public:
 
@@ -75,9 +75,9 @@ public:
     nCorrelationPerDetector
   };
 
-  AnalysisTaskQnVectorAnalysis();
-  AnalysisTaskQnVectorAnalysis(const char *name);
-  virtual ~AnalysisTaskQnVectorAnalysis();
+  AliAnalysisTaskQnVectorAnalysis();
+  AliAnalysisTaskQnVectorAnalysis(const char *name);
+  virtual ~AliAnalysisTaskQnVectorAnalysis();
 
 
   virtual void UserExec(Option_t *);
@@ -85,21 +85,21 @@ public:
   virtual void FinishTaskOutput();
 
   AliQnCorrectionsHistos* GetHistograms() {return fEventPlaneHistos;}
-  QnCorrectionsCutsSet* EventCuts()  const {return fEventCuts;}
+  AliQnCorrectionsCutsSet* EventCuts()  const {return fEventCuts;}
   Bool_t IsEventSelected(Float_t* values);
 
-  void SetEventCuts(QnCorrectionsCutsSet* cuts)  {fEventCuts = cuts;}
+  void SetEventCuts(AliQnCorrectionsCutsSet* cuts)  {fEventCuts = cuts;}
   void SetCentralityVariable(Int_t var) { fCentralityVariable = var; }
   void SetExpectedCorrectionPass(const char *pass) { fExpectedCorrectionPass = pass; }
   void SetAlternativeCorrectionPass(const char *pass) { fAlternativeCorrectionPass = pass; }
 
  private:
   TList* fEventQAList;
-  QnCorrectionsCutsSet *fEventCuts;
+  AliQnCorrectionsCutsSet *fEventCuts;
   AliQnCorrectionsHistos* fEventPlaneHistos;
 
-  AnalysisTaskQnVectorAnalysis(const AnalysisTaskQnVectorAnalysis &c);
-  AnalysisTaskQnVectorAnalysis& operator= (const AnalysisTaskQnVectorAnalysis &c);
+  AliAnalysisTaskQnVectorAnalysis(const AliAnalysisTaskQnVectorAnalysis &c);
+  AliAnalysisTaskQnVectorAnalysis& operator= (const AliAnalysisTaskQnVectorAnalysis &c);
 
   TProfile* fVn[nTrackDetectors*nEPDetectors][kNharmonics][kNcorrelationComponents];
 
@@ -115,7 +115,7 @@ public:
   TString fExpectedCorrectionPass;
   TString fAlternativeCorrectionPass;
 
-  ClassDef(AnalysisTaskQnVectorAnalysis, 1);
+  ClassDef(AliAnalysisTaskQnVectorAnalysis, 1);
 };
 
 #endif

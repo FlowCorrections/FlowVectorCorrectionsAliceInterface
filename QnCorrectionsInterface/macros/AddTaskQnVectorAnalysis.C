@@ -38,29 +38,29 @@
 
 #ifdef __ECLIPSE_IDE
 
-#include "AnalysisTaskQnVectorAnalysis.h"
+#include "AliAnalysisTaskQnVectorAnalysis.h"
 
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
 
-#define VAR AnalysisTaskQnVectorAnalysis
+#define VAR AliAnalysisTaskQnVectorAnalysis
 
 void DefineHistogramsQnAnalysis(AliQnCorrectionsHistos* histos, TString histClass);
 
 
 AliAnalysisTask* AddTaskQnVectorAnalysis(Bool_t bUseMultiplicity, Bool_t b2015DataSet) {
 
-  AnalysisTaskQnVectorAnalysis* taskQn = new AnalysisTaskQnVectorAnalysis("QnAnalysis");
+  AliAnalysisTaskQnVectorAnalysis* taskQn = new AliAnalysisTaskQnVectorAnalysis("QnAnalysis");
 
   /* let's establish the event cuts for event selection */
-  QnCorrectionsCutsSet *eventCuts = new QnCorrectionsCutsSet();
-  eventCuts->Add(new QnCorrectionsCutWithin(VAR::kVtxZ,zvertexMin,zvertexMax));
+  AliQnCorrectionsCutsSet *eventCuts = new AliQnCorrectionsCutsSet();
+  eventCuts->Add(new AliQnCorrectionsCutWithin(VAR::kVtxZ,zvertexMin,zvertexMax));
   if (bUseMultiplicity) {
     varForEventMultiplicity = VAR::kVZEROMultPercentile;
   }
   else {
     varForEventMultiplicity = VAR::kCentVZERO;
   }
-  eventCuts->Add(new QnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
+  eventCuts->Add(new AliQnCorrectionsCutWithin(varForEventMultiplicity,centralityMin,centralityMax));
   taskQn->SetEventCuts(eventCuts);
   taskQn->SetCentralityVariable(varForEventMultiplicity);
 

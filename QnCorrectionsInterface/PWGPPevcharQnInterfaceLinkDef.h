@@ -4,10 +4,10 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class AnalysisTaskFlowVectorCorrections+;
-#pragma link C++ class AnalysisTaskQnVectorAnalysis+;
-#pragma link C++ class QnCorrectionsFillEventTask+;
+#pragma link C++ class AliAnalysisTaskFlowVectorCorrections+;
+#pragma link C++ class AliAnalysisTaskQnVectorAnalysis+;
+#pragma link C++ class AliQnCorrectionsFillEventTask+;
 #pragma link C++ class AliQnCorrectionsHistos+;
-#pragma link C++ class QnCorrectionsVarManagerTask+;
+#pragma link C++ class AliQnCorrectionsVarManagerTask+;
 
 #endif

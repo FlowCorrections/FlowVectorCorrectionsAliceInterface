@@ -19,7 +19,7 @@
 #include "TSystem.h"
 #include "TChain.h"
 #include "AliAnalysisTaskSE.h"
-#include "AnalysisTaskFlowVectorCorrections.h"
+#include "AliAnalysisTaskFlowVectorCorrections.h"
 #include "AliAnalysisTask.h"
 #include "AliAnalysisManager.h"
 #include "AliAODInputHandler.h"
@@ -184,7 +184,7 @@ void runAnalysis(const char *sRunMode = "full", Bool_t gridMerge = kTRUE) {
 
   if (bRunQnVectorAnalysisTask) {
     gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EVCHAR/FlowVectorCorrections/QnCorrectionsInterface/macros/AddTaskQnVectorAnalysis.C");
-    AnalysisTaskQnVectorAnalysis* taskQn = AddTaskQnVectorAnalysis(bUseMultiplicity, b2015DataSet);
+    AliAnalysisTaskQnVectorAnalysis* taskQn = AddTaskQnVectorAnalysis(bUseMultiplicity, b2015DataSet);
     taskQn->SetExpectedCorrectionPass(szCorrectionPass.Data());
     taskQn->SetAlternativeCorrectionPass(szAltCorrectionPass.Data());
 

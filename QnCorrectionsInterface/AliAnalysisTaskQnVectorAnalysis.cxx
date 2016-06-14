@@ -23,20 +23,20 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <TList.h>
 #include <TGraphErrors.h>
 #include <AliLog.h>
-#include "QnCorrectionsCutsSet.h"
-#include "QnCorrectionsManager.h"
+#include "AliQnCorrectionsCutsSet.h"
+#include "AliQnCorrectionsManager.h"
 #include "AliQnCorrectionsHistos.h"
-#include "AnalysisTaskQnVectorAnalysis.h"
-#include "QnCorrectionsQnVector.h"
+#include "AliAnalysisTaskQnVectorAnalysis.h"
+#include "AliQnCorrectionsQnVector.h"
 
 // make a change
 
-ClassImp(AnalysisTaskQnVectorAnalysis)
+ClassImp(AliAnalysisTaskQnVectorAnalysis)
 
 /* names for the different TProfile */
-TString namesQnTrackDetectors[AnalysisTaskQnVectorAnalysis::nTrackDetectors] = {"TPC","SPD"};
-TString namesQnEPDetectors[AnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","T0A","T0C","FMDA","FMDC"/*,"rawFMDA","rawFMDC"*/};
-TString namesQnComponents[AnalysisTaskQnVectorAnalysis::kNcorrelationComponents] = {"XX","XY","YX","YY"};
+TString namesQnTrackDetectors[AliAnalysisTaskQnVectorAnalysis::nTrackDetectors] = {"TPC","SPD"};
+TString namesQnEPDetectors[AliAnalysisTaskQnVectorAnalysis::nEPDetectors] = {"V0A","V0C","T0A","T0C","FMDA","FMDC"/*,"rawFMDA","rawFMDC"*/};
+TString namesQnComponents[AliAnalysisTaskQnVectorAnalysis::kNcorrelationComponents] = {"XX","XY","YX","YY"};
 
 /* centrality binning */
 const Int_t nQnCentBins = 11;
@@ -44,8 +44,8 @@ Double_t centQnBinning[nQnCentBins+1] = {0.0, 5.0, 10.0, 20.0, 30.0, 40.0, 50.0,
 Double_t centQnBinningmid[nQnCentBins] = {2.5, 7.5, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0, 95.0};
 
 //_________________________________________________________________________________
-AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis() :
-        QnCorrectionsFillEventTask(),
+AliAnalysisTaskQnVectorAnalysis::AliAnalysisTaskQnVectorAnalysis() :
+        AliQnCorrectionsFillEventTask(),
   fEventQAList(0x0),
   fEventCuts(NULL),
   fEventPlaneHistos(0x0),
@@ -66,8 +66,8 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis() :
 }
 
 //_________________________________________________________________________________
-AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
-        QnCorrectionsFillEventTask(name),
+AliAnalysisTaskQnVectorAnalysis::AliAnalysisTaskQnVectorAnalysis(const char* name) :
+        AliQnCorrectionsFillEventTask(name),
   fEventQAList(0x0),
   fEventCuts(0x0),
   fEventPlaneHistos(0x0),
@@ -240,7 +240,7 @@ AnalysisTaskQnVectorAnalysis::AnalysisTaskQnVectorAnalysis(const char* name) :
   DefineOutput(1, TList::Class());// Event QA histograms
 }
 
-AnalysisTaskQnVectorAnalysis::~AnalysisTaskQnVectorAnalysis() {
+AliAnalysisTaskQnVectorAnalysis::~AliAnalysisTaskQnVectorAnalysis() {
   /* clean up everything before leaving */
   for(Int_t iTrkDetector=0; iTrkDetector < nTrackDetectors; iTrkDetector++) {
     for (Int_t iEPDetector=0; iEPDetector < nEPDetectors; iEPDetector++) {
@@ -266,7 +266,7 @@ AnalysisTaskQnVectorAnalysis::~AnalysisTaskQnVectorAnalysis() {
   }
 }
 //_________________________________________________________________________________
-void AnalysisTaskQnVectorAnalysis::UserCreateOutputObjects()
+void AliAnalysisTaskQnVectorAnalysis::UserCreateOutputObjects()
 {
   //
   // Add all histogram manager histogram lists to the output TList
@@ -279,7 +279,7 @@ void AnalysisTaskQnVectorAnalysis::UserCreateOutputObjects()
 
 
 //________________________________________________________________________________________________________
-void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
+void AliAnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
   //
   // Main loop. Called for every event
   //
@@ -303,17 +303,17 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
 
   TList* newTrkQvecList[nTrackDetectors] = {NULL};
   TList* newEPQvecList[nEPDetectors] = {NULL};
-  QnCorrectionsQnVector* newTrk_qvec[nTrackDetectors] = {NULL};
-  QnCorrectionsQnVector* newEP_qvec[nEPDetectors] = {NULL};
+  AliQnCorrectionsQnVector* newTrk_qvec[nTrackDetectors] = {NULL};
+  AliQnCorrectionsQnVector* newEP_qvec[nEPDetectors] = {NULL};
 
 
   /* get data structures for the different track detectors */
   for (Int_t iTrk = 0; iTrk < nTrackDetectors; iTrk++) {
     newTrkQvecList[iTrk] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s", fTrackDetectorNameInFile[iTrk].Data())));
     if (newTrkQvecList[iTrk] == NULL) continue; /* the detector was not there */
-    newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fExpectedCorrectionPass.Data());
+    newTrk_qvec[iTrk] = (AliQnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fExpectedCorrectionPass.Data());
     if (newTrk_qvec[iTrk] == NULL) {
-      newTrk_qvec[iTrk] = (QnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fAlternativeCorrectionPass.Data());
+      newTrk_qvec[iTrk] = (AliQnCorrectionsQnVector*) newTrkQvecList[iTrk]->FindObject(fAlternativeCorrectionPass.Data());
       if (newTrk_qvec[iTrk] == NULL) continue; /* neither the expected nor the alternative were there */
     }
   }
@@ -322,9 +322,9 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
   for (Int_t iEP = 0; iEP < nEPDetectors; iEP++) {
     newEPQvecList[iEP] = dynamic_cast<TList*> (qnlist->FindObject(Form("%s",fEPDetectorNameInFile[iEP].Data())));
     if (newEPQvecList[iEP] == NULL) continue; /* the detector was not there */
-    newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fExpectedCorrectionPass.Data());
+    newEP_qvec[iEP] = (AliQnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fExpectedCorrectionPass.Data());
     if (newEP_qvec[iEP] == NULL) {
-      newEP_qvec[iEP] = (QnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fAlternativeCorrectionPass.Data());
+      newEP_qvec[iEP] = (AliQnCorrectionsQnVector*) newEPQvecList[iEP]->FindObject(fAlternativeCorrectionPass.Data());
       if (newEP_qvec[iEP] == NULL) continue; /* neither the expected nor the alternative were there */
     }
   }
@@ -417,7 +417,7 @@ void AnalysisTaskQnVectorAnalysis::UserExec(Option_t *){
 
 
 //__________________________________________________________________
-void AnalysisTaskQnVectorAnalysis::FinishTaskOutput()
+void AliAnalysisTaskQnVectorAnalysis::FinishTaskOutput()
 {
   //
   // Finish Task
@@ -457,7 +457,7 @@ void AnalysisTaskQnVectorAnalysis::FinishTaskOutput()
 
 
 //__________________________________________________________________
-Bool_t AnalysisTaskQnVectorAnalysis::IsEventSelected(Float_t* values) {
+Bool_t AliAnalysisTaskQnVectorAnalysis::IsEventSelected(Float_t* values) {
   if(!fEventCuts) return kTRUE;
   return fEventCuts->IsSelected(values);
 }

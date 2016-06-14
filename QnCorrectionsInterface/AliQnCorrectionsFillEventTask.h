@@ -1,5 +1,5 @@
-#ifndef QNCORRECTIONS_FILLEVENT_H
-#define QNCORRECTIONS_FILLEVENT_H
+#ifndef ALIALIQNCORRECTIONS_FILLEVENT_H
+#define ALIALIQNCORRECTIONS_FILLEVENT_H
 
 /***************************************************************************
  * Package:       FlowVectorCorrections ALICE glue                         *
@@ -17,19 +17,19 @@
 #include <AliInputEventHandler.h>
 #include <AliESDInputHandler.h>
 
-#include "QnCorrectionsManager.h"
-#include "QnCorrectionsVarManagerTask.h"
+#include "AliQnCorrectionsManager.h"
+#include "AliQnCorrectionsVarManagerTask.h"
 #include "AliQnCorrectionsHistos.h"
 
 class AliESDtrack;
 class AliVParticle;
 
-class QnCorrectionsFillEventTask : public QnCorrectionsVarManagerTask {
+class AliQnCorrectionsFillEventTask : public AliQnCorrectionsVarManagerTask {
 public:
 
-  QnCorrectionsFillEventTask();
-  QnCorrectionsFillEventTask(const char *name);
-  ~QnCorrectionsFillEventTask();
+  AliQnCorrectionsFillEventTask();
+  AliQnCorrectionsFillEventTask(const char *name);
+  ~AliQnCorrectionsFillEventTask();
 
 public:
 
@@ -63,12 +63,12 @@ protected:
 
 private:
 
-  QnCorrectionsFillEventTask(const QnCorrectionsFillEventTask &c);
-  QnCorrectionsFillEventTask& operator= (const QnCorrectionsFillEventTask &c);
+  AliQnCorrectionsFillEventTask(const AliQnCorrectionsFillEventTask &c);
+  AliQnCorrectionsFillEventTask& operator= (const AliQnCorrectionsFillEventTask &c);
 
 protected:
   AliVEvent* fEvent;
-  QnCorrectionsManager *fQnCorrectionsManager;
+  AliQnCorrectionsManager *fAliQnCorrectionsManager;
   AliQnCorrectionsHistos* fEventHistos;
   Float_t *fDataBank;                             //!<! The event variables values data bank. Transient!
 private:
@@ -88,7 +88,7 @@ private:
   Bool_t fIsAOD;
   Bool_t fIsESD;
 
-  ClassDef(QnCorrectionsFillEventTask, 1);
+  ClassDef(AliQnCorrectionsFillEventTask, 1);
 };
 
 #endif

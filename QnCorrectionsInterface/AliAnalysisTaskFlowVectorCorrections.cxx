@@ -20,18 +20,18 @@ Instructions in AddTask_EPcorrectionsExample.C
 #include <AliAnalysisManager.h>
 #include <AliCentrality.h>
 #include <AliESDEvent.h>
-#include "QnCorrectionsCutsSet.h"
-#include "QnCorrectionsManager.h"
+#include "AliQnCorrectionsCutsSet.h"
+#include "AliQnCorrectionsManager.h"
 #include "AliQnCorrectionsHistos.h"
 #include "AliLog.h"
 
-#include "AnalysisTaskFlowVectorCorrections.h"
+#include "AliAnalysisTaskFlowVectorCorrections.h"
 
-ClassImp(AnalysisTaskFlowVectorCorrections)
+ClassImp(AliAnalysisTaskFlowVectorCorrections)
 
 
-AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections() :
-QnCorrectionsFillEventTask(),
+AliAnalysisTaskFlowVectorCorrections::AliAnalysisTaskFlowVectorCorrections() :
+AliQnCorrectionsFillEventTask(),
 fCalibrateByRun(kTRUE),
 fCalibrationFile(""),
 fCalibrationFileSource(CALIBSRC_local),
@@ -54,8 +54,8 @@ fOutputSlotTree(-1)
 }
 
 //_________________________________________________________________________________
-AnalysisTaskFlowVectorCorrections::AnalysisTaskFlowVectorCorrections(const char* name) :
-    QnCorrectionsFillEventTask(name),
+AliAnalysisTaskFlowVectorCorrections::AliAnalysisTaskFlowVectorCorrections(const char* name) :
+    AliQnCorrectionsFillEventTask(name),
 fCalibrateByRun(kTRUE),
 fCalibrationFile(""),
 fCalibrationFileSource(CALIBSRC_local),
@@ -84,9 +84,9 @@ fOutputSlotTree(-1)
 }
 
 //_________________________________________________________________________________
-void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
+void AliAnalysisTaskFlowVectorCorrections::DefineInOutput(){
 
-  if(!fQnCorrectionsManager) {
+  if(!fAliQnCorrectionsManager) {
     AliFatal("First configure QnCorrecionsManager!!\n");
     return;
   }
@@ -94,17 +94,17 @@ void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
   DefineInput(0,TChain::Class());
   Int_t outputSlot = 1;
   // Calibration histograms
-  if (fQnCorrectionsManager->GetShouldFillOutputHistograms()) {
+  if (fAliQnCorrectionsManager->GetShouldFillOutputHistograms()) {
     DefineOutput(outputSlot, TList::Class());
     fOutputSlotHistQn = outputSlot++;
   }
   // Calibrated qvector tree
-  if (fQnCorrectionsManager->GetShouldFillQnVectorTree()) {
+  if (fAliQnCorrectionsManager->GetShouldFillQnVectorTree()) {
     DefineOutput(outputSlot, TTree::Class());
     fOutputSlotTree = outputSlot++;
   }
   // Qvector QA histograms
-  if (fQnCorrectionsManager->GetShouldFillQAHistograms()) {
+  if (fAliQnCorrectionsManager->GetShouldFillQAHistograms()) {
     DefineOutput(outputSlot, TList::Class());
     fOutputSlotHistQA = outputSlot++;
   }
@@ -120,7 +120,7 @@ void AnalysisTaskFlowVectorCorrections::DefineInOutput(){
   }
 }
 
-void AnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(CalibrationFileSource source, const char *filename) {
+void AliAnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(CalibrationFileSource source, const char *filename) {
   TFile *calibfile = NULL;
 
   fCalibrationFile = filename;
@@ -135,7 +135,7 @@ void AnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(Calibration
     }
     if (calibfile != NULL && calibfile->IsOpen()) {
       AliInfo(Form("\t Calibration file %s open", fCalibrationFile.Data()));
-      fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
       calibfile->Close();
     }
     break;
@@ -150,7 +150,7 @@ void AnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(Calibration
 }
 
 //_________________________________________________________________________________
-void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
+void AliAnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
 {
   //
   // Add all histogram manager histogram lists to the output TList
@@ -171,7 +171,7 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
     }
     if (calibfile != NULL && calibfile->IsOpen()) {
       AliInfo(Form("\t Calibration file %s open", fCalibrationFile.Data()));
-      fQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
       calibfile->Close();
     }
     break;
@@ -179,14 +179,14 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
     break;
   }
 
-  fQnCorrectionsManager->InitializeQnCorrectionsFramework();
+  fAliQnCorrectionsManager->InitializeQnCorrectionsFramework();
 
-  if (fQnCorrectionsManager->GetShouldFillOutputHistograms())
-    PostData(fOutputSlotHistQn, fQnCorrectionsManager->GetOutputHistogramsList());
-  if (fQnCorrectionsManager->GetShouldFillQnVectorTree())
-    PostData(fOutputSlotTree, fQnCorrectionsManager->GetQnVectorTree());
-  if (fQnCorrectionsManager->GetShouldFillQAHistograms())
-    PostData(fOutputSlotHistQA, fQnCorrectionsManager->GetQAHistogramsList());
+  if (fAliQnCorrectionsManager->GetShouldFillOutputHistograms())
+    PostData(fOutputSlotHistQn, fAliQnCorrectionsManager->GetOutputHistogramsList());
+  if (fAliQnCorrectionsManager->GetShouldFillQnVectorTree())
+    PostData(fOutputSlotTree, fAliQnCorrectionsManager->GetQnVectorTree());
+  if (fAliQnCorrectionsManager->GetShouldFillQAHistograms())
+    PostData(fOutputSlotHistQA, fAliQnCorrectionsManager->GetQAHistogramsList());
   if (fFillEventQA)
     PostData(fOutputSlotEventQA, fEventQAList);
 }
@@ -194,20 +194,20 @@ void AnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
 /// The current run has changed. Usually it is only sent before
 /// the first event is handled.
 /// Notify the framework manager that the current label has changed.
-void AnalysisTaskFlowVectorCorrections::NotifyRun() {
+void AliAnalysisTaskFlowVectorCorrections::NotifyRun() {
 
-  if (fCalibrateByRun) fQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
+  if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
 }
 
-void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
+void AliAnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   //
   // Main loop. Called for every event
   //
 
   fEvent = InputEvent();
-  fQnCorrectionsManager->ClearEvent();
+  fAliQnCorrectionsManager->ClearEvent();
 
-  fDataBank = fQnCorrectionsManager->GetDataContainer();
+  fDataBank = fAliQnCorrectionsManager->GetDataContainer();
 
   FillEventData();
 
@@ -216,20 +216,20 @@ void AnalysisTaskFlowVectorCorrections::UserExec(Option_t *){
   if (IsEventSelected(fDataBank)) {
     fEventHistos->FillHistClass("Event_Analysis", fDataBank);
 
-    fQnCorrectionsManager->ProcessEvent();
+    fAliQnCorrectionsManager->ProcessEvent();
   }  // end if event selection
 
   if(fProvideQnVectorsList)
-    PostData(fOutputSlotQnVectorsList, fQnCorrectionsManager->GetQnVectorList());
+    PostData(fOutputSlotQnVectorsList, fAliQnCorrectionsManager->GetQnVectorList());
 }  // end loop over events
 
 
-void AnalysisTaskFlowVectorCorrections::FinishTaskOutput()
+void AliAnalysisTaskFlowVectorCorrections::FinishTaskOutput()
 {
   //
   // Finish Task
   //
-  fQnCorrectionsManager->FinalizeQnCorrectionsFramework();
+  fAliQnCorrectionsManager->FinalizeQnCorrectionsFramework();
 
   THashList* hList = (THashList*) fEventHistos->HistList();
   for(Int_t i=0; i<hList->GetEntries(); ++i) {
@@ -238,7 +238,7 @@ void AnalysisTaskFlowVectorCorrections::FinishTaskOutput()
   }
 }
 
-Bool_t AnalysisTaskFlowVectorCorrections::IsEventSelected(Float_t* values) {
+Bool_t AliAnalysisTaskFlowVectorCorrections::IsEventSelected(Float_t* values) {
 
   if(!fEventCuts) return kTRUE;
   return fEventCuts->IsSelected(values);

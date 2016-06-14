@@ -1,5 +1,5 @@
-#ifndef QNCORRECTIONS_VARMANAGER_H
-#define QNCORRECTIONS_VARMANAGER_H
+#ifndef ALIALIQNCORRECTIONS_VARMANAGER_H
+#define ALIALIQNCORRECTIONS_VARMANAGER_H
 
 /***************************************************************************
  * Package:       FlowVectorCorrections ALICE glue                         *
@@ -18,12 +18,12 @@
 
 class AliVEvent;
 
-class QnCorrectionsVarManagerTask : public AliAnalysisTaskSE {
+class AliQnCorrectionsVarManagerTask : public AliAnalysisTaskSE {
 
 public:
-  QnCorrectionsVarManagerTask();
-  QnCorrectionsVarManagerTask(const char *name);
-  virtual ~QnCorrectionsVarManagerTask();
+  AliQnCorrectionsVarManagerTask();
+  AliQnCorrectionsVarManagerTask(const char *name);
+  virtual ~AliQnCorrectionsVarManagerTask();
 
   enum Detector {
     kVZERO=0,
@@ -352,20 +352,20 @@ public:
 
 private:
 
-  QnCorrectionsVarManagerTask(const QnCorrectionsVarManagerTask &c);
-  QnCorrectionsVarManagerTask & operator= (const QnCorrectionsVarManagerTask &c);
+  AliQnCorrectionsVarManagerTask(const AliQnCorrectionsVarManagerTask &c);
+  AliQnCorrectionsVarManagerTask & operator= (const AliQnCorrectionsVarManagerTask &c);
 
-  ClassDef(QnCorrectionsVarManagerTask, 1);
+  ClassDef(AliQnCorrectionsVarManagerTask, 1);
 };  
 
-inline const Char_t* QnCorrectionsVarManagerTask::VarName(Int_t var) const {
+inline const Char_t* AliQnCorrectionsVarManagerTask::VarName(Int_t var) const {
   if ((!(var < 0)) && (var < kNVars))
     return fVariableNames[var][0];
   else
     return "";
 }
 
-inline const Char_t* QnCorrectionsVarManagerTask::VarUnits(Int_t var) const {
+inline const Char_t* AliQnCorrectionsVarManagerTask::VarUnits(Int_t var) const {
   if ((!(var < 0)) && (var < kNVars))
     return fVariableNames[var][1];
   else

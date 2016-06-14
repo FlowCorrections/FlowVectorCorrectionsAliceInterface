@@ -36,11 +36,11 @@
 #include <TMath.h>
 
 #include "AliAnalysisTaskSE.h"
-#include "QnCorrectionsVarManagerTask.h"
+#include "AliQnCorrectionsVarManagerTask.h"
 
-ClassImp(QnCorrectionsVarManagerTask)
+ClassImp(AliQnCorrectionsVarManagerTask)
 
-const Char_t* QnCorrectionsVarManagerTask::fTrackingFlagNames[] = {
+const Char_t* AliQnCorrectionsVarManagerTask::fTrackingFlagNames[] = {
     "kITSin", "kITSout", "kITSrefit", "kITSpid",
     "kTPCin", "kTPCout", "kTPCrefit", "kTPCpid",
     "kTRDin", "kTRDout", "kTRDrefit", "kTRDpid",
@@ -57,7 +57,7 @@ const Char_t* QnCorrectionsVarManagerTask::fTrackingFlagNames[] = {
 };
 
 
-const Char_t* QnCorrectionsVarManagerTask::fOfflineTriggerNames[64] = {
+const Char_t* AliQnCorrectionsVarManagerTask::fOfflineTriggerNames[64] = {
     "MB",              "INT7",              "MUON", "HighMult",    "EMC1", "CINT5",       "CMUS5/MUSPB",      "MUSH7/MUSHPB",
     "MUL7/MuonLikePB", "MUU7/MuonUnlikePB", "EMC7", "MUS7",        "PHI1", "PHI7/PHOSPb", "EMCEJE",           "EMCEGA",
     "Central",         "SemiCentral",       "DG5",  "ZED",         "SPI7", "CINT8",       "MuonSingleLowPt8", "MuonSingleHighPt8",
@@ -69,7 +69,7 @@ const Char_t* QnCorrectionsVarManagerTask::fOfflineTriggerNames[64] = {
 };
 
 //__________________________________________________________________
-void QnCorrectionsVarManagerTask::SetDefaultVarNames() {
+void AliQnCorrectionsVarManagerTask::SetDefaultVarNames() {
   fVariableNames[kRandom1][0]              = "User";                            fVariableNames[kRandom1][1] = "";
   fVariableNames[kRunNo][0]                = "Run number";                      fVariableNames[kRunNo][1] = "";
   fVariableNames[kLHCFillNumber][0]        = "LHC fill number";                 fVariableNames[kLHCFillNumber][1] = ""; 
@@ -235,7 +235,7 @@ void QnCorrectionsVarManagerTask::SetDefaultVarNames() {
 
 
 
-QnCorrectionsVarManagerTask::QnCorrectionsVarManagerTask():
+AliQnCorrectionsVarManagerTask::AliQnCorrectionsVarManagerTask():
     AliAnalysisTaskSE()
 {
   //
@@ -244,7 +244,7 @@ QnCorrectionsVarManagerTask::QnCorrectionsVarManagerTask():
   SetDefaultVarNames();
 }
 
-QnCorrectionsVarManagerTask::QnCorrectionsVarManagerTask(const char *name):
+AliQnCorrectionsVarManagerTask::AliQnCorrectionsVarManagerTask(const char *name):
     AliAnalysisTaskSE(name)
 {
   //
@@ -253,7 +253,7 @@ QnCorrectionsVarManagerTask::QnCorrectionsVarManagerTask(const char *name):
   SetDefaultVarNames();
 }
 
-QnCorrectionsVarManagerTask::~QnCorrectionsVarManagerTask()
+AliQnCorrectionsVarManagerTask::~AliQnCorrectionsVarManagerTask()
 {
   //
   // Default destructor

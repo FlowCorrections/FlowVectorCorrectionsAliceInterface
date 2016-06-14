@@ -1,5 +1,5 @@
-#ifndef ANALYSISTASKFLOWVECTORCORRECTION_H
-#define ANALYSISTASKFLOWVECTORCORRECTION_H
+#ifndef ALIANALYSISTASKFLOWVECTORCORRECTION_H
+#define ALIANALYSISTASKFLOWVECTORCORRECTION_H
 
 /***************************************************************************
  * Package:       FlowVectorCorrections ALICE glue                         *
@@ -17,14 +17,14 @@
 #include "TTree.h"
 
 #include "AliAnalysisTaskSE.h"
-#include "QnCorrectionsFillEventTask.h"
+#include "AliQnCorrectionsFillEventTask.h"
 
 class AliAnalysis;
-class QnCorrectionsManager;
-class QnCorrectionsCutsSet;
+class AliQnCorrectionsManager;
+class AliQnCorrectionsCutsSet;
 class AliQnCorrectionsHistos;
 
-class AnalysisTaskFlowVectorCorrections : public QnCorrectionsFillEventTask {
+class AliAnalysisTaskFlowVectorCorrections : public AliQnCorrectionsFillEventTask {
 
 public:
   /// \enum CalibrationFileSource
@@ -35,9 +35,9 @@ public:
   };
 
 
-  AnalysisTaskFlowVectorCorrections();
-  AnalysisTaskFlowVectorCorrections(const char *name);
-  virtual ~AnalysisTaskFlowVectorCorrections(){}
+  AliAnalysisTaskFlowVectorCorrections();
+  AliAnalysisTaskFlowVectorCorrections(const char *name);
+  virtual ~AliAnalysisTaskFlowVectorCorrections(){}
 
 
   virtual void UserExec(Option_t *);
@@ -47,19 +47,19 @@ public:
 
 
   void SetRunByRunCalibration(Bool_t enable) { fCalibrateByRun = enable; }
-  void SetQnCorrectionsManager(QnCorrectionsManager* QnManager)  {fQnCorrectionsManager = QnManager;}
-  void SetEventCuts(QnCorrectionsCutsSet *cuts)  {fEventCuts = cuts;}
+  void SetAliQnCorrectionsManager(AliQnCorrectionsManager* QnManager)  {fAliQnCorrectionsManager = QnManager;}
+  void SetEventCuts(AliQnCorrectionsCutsSet *cuts)  {fEventCuts = cuts;}
   void SetFillExchangeContainerWithQvectors(Bool_t enable = kTRUE) { fProvideQnVectorsList = enable; }
   void SetFillEventQA(Bool_t enable = kTRUE) { fFillEventQA = enable; }
   void SetTrigger(UInt_t triggerbit) {fTriggerMask=triggerbit;}
   void AddHistogramClass(TString hist) {fQAhistograms+=hist+";";}
   void SetCalibrationHistogramsFile(CalibrationFileSource source, const char *filename);
   void DefineInOutput();
-  void SetRunsLabels(TObjArray *runsList) { fQnCorrectionsManager->SetListOfProcessesNames(runsList); }
+  void SetRunsLabels(TObjArray *runsList) { fAliQnCorrectionsManager->SetListOfProcessesNames(runsList); }
 
-  QnCorrectionsManager *GetQnCorrectionsManager() {return fQnCorrectionsManager;}
+  AliQnCorrectionsManager *GetAliQnCorrectionsManager() {return fAliQnCorrectionsManager;}
   AliQnCorrectionsHistos* GetEventHistograms() {return fEventHistos;}
-  QnCorrectionsCutsSet* GetEventCuts()  const {return fEventCuts;}
+  AliQnCorrectionsCutsSet* GetEventCuts()  const {return fEventCuts;}
   Int_t OutputSlotEventQA()        const {return fOutputSlotEventQA;}
   Int_t OutputSlotHistQA()        const {return fOutputSlotHistQA;}
   Int_t OutputSlotHistQn()        const {return fOutputSlotHistQn;}
@@ -75,7 +75,7 @@ private:
   CalibrationFileSource fCalibrationFileSource;   ///< the source of the calibration file
   UInt_t fTriggerMask;
   TList* fEventQAList;
-  QnCorrectionsCutsSet *fEventCuts;
+  AliQnCorrectionsCutsSet *fEventCuts;
   TString fLabel;
   TString fQAhistograms;
   Bool_t fFillEventQA;
@@ -86,12 +86,12 @@ private:
   Int_t fOutputSlotQnVectorsList;
   Int_t fOutputSlotTree;
 
-  AnalysisTaskFlowVectorCorrections(const AnalysisTaskFlowVectorCorrections &c);
-  AnalysisTaskFlowVectorCorrections& operator= (const AnalysisTaskFlowVectorCorrections &c);
+  AliAnalysisTaskFlowVectorCorrections(const AliAnalysisTaskFlowVectorCorrections &c);
+  AliAnalysisTaskFlowVectorCorrections& operator= (const AliAnalysisTaskFlowVectorCorrections &c);
 
-  ClassDef(AnalysisTaskFlowVectorCorrections, 3);
+  ClassDef(AliAnalysisTaskFlowVectorCorrections, 3);
 };
 
-#endif // ANALYSISTASKFLOWVECTORCORRECTION_H
+#endif // ALIANALYSISTASKFLOWVECTORCORRECTION_H
 
 
