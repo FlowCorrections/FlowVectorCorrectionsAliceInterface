@@ -60,6 +60,7 @@
 #include "AliQnCorrectionsInputGainEqualization.h"
 #include "AliQnCorrectionsQnVectorRecentering.h"
 #include "AliQnCorrectionsQnVectorAlignment.h"
+#include "AliQnCorrectionsQnVectorTwistAndRescale.h"
 #include "AliAnalysisTaskFlowVectorCorrections.h"
 
 #endif // ifdef __ECLIPSE_IDE declaration and includes for the ECLIPSE IDE
@@ -297,6 +298,14 @@ void AddVZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   /* lets configrure the QA histograms */
   VZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROAconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleA = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleA->SetApplyTwist(kTRUE);
+  twScaleA->SetApplyRescale(kTRUE);
+  twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("VZEROC","TPC");
+  /* now we add it to the detector configuration */
+  VZEROAconf->AddCorrectionOnQnVector(twScaleA);
 
   /* add the configuration to the detector */
   VZERO->AddDetectorConfiguration(VZEROAconf);
@@ -329,6 +338,14 @@ void AddVZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   /* lets configrure the QA histograms */
   VZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   VZEROCconf->SetQAMultiplicityAxis(100, 0.0, 500.0);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleC = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleC->SetApplyTwist(kTRUE);
+  twScaleC->SetApplyRescale(kTRUE);
+  twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("VZEROA","TPC");
+  /* now we add it to the detector configuration */
+  VZEROCconf->AddCorrectionOnQnVector(twScaleC);
 
   /* add the configuration to the detector */
   VZERO->AddDetectorConfiguration(VZEROCconf);
@@ -368,6 +385,12 @@ void AddTPC(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   TPCconf->AddCorrectionOnQnVector(new AliQnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector twist correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScale = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScale->SetApplyTwist(kTRUE);
+  twScale->SetApplyRescale(kFALSE);
+  twScale->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_doubleHarmonic);
+  TPCconf->AddCorrectionOnQnVector(twScale);
 
   /* define the cuts to apply */
   AliAnalysisManager *mgr = AliAnalysisManager::GetAnalysisManager();
@@ -439,6 +462,12 @@ void AddSPD(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   /* let's add the Q vector recentering correction step */
   /* we don't configure it, so we create it anonymous */
   SPDconf->AddCorrectionOnQnVector(new AliQnCorrectionsQnVectorRecentering());
+  /* let's add the Q vector twist correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScale = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScale->SetApplyTwist(kTRUE);
+  twScale->SetApplyRescale(kFALSE);
+  twScale->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_doubleHarmonic);
+  SPDconf->AddCorrectionOnQnVector(twScale);
 
   /* add the configuration to the detector */
   SPD->AddDetectorConfiguration(SPDconf);
@@ -504,6 +533,14 @@ void AddTZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   /* let's configure the QA histograms */
   TZEROAconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROAconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleA = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleA->SetApplyTwist(kTRUE);
+  twScaleA->SetApplyRescale(kTRUE);
+  twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("TZEROC","TPC");
+  /* now we add it to the detector configuration */
+  TZEROAconf->AddCorrectionOnQnVector(twScaleA);
 
   /* add the configuration to the detector */
   TZERO->AddDetectorConfiguration(TZEROAconf);
@@ -536,6 +573,14 @@ void AddTZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   /* let's configure the QA histograms */
   TZEROCconf->SetQACentralityVar(varForEventMultiplicity);
   TZEROCconf->SetQAMultiplicityAxis(100, 0.0, 150.0);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleC = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleC->SetApplyTwist(kTRUE);
+  twScaleC->SetApplyRescale(kTRUE);
+  twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("TZEROA","TPC");
+  /* now we add it to the detector configuration */
+  TZEROCconf->AddCorrectionOnQnVector(twScaleC);
 
   /* add the configuration to the detector */
   TZERO->AddDetectorConfiguration(TZEROCconf);
@@ -699,6 +744,14 @@ void AddFMD(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   alignA->SetHarmonicNumberForAlignment(2);
   alignA->SetReferenceConfigurationForAlignment("TPC");
   FMDAconf->AddCorrectionOnQnVector(alignA);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleA = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleA->SetApplyTwist(kTRUE);
+  twScaleA->SetApplyRescale(kTRUE);
+  twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("FMDC","TPC");
+  /* now we add it to the detector configuration */
+  FMDAconf->AddCorrectionOnQnVector(twScaleA);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDAconf);
@@ -721,6 +774,14 @@ void AddFMD(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   alignC->SetHarmonicNumberForAlignment(2);
   alignC->SetReferenceConfigurationForAlignment("TPC");
   FMDCconf->AddCorrectionOnQnVector(alignC);
+  /* let's configure the twist and rescale correction step */
+  AliQnCorrectionsQnVectorTwistAndRescale *twScaleC = new AliQnCorrectionsQnVectorTwistAndRescale();
+  twScaleC->SetApplyTwist(kTRUE);
+  twScaleC->SetApplyRescale(kTRUE);
+  twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("FMDA","TPC");
+  /* now we add it to the detector configuration */
+  FMDCconf->AddCorrectionOnQnVector(twScaleC);
 
   /* add the configuration to the detector */
   FMD->AddDetectorConfiguration(FMDCconf);
