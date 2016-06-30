@@ -216,7 +216,7 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
       mgr->CreateContainer(QnManager->GetCalibrationNveQAHistogramsContainerName(),
           TList::Class(),
           AliAnalysisManager::kOutputContainer,
-          "CalibrationNveQA.root");
+          "CalibrationQA.root");
     mgr->ConnectOutput(taskQnCorrections, taskQnCorrections->OutputSlotHistNveQA(), cOutputHistNveQA );
   }
 
