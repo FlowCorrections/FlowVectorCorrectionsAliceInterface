@@ -303,7 +303,7 @@ void AddVZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   twScaleA->SetApplyTwist(kTRUE);
   twScaleA->SetApplyRescale(kTRUE);
   twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleA->SetReferenceConfigurationsForTwistAndRescale("VZEROC","TPC");
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("TPC","VZEROC");
   /* now we add it to the detector configuration */
   VZEROAconf->AddCorrectionOnQnVector(twScaleA);
 
@@ -343,7 +343,7 @@ void AddVZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   twScaleC->SetApplyTwist(kTRUE);
   twScaleC->SetApplyRescale(kTRUE);
   twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleC->SetReferenceConfigurationsForTwistAndRescale("VZEROA","TPC");
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("TPC","VZEROA");
   /* now we add it to the detector configuration */
   VZEROCconf->AddCorrectionOnQnVector(twScaleC);
 
@@ -538,7 +538,7 @@ void AddTZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   twScaleA->SetApplyTwist(kTRUE);
   twScaleA->SetApplyRescale(kTRUE);
   twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleA->SetReferenceConfigurationsForTwistAndRescale("TZEROC","TPC");
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("TPC","TZEROC");
   /* now we add it to the detector configuration */
   TZEROAconf->AddCorrectionOnQnVector(twScaleA);
 
@@ -578,7 +578,7 @@ void AddTZERO(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManage
   twScaleC->SetApplyTwist(kTRUE);
   twScaleC->SetApplyRescale(kTRUE);
   twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleC->SetReferenceConfigurationsForTwistAndRescale("TZEROA","TPC");
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("TPC","TZEROA");
   /* now we add it to the detector configuration */
   TZEROCconf->AddCorrectionOnQnVector(twScaleC);
 
@@ -749,7 +749,7 @@ void AddFMD(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   twScaleA->SetApplyTwist(kTRUE);
   twScaleA->SetApplyRescale(kTRUE);
   twScaleA->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleA->SetReferenceConfigurationsForTwistAndRescale("FMDC","TPC");
+  twScaleA->SetReferenceConfigurationsForTwistAndRescale("TPC","FMDC");
   /* now we add it to the detector configuration */
   FMDAconf->AddCorrectionOnQnVector(twScaleA);
 
@@ -779,7 +779,7 @@ void AddFMD(AliAnalysisTaskFlowVectorCorrections *task, AliQnCorrectionsManager*
   twScaleC->SetApplyTwist(kTRUE);
   twScaleC->SetApplyRescale(kTRUE);
   twScaleC->SetTwistAndRescaleMethod(AliQnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  twScaleC->SetReferenceConfigurationsForTwistAndRescale("FMDA","TPC");
+  twScaleC->SetReferenceConfigurationsForTwistAndRescale("TPC","FMDA");
   /* now we add it to the detector configuration */
   FMDCconf->AddCorrectionOnQnVector(twScaleC);
 
