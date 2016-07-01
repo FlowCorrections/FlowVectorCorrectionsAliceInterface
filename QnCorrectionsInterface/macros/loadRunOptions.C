@@ -258,10 +258,14 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
     currline.Remove(0,strlen("source: "));
     if (currline.Contains("local"))
       szCorrectionsSource = "local";
-    else if (currline.Contains("alien"))
-      szCorrectionsSource = "alien";
-    else if (currline.Contains("OADB"))
-      szCorrectionsSource = "OADB";
+    else if (currline.Contains("aliensingle"))
+      szCorrectionsSource = "aliensingle";
+    else if (currline.Contains("alienmultiple"))
+      szCorrectionsSource = "alienmultiple";
+    else if (currline.Contains("OADBsingle"))
+      szCorrectionsSource = "OADBsingle";
+    else if (currline.Contains("OADBmultiple"))
+      szCorrectionsSource = "OADBmultiple";
     else if (currline.Contains("OCDB"))
       szCorrectionsSource = "OCDB";
     else

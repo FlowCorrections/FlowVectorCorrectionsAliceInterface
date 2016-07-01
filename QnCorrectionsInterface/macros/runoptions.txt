@@ -4,6 +4,8 @@
 # run options
 Run options:
 # grid, local, train
+# when grid is chosen the GRID datafiles are configured in GRIDrealdata.txt or GRIDMCdata.txt if MC is chosen
+# when local is chosen the datafiles are taken from filelist.txt or filelist_mc.txt
 grid
 # real, MC
 real
@@ -45,7 +47,9 @@ Use ZDC: yes
 
 # the corrections file
 Corrections file:
-# source: local, alien, OADB or OCDB
+# source: local, aliensingle, alienmultiple, OADBsingle, OADBmultiple or OCDB
+# single: one file contains on a per run basis the calibration parameters for the whole runs set
+# multiple: each run has its own calibration parameters file; in this case the filename is built as filename = name.root -> actual filename = name_runno.root
 source: local
 path: ./
 filename: QnVectorCorrectionsHistograms.root

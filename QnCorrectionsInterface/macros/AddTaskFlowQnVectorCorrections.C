@@ -165,9 +165,9 @@ AliAnalysisDataContainer* AddTaskFlowQnVectorCorrections() {
     cout << "\t File " << inputCalibrationFilename << endl << "\t being taken locally when building the task object" << endl;
     taskQnCorrections->SetCalibrationHistogramsFile(AliAnalysisTaskFlowVectorCorrections::CALIBSRC_local, inputCalibrationFilename.Data());
   }
-  else if (szCorrectionsSource.EqualTo("alien")) {
+  else if (szCorrectionsSource.EqualTo("aliensingle")) {
     cout << "\t File " << inputCalibrationFilename << " being taken from alien in the execution nodes" << endl;
-    taskQnCorrections->SetCalibrationHistogramsFile(AliAnalysisTaskFlowVectorCorrections::CALIBSRC_alien, inputCalibrationFilename.Data());
+    taskQnCorrections->SetCalibrationHistogramsFile(AliAnalysisTaskFlowVectorCorrections::CALIBSRC_aliensingle, inputCalibrationFilename.Data());
   }
   else {
     Error("AddTaskFlowQnVectorCorrections", "\t CALIBRATION FILE SOURCE NOT SUPPORTED. ABORTING!!!");
