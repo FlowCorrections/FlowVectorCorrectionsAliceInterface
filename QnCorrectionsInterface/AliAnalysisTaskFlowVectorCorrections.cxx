@@ -148,6 +148,9 @@ void AliAnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(Calibrat
       fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
       calibfile->Close();
     }
+    else {
+      AliWarning("CALIBRATION FILE NOT FOUND. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!");
+    }
     break;
   case CALIBSRC_aliensingle:
   case CALIBSRC_alienmultiple:
@@ -157,7 +160,7 @@ void AliAnalysisTaskFlowVectorCorrections::SetCalibrationHistogramsFile(Calibrat
     break;
   case CALIBSRC_OADBsingle:
   case CALIBSRC_OADBmultiple:
-    AliFatal("Calibration file source still not supported. Aborting!!!");
+    /* nothing to do for the time being */
     break;
   default:
     AliFatal("Calibration file source not supported. Aborting!!!");
@@ -191,8 +194,27 @@ void AliAnalysisTaskFlowVectorCorrections::UserCreateOutputObjects()
       fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
       calibfile->Close();
     }
+    else {
+      AliWarning("CALIBRATION FILE NOT FOUND. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!");
+    }
     break;
   case CALIBSRC_alienmultiple:
+    /* we still don't know the run neither the calibration file */
+    break;
+  case CALIBSRC_OADBsingle:
+    if (fCalibrationFile.Length() != 0) {
+      calibfile = TFile::Open(Form("%s/COMMON/EVENTPLANE/framework_v2_data/%s", AliAnalysisManager::GetOADBPath(),fCalibrationFile.Data()));
+    }
+    if (calibfile != NULL && calibfile->IsOpen()) {
+      AliInfo(Form("\t Calibration file %s open", fCalibrationFile.Data()));
+      fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      calibfile->Close();
+    }
+    else {
+      AliWarning("CALIBRATION FILE NOT FOUND AT OADB. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!");
+    }
+    break;
+  case CALIBSRC_OADBmultiple:
     /* we still don't know the run neither the calibration file */
     break;
   default:
@@ -241,9 +263,29 @@ void AliAnalysisTaskFlowVectorCorrections::NotifyRun() {
       calibfile->Close();
       if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
     }
+    else {
+      AliWarning(Form("CALIBRATION FILE FOR RUN NO: %d NOT FOUND. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!",this->fCurrentRunNumber));
+    }
     break;
   case CALIBSRC_OADBsingle:
+    /* we should have everyhting in place so just inform the framework in case it has to switch to the new one */
+    if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
+    break;
   case CALIBSRC_OADBmultiple:
+    TString runCalibrationFile = fCalibrationFile;
+    if (fCalibrationFile.Length() != 0) {
+      runCalibrationFile.Insert(runCalibrationFile.Index(".root"), Form("_%d", this->fCurrentRunNumber));
+      calibfile = TFile::Open(Form("%s/%s", AliAnalysisManager::GetOADBPath(),runCalibrationFile.Data()));
+    }
+    if (calibfile != NULL && calibfile->IsOpen()) {
+      AliInfo(Form("\t Calibration file %s open", Form("OADB/%s", runCalibrationFile.Data())));
+      fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+      calibfile->Close();
+      if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
+    }
+    else {
+      AliWarning(Form("CALIBRATION FILE FOR RUN NO: %d NOT FOUND AT OADB. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!",this->fCurrentRunNumber));
+    }
     break;
   default:
     break;

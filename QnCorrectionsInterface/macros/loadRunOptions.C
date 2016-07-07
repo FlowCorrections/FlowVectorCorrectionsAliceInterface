@@ -266,8 +266,6 @@ Bool_t loadRunOptions(Bool_t verb,const char *filename) {
       szCorrectionsSource = "OADBsingle";
     else if (currline.Contains("OADBmultiple"))
       szCorrectionsSource = "OADBmultiple";
-    else if (currline.Contains("OCDB"))
-      szCorrectionsSource = "OCDB";
     else
       { printf("ERROR: wrong corrections file source in options file %s\n", filename); return kFALSE; }
   }
