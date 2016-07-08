@@ -271,20 +271,21 @@ void AliAnalysisTaskFlowVectorCorrections::NotifyRun() {
     /* we should have everyhting in place so just inform the framework in case it has to switch to the new one */
     if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
     break;
-  case CALIBSRC_OADBmultiple:
-    TString runCalibrationFile = fCalibrationFile;
-    if (fCalibrationFile.Length() != 0) {
-      runCalibrationFile.Insert(runCalibrationFile.Index(".root"), Form("_%d", this->fCurrentRunNumber));
-      calibfile = TFile::Open(Form("%s/%s", AliAnalysisManager::GetOADBPath(),runCalibrationFile.Data()));
-    }
-    if (calibfile != NULL && calibfile->IsOpen()) {
-      AliInfo(Form("\t Calibration file %s open", Form("OADB/%s", runCalibrationFile.Data())));
-      fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
-      calibfile->Close();
-      if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
-    }
-    else {
-      AliWarning(Form("CALIBRATION FILE FOR RUN NO: %d NOT FOUND AT OADB. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!",this->fCurrentRunNumber));
+  case CALIBSRC_OADBmultiple: {
+      TString runCalibrationFile = fCalibrationFile;
+      if (fCalibrationFile.Length() != 0) {
+        runCalibrationFile.Insert(runCalibrationFile.Index(".root"), Form("_%d", this->fCurrentRunNumber));
+        calibfile = TFile::Open(Form("%s/%s", AliAnalysisManager::GetOADBPath(),runCalibrationFile.Data()));
+      }
+      if (calibfile != NULL && calibfile->IsOpen()) {
+        AliInfo(Form("\t Calibration file %s open", Form("OADB/%s", runCalibrationFile.Data())));
+        fAliQnCorrectionsManager->SetCalibrationHistogramsList(calibfile);
+        calibfile->Close();
+        if (fCalibrateByRun) fAliQnCorrectionsManager->SetCurrentProcessListName(Form("%d", this->fCurrentRunNumber));
+      }
+      else {
+        AliWarning(Form("CALIBRATION FILE FOR RUN NO: %d NOT FOUND AT OADB. RUNNING FRAMEWORK WITHOUT CALIBRATION PARAMETERS!!!",this->fCurrentRunNumber));
+      }
     }
     break;
   default:
