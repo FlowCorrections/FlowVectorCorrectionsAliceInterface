@@ -391,11 +391,8 @@ void AliQnCorrectionsFillEventTask::FillVZERO(){
   //
 
   Double_t weight=0.;
-  const Double_t kX[8] = {0.92388, 0.38268, -0.38268, -0.92388, -0.92388, -0.38268, 0.38268, 0.92388};    // cosines of the angles of the VZERO sectors (8 per ring)
-  const Double_t kY[8] = {0.38268, 0.92388, 0.92388, 0.38268, -0.38268, -0.92388, -0.92388, -0.38268};    // sines     -- " --
-  const Double_t phi[8] = {TMath::ATan2(kY[0],kX[0]), TMath::ATan2(kY[1],kX[1]), TMath::ATan2(kY[2],kX[2]),
-      TMath::ATan2(kY[3],kX[3]), TMath::ATan2(kY[4],kX[4]), TMath::ATan2(kY[5],kX[5]),
-      TMath::ATan2(kY[6],kX[6]), TMath::ATan2(kY[7],kX[7]) };
+  static const Double_t phi[8] = {1*TMath::Pi()/8.0, 3*TMath::Pi()/8.0, 5*TMath::Pi()/8.0, 7*TMath::Pi()/8.0,
+      9*TMath::Pi()/8.0, 11*TMath::Pi()/8.0, 13*TMath::Pi()/8.0, 15*TMath::Pi()/8.0};
 
   AliVVZERO* vzero = fEvent->GetVZEROData();
 
