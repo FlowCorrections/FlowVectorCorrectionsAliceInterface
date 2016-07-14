@@ -62,7 +62,7 @@ filename: CalibrationHistograms.root
 
 # run the Qn vector analysis task
 Use QnVectorAnalysisTask: no
-# correction steps: raw, plain, rec, align, twist, scale
+# correction steps: raw, plain, rec, align, twist, scale, latest
 Expected correction step: align
 Alternative correction step: rec
 
