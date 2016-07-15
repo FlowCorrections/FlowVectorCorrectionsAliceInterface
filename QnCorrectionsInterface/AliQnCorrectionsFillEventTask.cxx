@@ -189,7 +189,7 @@ void AliQnCorrectionsFillEventTask::FillEventInfo() {
   }
 
   AliMultSelection *MultSelection = (AliMultSelection * ) fEvent->FindListObject("MultSelection");
-  if(MultSelection) fDataBank[kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kTRUE);
+  if(MultSelection) fDataBank[kVZEROMultPercentile] = MultSelection->GetMultiplicityPercentile("V0M", kFALSE);
 
   AliESDEvent* esdEvent = static_cast<AliESDEvent*>(fEvent);
   AliCentrality* cent = esdEvent->GetCentrality();
